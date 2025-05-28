@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Minishell.h                                        :+:      :+:    :+:   */
+/*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 14:21:24 by camerico          #+#    #+#             */
-/*   Updated: 2025/05/26 14:23:18 by camerico         ###   ########.fr       */
+/*   Updated: 2025/05/28 19:39:34 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 # include "./libft/includes/libft.h"
 # include <fcntl.h> 
 # include <sys/wait.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 
 /* ************************************************************************** */
 /* DEFINES                                                                    */
@@ -36,6 +38,30 @@
 /* STRUCTURES                                                                 */
 /* ************************************************************************** */
 
+//struct c'est pour stocker plusieurs variables
+//enum (pour enumeration) est une liste de nom associes a des entiers, par exemple les differents types de token. ce sont tous des int.
+
+//le type du token (a completer)
+typedef enum e_token_type {
+	WORD,			//= 0	//ex : "ls", "fichier.txt"
+	PIPE,			//= 1	//ex : |
+	REDIR_IN,		//= 2	//ex : <
+	REDIR_OUT,		//= 3	//ex : >
+	HEREDOC,				//ex : <<
+	APPEND					//ex : >>
+}	t_token_type;
+
+typedef struct s_token {
+	char		*value;
+	t_token_type	type;
+}	t_token;
+
+
+//structure principale de minishell
+typedef struct s_minishell {
+	t_token	*tokens;
+	char	**envp;
+}	t_minishell;
 
 
 /* ************************************************************************** */
