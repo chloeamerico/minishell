@@ -44,11 +44,19 @@ void	recup_quote_word(char *input, int *i, t_token **token)
 	create_token(token, word, WORD);		//il faut creer la fonction qui va transformer le mot en token
 }
 
+// int	is_operator(char c)
+// {
+// 	if (c == '<' || c == '<<' || c == '>'
+// 		|| c == '>>' || c == '|')
+// 		return(0);
+// 	else
+// 		return (1);
+// }
 int is_operator(char c)
 {
-	return  (c == '<' || c == '<<' || c == '>'
-		|| c == '>>' || c == '|');
+	return  (c == '<' || c == '>' || c == '|');
 }
+
 
 void	recup_operator(char *input, int *i, t_token **token)
 {
