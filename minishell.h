@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 14:21:24 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/02 14:48:56 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/06/02 15:01:48 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,22 @@ typedef struct s_minishell {
 	t_token	*tokens;
 	char	**envp;
 }	t_minishell;
+
+typedef struct s_redir
+{
+	char			*file;
+	t_token_type	type; // REDIR_IN, REDIR_OUT, etc.
+	struct s_redir	*next;
+}	t_redir;
+
+typedef struct s_cmd
+{
+	char		**argv;         // arguments de la commande
+	t_redir		*in;            // liste des redirs d’entrée
+	t_redir		*out;           // liste des redirs de sortie
+	struct s_cmd *next;         // commande suivante (si pipe)
+}	t_cmd;
+
 
 /* ************************************************************************** */
 /* PROTO                                                                      */
