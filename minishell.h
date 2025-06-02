@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/26 14:21:24 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/02 15:01:48 by lleichtn         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -27,8 +15,6 @@
 # include "./libft/includes/libft.h"
 # include <fcntl.h> 
 # include <sys/wait.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 
 /* ************************************************************************** */
 /* DEFINES                                                                    */
@@ -65,7 +51,7 @@ typedef struct s_minishell {
 	char	**envp;
 }	t_minishell;
 
-typedef struct s_redir
+typedef struct s_redir // stock les fichier a reddiriger
 {
 	char			*file;
 	t_token_type	type; // REDIR_IN, REDIR_OUT, etc.
