@@ -61,3 +61,4 @@ static char	*get_word(char *line, int start, int end)
 	word[j] = '\0';
 	return (word);
 }
+
