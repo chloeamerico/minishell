@@ -85,28 +85,3 @@ char	**word_to_array(char **array, char *word)
 	free(array);
 	return (new_array);
 }
-
-
-//fonction qui va prendre un mot et l'ajouter au tableau array
-char	**word_to_array(char **array, char *word)
-{
-	int	i;
-	char **new_array;
-	
-	i = 0;
-	while(array && array[i])
-		i++;
-	new_array = malloc(sizeof(char *) * (i + 2));	// on ajoute 2 pour garder une place pour le NULL
-	if (!new_array)
-		return (NULL);
-	i = 0;
-	while(array && array[i])
-	{
-		new_array[i] = array[i];	// on duplique array dans new_array
-		i++;
-	}
-	new_array[i] = word;
-	new_array[i + 1] = NULL;
-	free(array);
-	return (new_array);
-}
