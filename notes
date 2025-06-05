@@ -1,0 +1,126 @@
+Voici un plan détaillé et finalisé pour la partie parsing de ton projet Minishell, en suivant à la fois le sujet officiel et la bonne séparation modulaire du code.
+🧩 Fichiers à créer pour le parsing
+1. minishell.h
+
+But : Centraliser les définitions globales du parsing.
+Ce qu’il contient :
+
+    Structures : t_token, t_cmd, t_redirect, etc.
+
+    Prototypes des fonctions de parsing
+
+    Enums pour les types de tokens : TOKEN_WORD, TOKEN_PIPE, TOKEN_REDIR_OUT, etc.
+
+    Macros utiles
+
+    Inclusion des headers systèmes (<stdlib.h>, <unistd.h>, etc.)
+
+2. lexer.c
+
+But : Découper la ligne entrée (string) en tokens (char ** ou t_token *)
+Fonctions typiques :
+
+    char **tokenize(char *line)
+
+    int is_operator(char *str)
+
+    char *strip_quotes(char *token)
+
+    Appels à quote_utils pour traiter les quotes
+
+3. quote_utils.c
+
+But : Gérer les quotes ' et " pendant le découpage lexical
+Fonctions typiques :
+
+    int is_closed_quote(char *str)
+
+    char *remove_surrounding_quotes(char *str)
+
+    Gestion des cas : "bonjour $USER" vs 'bonjour $USER'
+
+4. token_utils.c
+
+But : Créer et manipuler les structures t_token
+Fonctions typiques :
+
+    t_token *new_token(char *value, int type)
+
+    void append_token(t_token **list, t_token *new)
+
+    void free_token_list(t_token *list)
+
+5. parser.c
+
+But : Transformer la liste de tokens en structure t_cmd
+Fonctions typiques :
+
+    t_cmd *parse_tokens(t_token *tokens)
+
+    t_cmd *init_command(void)
+
+    void fill_command(t_cmd *cmd, t_token *token_list)
+
+6. syntax_checker.c
+
+But : Valider la syntaxe avant parsing
+Fonctions typiques :
+
+    int check_pipe_errors(t_token *tokens)
+
+    int check_redirection_errors(t_token *tokens)
+
+    int is_valid_token_sequence(t_token *tokens)
+
+7. env_utils.c
+
+But : Lire / écrire / supprimer une variable d’environnement
+Fonctions typiques :
+
+    char *get_env_value(char **envp, const char *key)
+
+    int set_env(char ***envp, const char *key, const char *value)
+
+    int unset_env(char ***envp, const char *key)
+
+8. expander.c
+
+But : Rechercher et remplacer les occurrences de $VAR et $?
+Fonctions typiques :
+
+    char *expand_token(char *token, char **envp)
+
+    void expand_token_list(t_token *tokens, char **envp)
+
+    Utilise get_env_value depuis env_utils.c
+
+9. cmd_builder.c
+
+But : Construire les structures t_cmd finales à exécuter (avec argv, redirs, etc.)
+Fonctions typiques :
+
+    void add_argument(t_cmd *cmd, char *word)
+
+    void add_redirection(t_cmd *cmd, t_token *redir)
+
+    t_cmd *finalize_command(t_cmd *cmd)
+
+✅ Ordre recommandé de développement :
+
+    minishell.h
+
+    token_utils.c
+
+    lexer.c
+
+    quote_utils.c
+
+    env_utils.c
+
+    expander.c
+
+    syntax_checker.c
+
+    parser.c
+
+    cmd_builder.c
