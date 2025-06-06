@@ -85,3 +85,45 @@ char	**word_to_array(char **array, char *word)
 	free(array);
 	return (new_array);
 }
+
+int	split_input(char ***array, char *line, int i)
+{
+	int	start;		// pour stocker ou commence le mot/token qu'on va extraire
+	char *word;		// pour stocker le mot extrait
+
+	while(line[i])
+	{
+		while(line[i] == ' ')		// on saute les epace entre les mots
+			i++;
+		if (!line[i])
+			return (1);
+		start = i;
+		if (is_metachar(line[i]))
+		{
+			if (line[i] == line[i + 1])		//on gere les << et >>
+				i++;
+			i++;
+		}
+		else
+			get_word_len(line, &i);
+		word = get_word(line, start, i);
+		if (!word)
+			retrun(1);
+		*array = word_to_array(*array, word);
+		if (!*array)
+			return (1);
+	}
+	return (0);
+}
+
+char	**split_minishell(char *line)
+{
+	char	**array;	//c'est le tableau qui va accueillir les mots separes
+
+	array = NULL;
+	if (!line)
+		return (NULL);
+	if (split_input(&array, line, 0))		//fonction qui va appliquer le split
+		return (NULL);
+	return (array);
+}
