@@ -108,7 +108,7 @@ int	split_input(char ***array, char *line, int i)
 			get_word_len(line, &i);
 		word = get_word(line, start, i);
 		if (!word)
-			retrun(1);
+			return (1);
 		*array = word_to_array(*array, word);
 		if (!*array)
 			return (1);
