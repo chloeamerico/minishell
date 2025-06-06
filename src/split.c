@@ -5,7 +5,6 @@ static int is_metachar(char c)
 {
 	return(c == '|' || c == '>' || c == '<');
 }
-
 // met a jour le state
 static void quote_state(char c, int *state)
 {
