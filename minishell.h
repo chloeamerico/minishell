@@ -40,7 +40,8 @@ typedef enum e_type
 	RINT,  // <
 	ROUT,  // >
 	DRIN,  // <<
-	DROUT  // >>
+	DROUT, // >>
+	PIPE //|
 }	t_type;
 
 typedef struct s_token
