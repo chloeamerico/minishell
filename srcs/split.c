@@ -52,7 +52,8 @@ static char	*get_word(char *line, int start, int end)
 	while (start < end)
 	{
 		quote_state(line[start], &copy_state);
-		if (copy_state == STATE_NONE && (line[start] == '\'' || line[start] == '"')) // si on a une quote on saute hors quote
+		if ((copy_state == STATE_NONE || copy_state == STATE_SINGLE || copy_state == STATE_DOUBLE) 
+			&& (line[start] == '\'' || line[start] == '"')) // si on a une quote on saute hors quote
 			start++;
 		else
 			word[j++] = line[start++]; // on copie le carac ds le mot
