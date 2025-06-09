@@ -5,7 +5,6 @@ static int is_metachar(char c)
 {
 	return(c == '|' || c == '>' || c == '<');
 }
-
 // met a jour le state
 static void quote_state(char c, int *state)
 {
@@ -108,7 +107,11 @@ int	split_input(char ***array, char *line, int i)
 			get_word_len(line, &i);
 		word = get_word(line, start, i);
 		if (!word)
+<<<<<<< HEAD
 			return(1);
+=======
+			return (1);
+>>>>>>> main
 		*array = word_to_array(*array, word);
 		if (!*array)
 			return (1);
