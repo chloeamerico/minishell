@@ -95,7 +95,8 @@ int	split_input(char ***array, char *line, int i)
 		while(line[i] == ' ')		// on saute les epace entre les mots
 			i++;
 		if (!line[i])
-			return (1);
+			// return (1);
+			break;
 		start = i;
 		if (is_metachar(line[i]))
 		{
@@ -107,11 +108,7 @@ int	split_input(char ***array, char *line, int i)
 			get_word_len(line, &i);
 		word = get_word(line, start, i);
 		if (!word)
-<<<<<<< HEAD
-			return(1);
-=======
 			return (1);
->>>>>>> main
 		*array = word_to_array(*array, word);
 		if (!*array)
 			return (1);
