@@ -8,7 +8,9 @@ LIBFT_DIR 	=	libft/
 SRCS_DIR	=	srcs/
 OBJ_DIR		=	obj/
 
-# SRCS =  tobedone
+SRCS =  init.c \
+	main.c \
+	split.c \
 
 HEADER = minishell.h
 
@@ -25,7 +27,7 @@ $(LIBFT):
 	make -C $(LIBFT_DIR)
 
 $(NAME): $(LIBFT) $(OBJ_DIR) $(OBJS_MINISHELL)
-	$(CC) $(CFLAGS) $(OBJS_MINISHELL) -L$(LIBFT_DIR) -lft -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS_MINISHELL) -L$(LIBFT_DIR) -lft -lreadline -o $(NAME)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
