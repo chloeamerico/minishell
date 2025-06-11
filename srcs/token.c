@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 15:10:31 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/10 17:03:08 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/11 14:10:37 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static t_token	*create_token(char *str, t_type prev_type)
     	else
         	new->type = FD; //cas pr trouver le fd
 	}
-	else if ((prev_type == PIPE || prev_type == CMD) 
+	else if ((prev_type == PIPE) 
 		&& new->type == WRD)
     	new->type = CMD;
 	return (new);
@@ -82,7 +82,7 @@ t_token	*tokenize(char **split)
 
 	head = NULL;
 	last = NULL;
-	prev_type = CMD; //comme ca le premier mot est un cmd
+	prev_type = PIPE; //comme ca le premier mot est un cmd
 	while (*split)
 	{
 		new = create_token(*split, prev_type);

@@ -96,7 +96,6 @@ int	split_input(char ***array, char *line, int i)
 		while(line[i] == ' ')		// on saute les epace entre les mots
 			i++;
 		if (!line[i])
-			// return (1);
 			break;
 		start = i;
 		if (is_metachar(line[i]))
@@ -124,7 +123,32 @@ char	**split_minishell(char *line)
 	array = NULL;
 	if (!line)
 		return (NULL);
+	if (check_close_quotes)
+		return (NULL);
 	if (split_input(&array, line, 0))		//fonction qui va appliquer le split
 		return (NULL);
 	return (array);
+}
+
+static int	check_close_quotes(char *line)
+{
+	int	single_q;
+	int	double_q;
+	int	i;
+
+	single_q = 0;
+	double_q = 0;
+	i = 0;
+
+	while(line[i])
+	{
+		if (line[i] == 39)		//single
+			single_q++;
+		if (line[i] == 34)		//double
+			double_q++;
+	}
+	if (single_q % 2 != 0 || double_q % 2 != 0)
+		return (1);							// si il y a un nb impair de ' ou "" on return une erreur
+	else
+		return (0);
 }
