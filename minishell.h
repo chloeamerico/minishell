@@ -74,6 +74,8 @@ int	read_line(char **line);
 char	**word_to_array(char **array, char *word);
 int	split_input(char ***array, char *line, int i);
 char	**split_minishell(char *line);
+t_token	*tokenize(char **split);
+int	validate_tokens(t_token *tkn);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 15:10:31 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/09 15:10:36 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/10 17:03:08 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,10 @@ static t_type get_token_type(char *str)
     return (WRD);
 }
 
+// alloue un nv token
+// duplique la string
+// deduit le type
+//peut changer le type
 static t_token	*create_token(char *str, t_type prev_type)
 {
 	t_token	*new;
@@ -66,6 +70,9 @@ static t_token	*create_token(char *str, t_type prev_type)
 	return (new);
 }
 
+//fonction qui cree une liste chainee de t_token
+//gere les liens entre next et prev
+// return la tete de liste (head)
 t_token	*tokenize(char **split)
 {
 	t_token	*head; //fst tkn celui return
@@ -81,7 +88,7 @@ t_token	*tokenize(char **split)
 		new = create_token(*split, prev_type);
 		if (!new)
 			return (NULL);
-		if (last)
+		if (last)		// donc si au moins 1 token a deja ete cree
 		{
 			last->next = new;
 			new->prev = last;
@@ -95,24 +102,26 @@ t_token	*tokenize(char **split)
 	return (head);
 }
 
+//est ce que la liste de token generee est correcte / on a le droit de l'executee 
+// si return (0) (= invalide)
 int	validate_tokens(t_token *tkn)
 {
     if (!tkn)
         return (0);
-    if (tkn->type == PIPE)
+    if (tkn->type == PIPE) //si le premier token est un pipe => invalid
         return (0);
     while (tkn)
     {
         if (tkn->type == PIPE)
         {
-            if (!tkn->prev || !tkn->next || tkn->next->type == PIPE)
+            if (!tkn->prev || !tkn->next || tkn->next->type == PIPE)	// gere le : |... ou ... | ou ... ||...
                 return (0);
         }
         if (is_redir(tkn->type))
         {
-            if (!tkn->next)
+            if (!tkn->next)			// gere le ... > (ou n'imp quelle redir)
                 return (0);
-            if (is_metachar(tkn->next->type))
+            if (is_metachar(tkn->next->type))		// gere si il y a une redir vers metachar
                 return (0);
         }
         tkn = tkn->next;

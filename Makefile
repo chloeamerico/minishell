@@ -11,6 +11,7 @@ OBJ_DIR		=	obj/
 SRCS =  init.c \
 	main.c \
 	split.c \
+	token.c \
 
 HEADER = minishell.h
 
