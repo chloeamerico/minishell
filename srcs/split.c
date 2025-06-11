@@ -45,16 +45,23 @@ static char	*get_word(char *line, int start, int end)
 	int j;
 
 	copy_state = STATE_NONE;
-	word = malloc(end - start + 1);
+	word = malloc(end - start + 1);				// ehhhh, c'est quoi ca ?? depuis auqnd on malloc comme ca ?
 	j = 0;
 	if (!word)
 		return (NULL);
 	while (start < end)
 	{
-		quote_state(line[start], &copy_state);
-		if ((copy_state == STATE_NONE || copy_state == STATE_SINGLE || copy_state == STATE_DOUBLE) 
-			&& (line[start] == '\'' || line[start] == '"')) // si on a une quote on saute hors quote
+		if(copy_state == STATE_NONE && (line[start] == '\'' || line[start] == '"'))
+		{
+			quote_state(line[start], &copy_state);
 			start++;
+		}
+		else if((copy_state == STATE_SINGLE && line[start] == '\'')
+			|| (copy_state == STATE_DOUBLE && line[start] == '"'))
+		{
+			quote_state(line[start], &copy_state);
+			start++;
+		}
 		else
 			word[j++] = line[start++]; // on copie le carac ds le mot
 	}
@@ -85,29 +92,6 @@ char	**word_to_array(char **array, char *word)
 	free(array);
 	return (new_array);
 }
-
-// static int	check_close_quotes(char *line)
-// {
-// 	int	single_q;
-// 	int	double_q;
-// 	int	i;
-
-// 	single_q = 0;
-// 	double_q = 0;
-// 	i = 0;
-
-// 	while(line[i])
-// 	{
-// 		if (line[i] == 39)		//single
-// 			single_q++;
-// 		if (line[i] == 34)		//double
-// 			double_q++;
-// 		i++;
-// 	}
-// 	if (single_q % 2 != 0 || double_q % 2 != 0)
-// 		return (1);							// si il y a un nb impair de ' ou "" on return une erreur
-// 	return (0);
-// }
 
 static int	check_close_quotes(char *line)
 {

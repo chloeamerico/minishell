@@ -103,8 +103,7 @@ Fonction : display_tokens(t_token *tok)
 
 
 
-
-    minishell> 'hgdiuj"'"'l"
+minishell> 'hgdiuj"'"'l"
 Token 0: [hgdiujl]
 minishell> "'l"
 Token 0: [l]
