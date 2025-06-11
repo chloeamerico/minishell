@@ -86,6 +86,62 @@ char	**word_to_array(char **array, char *word)
 	return (new_array);
 }
 
+// static int	check_close_quotes(char *line)
+// {
+// 	int	single_q;
+// 	int	double_q;
+// 	int	i;
+
+// 	single_q = 0;
+// 	double_q = 0;
+// 	i = 0;
+
+// 	while(line[i])
+// 	{
+// 		if (line[i] == 39)		//single
+// 			single_q++;
+// 		if (line[i] == 34)		//double
+// 			double_q++;
+// 		i++;
+// 	}
+// 	if (single_q % 2 != 0 || double_q % 2 != 0)
+// 		return (1);							// si il y a un nb impair de ' ou "" on return une erreur
+// 	return (0);
+// }
+
+static int	check_close_quotes(char *line)
+{
+	int	i;
+
+	i = 0;
+	while(line[i])
+	{
+		if (line[i] == 39)		//single
+		{
+			i++;
+			while(line[i] && line[i] != 39)
+				i++;
+			if (!line[i])
+				return (1);
+			else
+				i++;
+		}
+		else if (line[i] == 34)		//double
+		{
+			i++;
+			while(line[i] && line[i] != 34)
+				i++;
+			if (!line[i])
+				return (1);
+			else
+				i++;
+		}
+		else
+			i++;
+	}
+	return (0);
+}
+
 int	split_input(char ***array, char *line, int i)
 {
 	int	start;		// pour stocker ou commence le mot/token qu'on va extraire
@@ -116,6 +172,7 @@ int	split_input(char ***array, char *line, int i)
 	return (0);
 }
 
+
 char	**split_minishell(char *line)
 {
 	char	**array;	//c'est le tableau qui va accueillir les mots separes
@@ -123,32 +180,9 @@ char	**split_minishell(char *line)
 	array = NULL;
 	if (!line)
 		return (NULL);
-	if (check_close_quotes)
+	if (check_close_quotes(line))
 		return (NULL);
 	if (split_input(&array, line, 0))		//fonction qui va appliquer le split
 		return (NULL);
 	return (array);
-}
-
-static int	check_close_quotes(char *line)
-{
-	int	single_q;
-	int	double_q;
-	int	i;
-
-	single_q = 0;
-	double_q = 0;
-	i = 0;
-
-	while(line[i])
-	{
-		if (line[i] == 39)		//single
-			single_q++;
-		if (line[i] == 34)		//double
-			double_q++;
-	}
-	if (single_q % 2 != 0 || double_q % 2 != 0)
-		return (1);							// si il y a un nb impair de ' ou "" on return une erreur
-	else
-		return (0);
 }

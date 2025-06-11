@@ -99,4 +99,12 @@ Fonction : free_tokens(t_token *tok)
 4️⃣ Affichage debug (optionnel)
 Fonction : display_tokens(t_token *tok)
 
-    Affiche la liste → très utile pour vérifier ton tokenizer
+    Affiche la liste → très utile pour vérifier ton tokenizer\
+
+
+
+
+    minishell> 'hgdiuj"'"'l"
+Token 0: [hgdiujl]
+minishell> "'l"
+Token 0: [l]
