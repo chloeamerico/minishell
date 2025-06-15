@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
+/*   Updated: 2025/06/12 14:54:52 by camerico         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // Signal envoyer lors de ctrl +C
@@ -16,37 +28,37 @@ void	setup_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-char	**init_env(char **envp)
-{
-	int		i;
-	char	**copy;
+// char	**init_env(char **envp)
+// {
+// 	int		i;
+// 	char	**copy;
 
-	i = 0;
-	while (envp[i])
-		i++;
-	copy = malloc(sizeof(char *) * (i + 1));
-	if (!copy)
-		return (NULL);
-	i = 0;
-	while (envp[i])
-	{
-		copy[i] = strdup(envp[i]);
-		if (!copy[i])
-			return (NULL);
-		i++;
-	}
-	copy[i] = NULL;
-	return (copy);
-}
+// 	i = 0;
+// 	while (envp[i])
+// 		i++;
+// 	copy = malloc(sizeof(char *) * (i + 1));
+// 	if (!copy)
+// 		return (NULL);
+// 	i = 0;
+// 	while (envp[i])
+// 	{
+// 		copy[i] = strdup(envp[i]);
+// 		if (!copy[i])
+// 			return (NULL);
+// 		i++;
+// 	}
+// 	copy[i] = NULL;
+// 	return (copy);
+// }
 
-char	**get_env(char **env)
-{
-	static char	**env_storage = NULL; // la sigleton donc
+// char	**get_env(char **env)
+// {
+// 	static char	**env_storage = NULL; // la sigleton donc
 
-	if (env)
-		env_storage = env;
-	return (env_storage);
-}
+// 	if (env)
+// 		env_storage = env;
+// 	return (env_storage);
+// }
 
 int	read_line(char **line)
 {
