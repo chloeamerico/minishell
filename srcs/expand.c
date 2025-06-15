@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/15 17:53:00 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/15 18:08:07 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,41 +45,14 @@ void	divide_key_and_value(char *arg, t_env **env)
 	key = ft_substr(arg, 0, i);
 	value = ft_strdup(arg + i + 1);		//on commence au char juste apres le =
 	update_or_add_env(key, value, env);
+	free(key);
+	free(value);
 }
 
 
 //on parcours la liste en env pour voir si key existe
 
-// int	check_in_env(char *key, t_env **env)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while(env[i])
-// 	{
-// 		if(env[i] == key)
-// 			return(1);			//si key est deja present dans env, return (1)
-// 		i++;
-// 	}
-// 	return (0);					// si key n'est pas present, return (0);
-// }
-
-//  int	check_in_env(char *key, t_env **env)
-//  {
-// 	t_env	*tmp;
-
-// 	tmp = *env;
-// 	while(tmp)
-// 	{
-// 		if (ft_strcmp(tmp->key, key) == 0)		// si key deja presente, return (1)
-// 			return(1);
-// 		tmp = tmp->next;
-// 	}
-// 	return (0);									// si key n'est pas present, return (0);
-//  }
-
-
- t_env	*check_in_env(char *key, t_env *env)
+t_env	*check_in_env(char *key, t_env *env)
  {
 	while(env)
 	{
@@ -97,8 +70,9 @@ void	update_or_add_env(char *key, char *value, t_env **env)
 {
 	t_env	*match;
 	t_env	*new;
+	t_env	*tmp;
 	
-	match = check_in_env(key, env);			//on check si il y a eu un match avec les key deja dans la var d'env
+	match = check_in_env(key, *env);			//on check si il y a eu un match avec les key deja dans la var d'env
 	if(match)
 	{
 		free(match->value);					//on remplace l'ancienne value par la nouvelle
@@ -109,27 +83,14 @@ void	update_or_add_env(char *key, char *value, t_env **env)
 		new = malloc(sizeof(t_env));
 		new->key = ft_strdup(key);
 		new->value = ft_strdup(value);
-		new->next = NULL;					//on l'ajoute a la fin
-		*env = new; 
+		if (*env == NULL)
+			*env = new;
+		else
+		{
+			tmp = *env;
+			while(tmp->next)
+				tmp = tmp->next;
+			tmp->next = new;
+		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-// void	var_in_env(char *arg, t_env **env)
-// {
-// 	char	*since_equal;		//string a partir du e
-	
-// 	since_equal = ft_strchr(arg, '=');		//si il n'y a pas de = 
-// 	if(!since_equal)
-// 		return;
-	
-	
-// }
