@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/15 17:17:16 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/15 17:53:00 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	divide_key_and_value(char *arg, t_env **env)
 		return;
 	key = ft_substr(arg, 0, i);
 	value = ft_strdup(arg + i + 1);		//on commence au char juste apres le =
+	update_or_add_env(key, value, env);
 }
 
 
@@ -63,18 +64,30 @@ void	divide_key_and_value(char *arg, t_env **env)
 // 	return (0);					// si key n'est pas present, return (0);
 // }
 
- int	check_in_env(char *key, t_env **env)
- {
-	t_env	*tmp;
+//  int	check_in_env(char *key, t_env **env)
+//  {
+// 	t_env	*tmp;
 
-	tmp = *env;
-	while(tmp)
+// 	tmp = *env;
+// 	while(tmp)
+// 	{
+// 		if (ft_strcmp(tmp->key, key) == 0)		// si key deja presente, return (1)
+// 			return(1);
+// 		tmp = tmp->next;
+// 	}
+// 	return (0);									// si key n'est pas present, return (0);
+//  }
+
+
+ t_env	*check_in_env(char *key, t_env *env)
+ {
+	while(env)
 	{
-		if (ft_strcmp(tmp->key, key) == 0)		// si key deja presente, return (1)
-			return(1);
-		tmp = tmp->next;
+		if (ft_strcmp(env->key, key) == 0)		// si key deja presente, return (1)
+			return(env);
+		env = env->next;
 	}
-	return (0);									// si key n'est pas present, return (0);
+	return (NULL);									// si key n'est pas present, return (0);
  }
 
 
@@ -82,13 +95,22 @@ void	divide_key_and_value(char *arg, t_env **env)
 //on lui associe la valeur ou on la met a jour si elle existe deja
 void	update_or_add_env(char *key, char *value, t_env **env)
 {
-	char **tmp;
+	t_env	*match;
+	t_env	*new;
 	
-	if (check_in_env(key, env))
-	while(env)
+	match = check_in_env(key, env);			//on check si il y a eu un match avec les key deja dans la var d'env
+	if(match)
 	{
-		tmp = env;
-		if()	
+		free(match->value);					//on remplace l'ancienne value par la nouvelle
+		match->value = ft_strdup(value);
+	}
+	else									//on cree un nv t_env
+	{
+		new = malloc(sizeof(t_env));
+		new->key = ft_strdup(key);
+		new->value = ft_strdup(value);
+		new->next = NULL;					//on l'ajoute a la fin
+		*env = new; 
 	}
 }
 
