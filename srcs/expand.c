@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/15 18:08:07 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/21 18:47:01 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,6 @@
 //gerer export , si la variable existe deja on modifie sa valeur, sinon on la creer en lui associant la valeur
 //quand on appelle avec le $, faire une fonction qui parcours la liste et retourne la value associee a key
 
-typedef struct s_env
-{
-    char            *key;
-    char            *value;
-    struct s_env    *next;
-}    t_env;
-
 
 //fonction qui va regarder si la var existe deja dans l'env:
 // si oui, modifie la valeur associee
@@ -31,7 +24,7 @@ typedef struct s_env
 
 
 //on divise l'arg en key et value a partir du =
-void	divide_key_and_value(char *arg, t_env **env)
+static void	divide_key_and_value(char *arg, t_env **env)
 {
 	int	i;
 	char	*key;
@@ -52,7 +45,7 @@ void	divide_key_and_value(char *arg, t_env **env)
 
 //on parcours la liste en env pour voir si key existe
 
-t_env	*check_in_env(char *key, t_env *env)
+static t_env	*check_in_env(char *key, t_env *env)
  {
 	while(env)
 	{
@@ -66,7 +59,7 @@ t_env	*check_in_env(char *key, t_env *env)
 
 //si la var n'existe pas on l'ajoute
 //on lui associe la valeur ou on la met a jour si elle existe deja
-void	update_or_add_env(char *key, char *value, t_env **env)
+static void	update_or_add_env(char *key, char *value, t_env **env)
 {
 	t_env	*match;
 	t_env	*new;
@@ -92,5 +85,68 @@ void	update_or_add_env(char *key, char *value, t_env **env)
 				tmp = tmp->next;
 			tmp->next = new;
 		}
+	}
+}
+
+//parcours les t_token de type CMD ou ARG
+//cherche les $VAR , $?
+// remplace les $VAR par leur valeur
+//remplace $? par le code de sortie precedent
+//ne pas expand les simple quotes
+
+
+//on verifie qu'on doti bien faire l'expension, puis appelle toutes els fonctions pour modifier la vaar d'env
+int	expand_or_not(char **split, t_env **env)
+{
+	int	i;
+	
+	if (!split || !split[0])
+		return(1);
+	if (ft_strcmp(split[0], "export") != 0 || ft_strcmp(split[0], "env") != 0)		//si le premier mot n'est pas "export", on passe a la tokenisation
+		return(1);
+	if (!split[1] || (ft_strcmp(split[0], "env") && !split[1]))		// si on ecrit juste "export" ou "env", afficher la var d'env
+		print_env;
+	else
+	{
+		i = 0;
+		while(split[i])
+			divide_key_and_value(split[i++], env);
+	}
+	return (0);			//on a gere l'export, pas besoin de faire la tokenisation
+}
+
+
+
+
+
+
+//partie pour remplacer le $VAR par la value si elle n'est pas entre '...'
+
+static int	in_simple_quotes(char *str)
+{
+	int	i;
+	int	state;
+	
+	i = 0;
+	state = STATE_NONE;
+	while (str[i])
+	{
+		quote_state(str[i], state);
+		if(str[i] == '$' && state == STATE_SINGLE)
+			return (1);			//si return (1), c'est que le $ est entre simple quotes
+		i++;
+	}
+	return (0);
+}
+
+void	expand_var(char **split, t_env *env, int exit_status)
+{
+	int	i;
+	char *expanded;
+
+	i = 0;
+	while(split[i])
+	{
+		if (ft_strchr(split[i], '$') && !in_simple_quotes)
 	}
 }
