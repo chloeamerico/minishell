@@ -56,8 +56,8 @@ typedef struct s_cmd
 {
 	int				input;
 	int				output;
-	t_token			*reds;
-	t_token			*args;
+	t_token			*reds;		//liste chainee des redirections (tokens de type RIN, ROUT, etc..)
+	t_token			*args;		//liste chainee des arguments de la commande (tokens de type CMD, WRD)
 	struct s_cmd	*prev;
 	struct s_cmd	*next;
 }	t_cmd;

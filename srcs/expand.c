@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/21 18:47:01 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/01 14:33:01 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ static void	update_or_add_env(char *key, char *value, t_env **env)
 //ne pas expand les simple quotes
 
 
-//on verifie qu'on doti bien faire l'expension, puis appelle toutes els fonctions pour modifier la vaar d'env
+//on verifie qu'on doit bien faire l'expension, puis appelle toutes els fonctions pour modifier la vaar d'env
 int	expand_or_not(char **split, t_env **env)
 {
 	int	i;
