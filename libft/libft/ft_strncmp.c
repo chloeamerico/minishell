@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 18:18:20 by camerico          #+#    #+#             */
-/*   Updated: 2025/01/16 17:39:04 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:30:26 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
+// compare les string s1 et s2 et renvoie la diff entre les deux
 int	ft_strcmp(char *s1, char *s2)
 {
 	int	i;

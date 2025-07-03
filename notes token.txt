@@ -107,3 +107,12 @@ minishell> 'hgdiuj"'"'l"
 Token 0: [hgdiujl]
 minishell> "'l"
 Token 0: [l]
+
+
+tests                resultat attendu
+echo '$USER'         $USER
+echo "$USER"         chloe
+echo "'$USER'"       'chloe'
+echo "'\"$USER\"'"   '"$USER"'
+
+expand que si quote_state != SINGLE

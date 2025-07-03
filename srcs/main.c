@@ -6,45 +6,104 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/11 15:24:10 by camerico         ###   ########.fr       */
+/*   Updated: 2025/06/19 15:19:56 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
 
-int	main(void)
+// int	main(void)
+// {
+// 	char	*line;
+// 	char	**split;
+// 	int		i;
+
+// 	while (1)
+// 	{
+// 		line = readline("minishell> ");
+// 		if (!line)
+// 			break; // CTRL+D
+// 		if (line[0])
+// 			add_history(line);
+// 		split = split_minishell(line);
+// 		if (!split)
+// 		{
+// 			free(line);
+// 			continue;
+// 		}
+// 		i = 0;
+// 		while (split[i])
+// 		{
+// 			printf("Token %d: [%s]\n", i, split[i]);
+// 			free(split[i]);
+// 			i++;
+// 		}
+// 		free(split);
+// 		free(line);
+// 	}
+// 	return (0);
+// }
+
+
+int	main(char **envp)
 {
 	char	*line;
 	char	**split;
-	int		i;
+	t_token	*tokens;
+	t_env	*env;
+	t_token	*tmp;
+
+	env = init_env(envp); // votre propre fonction d'init
+	setup_signals();
 
 	while (1)
 	{
 		line = readline("minishell> ");
 		if (!line)
-			break; // CTRL+D
-		if (line[0])
+			break ;
+		if (*line)
 			add_history(line);
+
 		split = split_minishell(line);
 		if (!split)
 		{
 			free(line);
-			continue;
+			continue ;
 		}
-		i = 0;
-		while (split[i])
+
+		tokens = tokenize(split);
+		free_split(split);
+		if (!tokens)
 		{
-			printf("Token %d: [%s]\n", i, split[i]);
-			free(split[i]);
-			i++;
+			free(line);
+			continue ;
 		}
-		free(split);
+
+		if (!validate_tokens(tokens))
+		{
+			printf("Syntax error in input\n");
+			free_tokens(tokens);
+			free(line);
+			continue ;
+		}
+
+		expand(tokens, env);
+
+		// 🔍 Affichage direct des tokens
+		tmp = tokens;
+		while (tmp)
+		{
+			printf("TYPE: %d | CONTENT: [%s]\n", tmp->type, tmp->str);
+			tmp = tmp->next;
+		}
+
+		free_tokens(tokens);
 		free(line);
 	}
+	free_env(env);
 	return (0);
 }
-
 
 // static void	print_tokens(t_token *token)
 // {

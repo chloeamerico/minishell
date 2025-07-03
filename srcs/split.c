@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   split.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
+/*   Updated: 2025/06/21 18:25:14 by camerico         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 //verifie les metachar
@@ -6,7 +18,7 @@ static int is_metachar(char c)
 	return(c == '|' || c == '>' || c == '<');
 }
 // met a jour le state
-static void quote_state(char c, int *state)
+void quote_state(char c, int *state)
 {
 	if (*state == STATE_NONE && c == '\'')
 		*state = STATE_SINGLE;
@@ -169,4 +181,19 @@ char	**split_minishell(char *line)
 	if (split_input(&array, line, 0))		//fonction qui va appliquer le split
 		return (NULL);
 	return (array);
+}
+
+void	free_split(char **split)
+{
+	int	i;
+
+	if (!split)
+		return;
+	i = 0;
+	while(split[i])
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
 }

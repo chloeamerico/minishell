@@ -1,20 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
+/*   Updated: 2025/07/03 15:06:28 by lleichtn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-// Signal envoyer lors de ctrl +C
-static void	sigint_handler(int signum)
-{
-	(void)signum;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-void	setup_signals(void)
-{
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
-}
 
 // char	**init_env(char **envp)
 // {
@@ -39,7 +35,32 @@ void	setup_signals(void)
 // 	return (copy);
 // }
 
-static t_env	*create_node(char *env_line)
+// char	**get_env(char **env)
+// {
+// 	static char	**env_storage = NULL; // la sigleton donc
+
+// 	if (env)
+// 		env_storage = env;
+// 	return (env_storage);
+// }
+
+// Signal envoyer lors de ctrl +C
+static void	sigint_handler(int signum)
+{
+	(void)signum;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	setup_signals(void)
+{
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+static t_env	*create_node(char *envdeb)
 {
 	t_env	*node;
 	char	*equal;
@@ -48,16 +69,16 @@ static t_env	*create_node(char *env_line)
 	node = malloc(sizeof(t_env));
 	if (!node)
 		return (NULL);
-	equal = ft_strchr(env_line, '=');
+	equal = ft_strchr(envdeb, '=');
 	if (!equal)
 	{
-		node->key = ft_strdup(env_line);
+		node->key = ft_strdup(envdeb);
 		node->value = NULL;
 	}
 	else
 	{
-		len = equal - env_line;
-		node->key = ft_substr(env_line, 0, len);
+		len = equal - envdeb;
+		node->key = ft_substr(envdeb, 0, len);
 		node->value = ft_strdup(equal + 1);
 	}
 	node->next = NULL;
@@ -76,7 +97,7 @@ t_env	*init_env_list(char **envp)
 	{
 		new = create_node(*envp);
 		if (!new)
-			return (NULL); // à améliorer (free liste en cas d'erreur)
+			return (NULL);
 		if (!head)
 			head = new;
 		else
@@ -87,9 +108,9 @@ t_env	*init_env_list(char **envp)
 	return (head);
 }
 
-t_env	*get_env(t_env *new_env)
+t_env	*get_env_list(t_env *new_env)
 {
-	static t_env	*env = NULL; // la sigleton donc
+	static t_env	*env = NULL;
 
 	if (new_env)
 		env = new_env;
@@ -102,6 +123,6 @@ int	read_line(char **line)
 	if (!*line)
 		return (0);
 	if (**line)
-		add_history(*line); //ajout la ligne de commence
+		add_history(*line); //ajout la ligne de commande
 	return (1);
 }

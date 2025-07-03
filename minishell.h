@@ -63,11 +63,18 @@ typedef struct s_cmd
 {
 	int				input;
 	int				output;
-	t_token			*reds;
-	t_token			*args;
+	t_token			*reds;		//liste chainee des redirections (tokens de type RIN, ROUT, etc..)
+	t_token			*args;		//liste chainee des arguments de la commande (tokens de type CMD, WRD)
 	struct s_cmd	*prev;
 	struct s_cmd	*next;
 }	t_cmd;
+
+typedef struct s_env
+{
+    char            *key;
+    char            *value;
+    struct s_env    *next;
+}    t_env;
 
 
 /* ************************************************************************** */
@@ -83,6 +90,8 @@ int	split_input(char ***array, char *line, int i);
 char	**split_minishell(char *line);
 t_token	*tokenize(char **split);
 int	validate_tokens(t_token *tkn);
+void	free_split(char **split);
+void quote_state(char c, int *state);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */
