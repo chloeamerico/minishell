@@ -31,6 +31,13 @@
 /* STRUCTURES                                                                 */
 /* ************************************************************************** */
 
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 typedef enum e_type
 {
 	CMD,   // commande
