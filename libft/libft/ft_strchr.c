@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 15:26:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/02/10 15:42:22 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/03 16:41:08 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 #include <string.h>
 #include <unistd.h>
 
-// recherche la premiere occurence du char c dans *s
-// retourne le reste de la string a partir du premier char c trouve
+
 // char	*ft_strchr(const char *s, int c)
 // {
 // 	int	i;
@@ -31,6 +30,8 @@
 // 		return (NULL);
 // }
 
+// recherche la premiere occurence du char c dans *s
+// retourne le reste de la string a partir du premier char c trouve
 char	*ft_strchr(const char *s, int c)
 {
 	int	i;
