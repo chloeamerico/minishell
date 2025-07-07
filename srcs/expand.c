@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/07 20:04:08 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/07 20:17:49 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	expand_tokens(t_token *tokens, t_env *env, int exit_status)
 	{
 		if(tmp->type == CMD || tmp->type == WRD || tmp->type == FD)
 		{
-			if(!check_if_expand(tmp->str))		//si il y a un $
+			if(check_if_expand(tmp->str))		//si il y a un $
 			{
 				expanded = build_expand(tmp->str, env, exit_status);
 				free(tmp->str);
@@ -45,41 +45,13 @@ int	check_if_expand(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if(str[i] == '$')		// il n'y a pas de $
-			return (0);
+		if(str[i] == '$')		//il y a un 
+			return (1);
 		i++;
 	}
-	return (1);
+	return (0);
 }
 
-// //on va construire l'expand
-// char	*build_expand(char *str, t_env *env, int exit_status)
-// {
-// 	int	quotes;
-// 	int	i = 0;
-// 	char *new_str;
-// 	char *var_name;
-// 	char *value;
-
-// 	new_str = ft_strdup(""); 	//on duplique une strig vide (avec malloc)
-// 	quotes = STATE_NONE;
-// 	while(str[i])
-// 	{
-// 		quote_state(str[i], &quotes);
-// 		while(str[i] != "$")
-// 		{
-// 			if (str[i] != 34)
-// 				new_str[i] = str[i];
-// 			i++;
-// 		}
-// 		i++;
-// 		quote_state(str[i], quotes);
-// 		if (quotes != STATE_SINGLE)
-// 			extract_var(&str[i], env);		//on commence a str[i] jusqu'a la fin
-		
-// 	}
-// 	return (new_str);
-// }
 
 //on va construire l'expand
 char	*build_expand(char *str, t_env *env, int exit_status)
@@ -95,7 +67,7 @@ char	*build_expand(char *str, t_env *env, int exit_status)
 	quotes = STATE_NONE;
 	while(str[i])
 	{
-		quote_state(str[i], quotes);
+		quote_state(str[i], &quotes);
 		if (str[i] == '$' && quotes != STATE_SINGLE)	// i le char est un $ en dehors des quotes simples, donc a expand
 		{
 			i++;	//pour sauter le char $
@@ -132,10 +104,12 @@ char	*extract_var(char *str, int *i)
 		(*i)++;
 		return(ft_strdup("?"));
 	}
-	while(ft_isalnum(str[len]) && str[len] == '_')
+	if(!ft_isalnum(str[0]) && str[0] != '_' && str[0] != '?')
+		return (ft_strdup(""));
+	while(ft_isalnum(str[len]) || str[len] == '_')
 		len++;
 	(*i) += len;
-	var = ft_substr(str, i, len);
+	var = ft_substr(str, 0, len);
 	return(var);
 }
 
@@ -150,11 +124,10 @@ char	*get_env_value(char *var, t_env *env, int exit_status)
 		return(ft_itoa(exit_status));
 	while (tmp)
 	{
-		if(ft_strcmp(var, tmp->key))
+		if(!ft_strcmp(var, tmp->key))
 			return(ft_strdup(tmp->value));
 		else
 			tmp = tmp->next;
 	}
-	if (!env->next)		//si ca n'existe pas, return une erreur
-		return (NULL);
+	return (ft_strdup(""));			//si ca n'existe pas, return une string vide
 }
