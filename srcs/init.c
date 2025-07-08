@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/12 14:54:52 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:00:16 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,14 +108,15 @@ t_env	*init_env_list(char **envp)
 	return (head);
 }
 
-t_env	*get_env_list(t_env *new_env)
-{
-	static t_env	*env = NULL;
+//n'est pas utilisee
+// static t_env	*get_env_list(t_env *new_env)
+// {
+// 	static t_env	*env = NULL;
 
-	if (new_env)
-		env = new_env;
-	return (env);
-}
+// 	if (new_env)
+// 		env = new_env;
+// 	return (env);
+// }
 
 int	read_line(char **line)
 {

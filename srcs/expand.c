@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/07 20:17:49 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:58:27 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	expand_tokens(t_token *tokens, t_env *env, int exit_status)
 //fonction qui va verifier si il y a un $ dans la chaine du maillon
 //return(1) si PAS de $
 //return (0) s'il y a un $
-int	check_if_expand(char *str)
+static int	check_if_expand(char *str)
 {
 	int	i;
 
@@ -54,7 +54,7 @@ int	check_if_expand(char *str)
 
 
 //on va construire l'expand
-char	*build_expand(char *str, t_env *env, int exit_status)
+static char	*build_expand(char *str, t_env *env, int exit_status)
 {
 	int	quotes;
 	int	i = 0;
@@ -92,7 +92,7 @@ char	*build_expand(char *str, t_env *env, int exit_status)
 //ex : on extrait $VAR dans abc$VAR
 //attention aux cas particuliers (le $!, $$ et $0)
 //on avance l'indexe i
-char	*extract_var(char *str, int *i)
+static char	*extract_var(char *str, int *i)
 {
 	int	start;
 	char	*var;
@@ -115,7 +115,7 @@ char	*extract_var(char *str, int *i)
 
 
 //on va chercher dans la var d'env quelle value correspond a la key
-char	*get_env_value(char *var, t_env *env, int exit_status)
+static char	*get_env_value(char *var, t_env *env, int exit_status)
 {
 	t_env	*tmp;
 
