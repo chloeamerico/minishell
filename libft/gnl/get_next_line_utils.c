@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 15:53:11 by camerico          #+#    #+#             */
-/*   Updated: 2025/02/21 18:35:53 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/07 18:36:25 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 // }
 
 // si la nouvelle ligne est deja remplie , strjoin s1(line) et s2(buffer)
+//on ajoute s2 a la fin de s1
+//on retourne une nouvelle str qui a ete malloc
+//s1 deja free dans la fonction
 char	*ft_strjoin_free(char *s1, char *s2)
 {
 	int		i;
