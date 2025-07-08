@@ -31,13 +31,6 @@
 /* STRUCTURES                                                                 */
 /* ************************************************************************** */
 
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
-
 typedef enum e_type
 {
 	CMD,   // commande
@@ -82,9 +75,9 @@ typedef struct s_env
 /* ************************************************************************** */
 
 void	setup_signals(void);
-char	**init_env(char **envp);
 char	**get_env(char **env);
 int	read_line(char **line);
+t_env	*init_env_list(char **envp);
 char	**word_to_array(char **array, char *word);
 int	split_input(char ***array, char *line, int i);
 char	**split_minishell(char *line);
@@ -92,6 +85,7 @@ t_token	*tokenize(char **split);
 int	validate_tokens(t_token *tkn);
 void	free_split(char **split);
 void quote_state(char c, int *state);
+void	expand_tokens(t_token *tokens, t_env *env, int exit_status);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */
