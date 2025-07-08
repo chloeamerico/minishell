@@ -86,6 +86,8 @@ int	validate_tokens(t_token *tkn);
 void	free_split(char **split);
 void quote_state(char c, int *state);
 void	expand_tokens(t_token *tokens, t_env *env, int exit_status);
+char	*get_env_value(char *var, t_env *env, int exit_status);
+int	check_close_quotes(char *line);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */

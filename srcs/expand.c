@@ -3,37 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/08 14:58:27 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:45:20 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
-//on parcourt la liste, on check si le type est une CMD ou WRD ou FD
-void	expand_tokens(t_token *tokens, t_env *env, int exit_status)
-{
-	t_token	*tmp;
-	char *expanded;
-
-	tmp = tokens;
-	while(tmp)
-	{
-		if(tmp->type == CMD || tmp->type == WRD || tmp->type == FD)
-		{
-			if(check_if_expand(tmp->str))		//si il y a un $
-			{
-				expanded = build_expand(tmp->str, env, exit_status);
-				free(tmp->str);
-				tmp->str = expanded;
-			}
-		}
-		tmp = tmp->next;
-	}
-}
 
 //fonction qui va verifier si il y a un $ dans la chaine du maillon
 //return(1) si PAS de $
@@ -52,6 +29,31 @@ static int	check_if_expand(char *str)
 	return (0);
 }
 
+
+//on extrait le nom de la var
+//ex : on extrait $VAR dans abc$VAR
+//attention aux cas particuliers (le $!, $$ et $0)
+//on avance l'indexe iget_env_value
+static char	*extract_var(char *str, int *i)
+{
+	int	start;
+	char	*var;
+	int	len = 0;
+
+	start = 0;
+	if (str[0] == '?')
+	{
+		(*i)++;
+		return(ft_strdup("?"));
+	}
+	if(!ft_isalnum(str[0]) && str[0] != '_' && str[0] != '?')
+		return (ft_strdup(""));
+	while(ft_isalnum(str[len]) || str[len] == '_')
+		len++;
+	(*i) += len;
+	var = ft_substr(str, 0, len);
+	return(var);
+}
 
 //on va construire l'expand
 static char	*build_expand(char *str, t_env *env, int exit_status)
@@ -88,34 +90,10 @@ static char	*build_expand(char *str, t_env *env, int exit_status)
 	return (new_str);
 }
 
-//on extrait le nom de la var
-//ex : on extrait $VAR dans abc$VAR
-//attention aux cas particuliers (le $!, $$ et $0)
-//on avance l'indexe i
-static char	*extract_var(char *str, int *i)
-{
-	int	start;
-	char	*var;
-	int	len = 0;
-
-	start = 0;
-	if (str[0] == '?')
-	{
-		(*i)++;
-		return(ft_strdup("?"));
-	}
-	if(!ft_isalnum(str[0]) && str[0] != '_' && str[0] != '?')
-		return (ft_strdup(""));
-	while(ft_isalnum(str[len]) || str[len] == '_')
-		len++;
-	(*i) += len;
-	var = ft_substr(str, 0, len);
-	return(var);
-}
 
 
 //on va chercher dans la var d'env quelle value correspond a la key
-static char	*get_env_value(char *var, t_env *env, int exit_status)
+char	*get_env_value(char *var, t_env *env, int exit_status)
 {
 	t_env	*tmp;
 
@@ -131,3 +109,28 @@ static char	*get_env_value(char *var, t_env *env, int exit_status)
 	}
 	return (ft_strdup(""));			//si ca n'existe pas, return une string vide
 }
+
+//on parcourt la liste, on check si le type est une CMD ou WRD ou FD
+void	expand_tokens(t_token *tokens, t_env *env, int exit_status)
+{
+	t_token	*tmp;
+	char *expanded;
+
+	tmp = tokens;
+	while(tmp)
+	{
+		if(tmp->type == CMD || tmp->type == WRD || tmp->type == FD)
+		{
+			if(check_if_expand(tmp->str))		//si il y a un $
+			{
+				expanded = build_expand(tmp->str, env, exit_status);
+				free(tmp->str);
+				tmp->str = expanded;
+			}
+		}
+		tmp = tmp->next;
+	}
+}
+
+
+

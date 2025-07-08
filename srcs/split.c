@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/21 18:25:14 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/08 17:01:05 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static char	*get_word(char *line, int start, int end)
 	int j;
 
 	copy_state = STATE_NONE;
-	malloc(sizeof(char) * (end - start + 1));
+	word = malloc(sizeof(char) * (end - start + 1));
 	j = 0;
 	if (!word)
 		return (NULL);
@@ -105,7 +105,7 @@ char	**word_to_array(char **array, char *word)
 	return (new_array);
 }
 
-static int	check_close_quotes(char *line)
+int	check_close_quotes(char *line)
 {
 	int	i;
 
