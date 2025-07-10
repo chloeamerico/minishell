@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/08 17:01:05 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:22:15 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,18 +63,18 @@ static char	*get_word(char *line, int start, int end)
 		return (NULL);
 	while (start < end)
 	{
-		if(copy_state == STATE_NONE && (line[start] == '\'' || line[start] == '"'))
-		{
-			quote_state(line[start], &copy_state);
-			start++;
-		}
-		else if((copy_state == STATE_SINGLE && line[start] == '\'')
-			|| (copy_state == STATE_DOUBLE && line[start] == '"'))
-		{
-			quote_state(line[start], &copy_state);
-			start++;
-		}
-		else
+		// if(copy_state == STATE_NONE && (line[start] == '\'' || line[start] == '"'))
+		// {
+		// 	quote_state(line[start], &copy_state);
+		// 	start++;
+		// }
+		// else if((copy_state == STATE_SINGLE && line[start] == '\'')
+		// 	|| (copy_state == STATE_DOUBLE && line[start] == '"'))
+		// {
+		// 	quote_state(line[start], &copy_state);
+		// 	start++;
+		// }
+		// else
 			word[j++] = line[start++]; // on copie le carac ds le mot
 	}
 	word[j] = '\0';

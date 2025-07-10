@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/08 17:57:23 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:40:13 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,8 @@ int	main(int argc, char **argv, char **envp)
 		}
 
 		expand_tokens(tokens, env_list, 0);
+
+		delete_quotes(tokens);
 
 		// Affichage debug
 		for (t_token *tmp = tokens; tmp; tmp = tmp->next)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/08 16:45:20 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:24:49 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ static int	check_if_expand(char *str)
 	}
 	return (0);
 }
-
 
 //on extrait le nom de la var
 //ex : on extrait $VAR dans abc$VAR
@@ -89,8 +88,6 @@ static char	*build_expand(char *str, t_env *env, int exit_status)
 	}
 	return (new_str);
 }
-
-
 
 //on va chercher dans la var d'env quelle value correspond a la key
 char	*get_env_value(char *var, t_env *env, int exit_status)
