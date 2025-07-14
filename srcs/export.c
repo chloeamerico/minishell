@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expand.c                                           :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/01 14:33:01 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/14 18:20:10 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,28 +23,7 @@
 // si non cree la variable et ajoute sa valeur associee 
 
 
-//on divise l'arg en key et value a partir du =
-static void	divide_key_and_value(char *arg, t_env **env)
-{
-	int	i;
-	char	*key;
-	char	*value;
-	
-	i = 0;
-	while (arg[i] && arg[i] != '=')		//on detecte le =
-		i++;
-	if (!arg[i])
-		return;
-	key = ft_substr(arg, 0, i);
-	value = ft_strdup(arg + i + 1);		//on commence au char juste apres le =
-	update_or_add_env(key, value, env);
-	free(key);
-	free(value);
-}
-
-
 //on parcours la liste en env pour voir si key existe
-
 static t_env	*check_in_env(char *key, t_env *env)
  {
 	while(env)
@@ -76,6 +55,7 @@ static void	update_or_add_env(char *key, char *value, t_env **env)
 		new = malloc(sizeof(t_env));
 		new->key = ft_strdup(key);
 		new->value = ft_strdup(value);
+		new->next = NULL;
 		if (*env == NULL)
 			*env = new;
 		else
@@ -88,6 +68,30 @@ static void	update_or_add_env(char *key, char *value, t_env **env)
 	}
 }
 
+//on divise l'arg en key et value a partir du =
+static void	divide_key_and_value(char *arg, t_env **env)
+{
+	int	i;
+	char	*key;
+	char	*value;
+	
+	i = 0;
+	while (arg[i] && arg[i] != '=')		//on detecte le =
+		i++;
+	if (!arg[i])
+		return;							//ou exit si il y a pas de = ?
+	key = ft_substr(arg, 0, i);
+	value = ft_strdup(arg + i + 1);		//on commence au char juste apres le =
+	update_or_add_env(key, value, env);
+	free(key);
+	free(value);
+}
+
+
+
+
+
+
 //parcours les t_token de type CMD ou ARG
 //cherche les $VAR , $?
 // remplace les $VAR par leur valeur
@@ -95,58 +99,27 @@ static void	update_or_add_env(char *key, char *value, t_env **env)
 //ne pas expand les simple quotes
 
 
+
 //on verifie qu'on doit bien faire l'expension, puis appelle toutes els fonctions pour modifier la vaar d'env
-int	expand_or_not(char **split, t_env **env)
+void	export(char **split, t_env **env)
 {
 	int	i;
 	
 	if (!split || !split[0])
-		return(1);
-	if (ft_strcmp(split[0], "export") != 0 || ft_strcmp(split[0], "env") != 0)		//si le premier mot n'est pas "export", on passe a la tokenisation
-		return(1);
+		return;
+	if (ft_strcmp(split[0], "export") != 0 && ft_strcmp(split[0], "env") != 0)		//si le premier mot n'est pas "export" ou "env", on passe a la tokenisation
+		return;
 	if (!split[1] || (ft_strcmp(split[0], "env") && !split[1]))		// si on ecrit juste "export" ou "env", afficher la var d'env
-		print_env;
+		return;		// return pour pouvoir le tester, mais ensuite mettre et coder la fonction print_env;
 	else
 	{
-		i = 0;
+		i = 1;
 		while(split[i])
-			divide_key_and_value(split[i++], env);
-	}
-	return (0);			//on a gere l'export, pas besoin de faire la tokenisation
-}
-
-
-
-
-
-
-//partie pour remplacer le $VAR par la value si elle n'est pas entre '...'
-
-static int	in_simple_quotes(char *str)
-{
-	int	i;
-	int	state;
-	
-	i = 0;
-	state = STATE_NONE;
-	while (str[i])
-	{
-		quote_state(str[i], state);
-		if(str[i] == '$' && state == STATE_SINGLE)
-			return (1);			//si return (1), c'est que le $ est entre simple quotes
-		i++;
-	}
-	return (0);
-}
-
-void	expand_var(char **split, t_env *env, int exit_status)
-{
-	int	i;
-	char *expanded;
-
-	i = 0;
-	while(split[i])
-	{
-		if (ft_strchr(split[i], '$') && !in_simple_quotes)
+		{
+			divide_key_and_value(split[i], env);
+			i++;
+		}	
 	}
 }
+
+

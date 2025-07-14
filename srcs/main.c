@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/09 18:40:13 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/14 17:54:36 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,9 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue;
 		}
-
+		
+		export(split, &env_list);
+		
 		tokens = tokenize(split);
 		if (!tokens)
 		{

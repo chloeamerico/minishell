@@ -89,6 +89,7 @@ void	expand_tokens(t_token *tokens, t_env *env, int exit_status);
 char	*get_env_value(char *var, t_env *env, int exit_status);
 int	check_close_quotes(char *line);
 void	delete_quotes(t_token *tokens);
+void	export(char **split, t_env **env);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */
