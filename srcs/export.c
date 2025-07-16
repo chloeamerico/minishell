@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/14 18:20:10 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/16 19:43:15 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,26 +68,76 @@ static void	update_or_add_env(char *key, char *value, t_env **env)
 	}
 }
 
+// static char	*clear_quotes_export(char *str)
+// {
+// 	char	*new;
+// 	int	len;
+
+// 	len = ft_strlen(str);
+// 	if(len >= 2 && ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len - 1] == '\'')))
+// 		new = ft_substr(str, 1, len - 1);
+// 	else
+// 		new = ft_strdup(str);
+// 	return(new);
+// }
+
+//permet de reetirer les quotes quand on expoort
+//par ex: export ""var1=123"" devient var1=123
+//pareil pour les simple quotes
+static char	*clear_quotes_export(char *str)
+{
+	char	*new;
+	int	len;
+
+	len = ft_strlen(str);
+	if(len >= 2 && ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len - 1] == '\'')))
+	{
+		while (len >= 2 && ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len - 1] == '\'')))
+		{
+			new = ft_substr(str, 1, len - 1);
+			len -= 2;
+			str = new;
+		}
+	}
+	else
+		new = ft_strdup(str);
+	return(new);
+}
+
+
 //on divise l'arg en key et value a partir du =
 static void	divide_key_and_value(char *arg, t_env **env)
 {
 	int	i;
 	char	*key;
 	char	*value;
+	char	*clean_arg;
 	
+	clean_arg = clear_quotes_export(arg);
 	i = 0;
-	while (arg[i] && arg[i] != '=')		//on detecte le =
+	while (clean_arg[i] && clean_arg[i] != '=')		//on detecte le =
 		i++;
-	if (!arg[i])
-		return;							//ou exit si il y a pas de = ?
-	key = ft_substr(arg, 0, i);
-	value = ft_strdup(arg + i + 1);		//on commence au char juste apres le =
+	if (!clean_arg[i])
+		return(free(clean_arg));							//ou exit si il y a pas de = ?
+	key = ft_substr(clean_arg, 0, i);
+	value = ft_strdup(clean_arg + i + 1);		//on commence au char juste apres le =
 	update_or_add_env(key, value, env);
 	free(key);
 	free(value);
+	free(clean_arg);
 }
 
-
+static void	print_env(t_env *env)
+{
+	t_env *tmp;
+	
+	tmp = env;
+	while(tmp)
+	{
+		printf("%s=%s\n", tmp->key, tmp->value);
+		tmp = tmp->next;
+	}
+}
 
 
 
@@ -110,7 +160,7 @@ void	export(char **split, t_env **env)
 	if (ft_strcmp(split[0], "export") != 0 && ft_strcmp(split[0], "env") != 0)		//si le premier mot n'est pas "export" ou "env", on passe a la tokenisation
 		return;
 	if (!split[1] || (ft_strcmp(split[0], "env") && !split[1]))		// si on ecrit juste "export" ou "env", afficher la var d'env
-		return;		// return pour pouvoir le tester, mais ensuite mettre et coder la fonction print_env;
+		print_env(*env);		// return pour pouvoir le tester, mais ensuite mettre et coder la fonction print_env;
 	else
 	{
 		i = 1;
