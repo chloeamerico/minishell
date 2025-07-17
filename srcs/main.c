@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/14 17:54:36 by camerico         ###   ########.fr       */
+/*   Updated: 2025/07/16 14:10:51 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,85 +105,168 @@ void	free_tokens(t_token *tokens)
 // }
 
 
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	t_env	*env_list;
+// 	char	*input;
+// 	char	**split;
+// 	t_token	*tokens;
+
+// 	(void)argc;
+// 	(void)argv;
+
+// 	setup_signals();
+// 	env_list = init_env_list(envp);
+// 	if (!env_list)
+// 	{
+// 		fprintf(stderr, "[ERREUR] échec init env\n");
+// 		return (1);
+// 	}
+
+// 	while (1)
+// 	{
+// 		tokens = NULL;
+// 		split = NULL;
+// 		input = NULL;
+
+// 		if (!read_line(&input))
+// 		{
+// 			printf("exit\n");
+// 			break;
+// 		}
+
+// 		// Quitter avec la commande "exit"
+// 		if (strcmp(input, "exit") == 0)
+// 		{
+// 			free(input);
+// 			break;
+// 		}
+
+// 		if (check_close_quotes(input))
+// 		{
+// 			fprintf(stderr, "[ERREUR] Guillemets non fermés\n");
+// 			free(input);
+// 			continue;
+// 		}
+
+// 		split = split_minishell(input);
+// 		if (!split)
+// 		{
+// 			fprintf(stderr, "[ERREUR] split_minishell a échoué\n");
+// 			free(input);
+// 			continue;
+// 		}
+		
+// 		export(split, &env_list);
+		
+// 		tokens = tokenize(split);
+// 		if (!tokens)
+// 		{
+// 			fprintf(stderr, "[ERREUR] tokenize a échoué\n");
+// 			free_split(split);
+// 			free(input);
+// 			continue;
+// 		}
+
+// 		expand_tokens(tokens, env_list, 0);
+
+// 		delete_quotes(tokens);
+
+// 		// Affichage debug
+// 		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
+// 			printf("Token: type=%d, str=%s\n", tmp->type, tmp->str);
+
+// 		// Libération
+// 		free_tokens(tokens);
+// 		free_split(split);
+// 		free(input);
+// 	}
+
+// 	// Libérer la liste env_list si tu as une fonction pour ça
+// 	// free_env_list(env_list);
+
+// 	return (0);
+// }
+
+#include "minishell.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <stdio.h>
+
+// 🔧 Affiche tous les tokens d'une liste
+void	print_tokens(t_token *tkn)
+{
+	while (tkn)
+	{
+		printf("  [type %d] %s\n", tkn->type, tkn->str);
+		tkn = tkn->next;
+	}
+}
+
+// 🔧 Affiche la structure de t_cmd (arguments et redirections)
+void	print_cmds(t_cmd *cmds)
+{
+	int i = 0;
+
+	while (cmds)
+	{
+		printf("======= CMD %d =======\n", i++);
+		printf("ARGS:\n");
+		print_tokens(cmds->args);
+		printf("REDS:\n");
+		print_tokens(cmds->reds);
+		cmds = cmds->next;
+	}
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	t_env	*env_list;
-	char	*input;
+	char	*line;
 	char	**split;
 	t_token	*tokens;
+	t_cmd	*cmds;
+	t_env	*env;
 
 	(void)argc;
 	(void)argv;
 
-	setup_signals();
-	env_list = init_env_list(envp);
-	if (!env_list)
-	{
-		fprintf(stderr, "[ERREUR] échec init env\n");
-		return (1);
-	}
+	env = init_env_list(envp); // tu peux l'utiliser si besoin dans ton projet
+	get_env_list(env);
 
 	while (1)
 	{
-		tokens = NULL;
-		split = NULL;
-		input = NULL;
-
-		if (!read_line(&input))
-		{
-			printf("exit\n");
+		line = readline("minishell$ ");
+		if (!line)
 			break;
-		}
+		if (*line)
+			add_history(line);
 
-		// Quitter avec la commande "exit"
-		if (strcmp(input, "exit") == 0)
-		{
-			free(input);
-			break;
-		}
-
-		if (check_close_quotes(input))
-		{
-			fprintf(stderr, "[ERREUR] Guillemets non fermés\n");
-			free(input);
-			continue;
-		}
-
-		split = split_minishell(input);
+		split = split_minishell(line);
 		if (!split)
 		{
-			fprintf(stderr, "[ERREUR] split_minishell a échoué\n");
-			free(input);
+			printf("Erreur de split.\n");
+			free(line);
 			continue;
 		}
-		
-		export(split, &env_list);
-		
+
 		tokens = tokenize(split);
-		if (!tokens)
+		if (!validate_tokens(tokens))
 		{
-			fprintf(stderr, "[ERREUR] tokenize a échoué\n");
-			free_split(split);
-			free(input);
+			printf("Tokens invalides.\n");
+			free(line);
 			continue;
 		}
 
-		expand_tokens(tokens, env_list, 0);
+		cmds = parse_commands(tokens);
+		if (!cmds)
+		{
+			printf("Erreur de parsing de commandes.\n");
+			free(line);
+			continue;
+		}
 
-		delete_quotes(tokens);
-
-		// Affichage debug
-		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
-			printf("Token: type=%d, str=%s\n", tmp->type, tmp->str);
-
-		// Libération
-		free_tokens(tokens);
-		free_split(split);
-		free(input);
+		print_cmds(cmds);
+		free(line); // Ajoute une fonction free_cmds() plus tard
 	}
-
-	// Libérer la liste env_list si tu as une fonction pour ça
-	// free_env_list(env_list);
-
 	return (0);
 }

@@ -81,6 +81,7 @@ t_env	*init_env_list(char **envp);
 char	**word_to_array(char **array, char *word);
 int	split_input(char ***array, char *line, int i);
 char	**split_minishell(char *line);
+t_env	*get_env_list(t_env *new_env);
 t_token	*tokenize(char **split);
 int	validate_tokens(t_token *tkn);
 void	free_split(char **split);
@@ -90,6 +91,7 @@ char	*get_env_value(char *var, t_env *env, int exit_status);
 int	check_close_quotes(char *line);
 void	delete_quotes(t_token *tokens);
 void	export(char **split, t_env **env);
+t_cmd *parse_commands(t_token *tokens);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */
