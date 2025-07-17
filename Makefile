@@ -15,6 +15,7 @@ SRCS =  init.c \
 	expand.c \
 	utils.c \
 	export.c \
+	commander.c
 
 HEADER = minishell.h
 
