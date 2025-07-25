@@ -6,7 +6,7 @@
 /*   By: chloeamerico <chloeamerico@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 16:05:29 by chloeameric       #+#    #+#             */
-/*   Updated: 2025/07/24 21:08:22 by chloeameric      ###   ########.fr       */
+/*   Updated: 2025/07/26 00:10:52 by chloeameric      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,17 +56,54 @@ char **env_to_array(t_env *env)
 	return(tab);
 }
  
+
+
+ 
 //fonction qui va boucler pour appliquer a tous les t_cmd
+//dans chaque appel, on va creer un pipe, forker, rediriger les entrées/sorties avec dup2, et executer avec execve.
 void	exec_loop(t_cmd *cmd_list, t_env *env)
 {
+	int	nb_pipe;
+	int	pipe_fd[2];		//pour les extremites de lecture et d'ecriture
 	char	**envp;
 	t_cmd	*cmd = cmd_list;
-	int	pipe[2][2];
+	pid_t	pid;
+	t_pipeline	pipeline;
 	
+	init_struct_pipe(&pipeline, cmd);
 	envp = env_to_array(env);
+	nb_pipe = pipeline.nb_cmd - 1;
+	if(pipeline.nb_cmd == 1)
+		exec_simple_cmd();			//fonction a faire !
+	else
+
+
+	
 	while(cmd)
-	(
-		if(cmd->next)
+	{
+		if(cmd->next)		//si on est pas à la derniere commande, on cree un pipe
+			pipe(pipe_fd);
 		
-	)
+		pid = fork();
+		
+		
+		cmd = cmd->next;
+	}
+}
+
+//permet de savoir combien il y a de commandes, et donc de savoir combien de pipes on va creer.
+//on stocke dans dans une structure.
+void	init_struct_pipe(t_pipeline	*pipeline, t_cmd *cmd)
+{
+	int	i;
+	t_cmd	*tmp;
+
+	i = 0;
+	tmp = cmd;
+	while(tmp)
+	{
+		i++;
+		tmp = tmp->next;
+	}
+	pipeline->nb_cmd = i;
 }

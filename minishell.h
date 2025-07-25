@@ -69,6 +69,11 @@ typedef struct s_env
     struct s_env    *next;
 }    t_env;
 
+typedef	struct s_pipeline
+{
+	int	nb_cmd;
+}	t_pipeline;
+
 
 /* ************************************************************************** */
 /* PROTO                                                                      */
