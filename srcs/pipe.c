@@ -6,7 +6,7 @@
 /*   By: chloeamerico <chloeamerico@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 16:05:29 by chloeameric       #+#    #+#             */
-/*   Updated: 2025/07/26 00:10:52 by chloeameric      ###   ########.fr       */
+/*   Updated: 2025/08/01 16:01:39 by chloeameric      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,36 +59,25 @@ char **env_to_array(t_env *env)
 
 
  
-//fonction qui va boucler pour appliquer a tous les t_cmd
-//dans chaque appel, on va creer un pipe, forker, rediriger les entrées/sorties avec dup2, et executer avec execve.
-void	exec_loop(t_cmd *cmd_list, t_env *env)
+//fonction qui appeler toutes les autres, debut de l'exec
+void	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
 	int	nb_pipe;
-	int	pipe_fd[2];		//pour les extremites de lecture et d'ecriture
 	char	**envp;
 	t_cmd	*cmd = cmd_list;
-	pid_t	pid;
-	t_pipeline	pipeline;
+	t_pipeline	pipeline;		//fait pour stocker les données liées aux pipes, si rien d'autres que nb_cmd, retirer la structure et mettre direct la variable
 	
 	init_struct_pipe(&pipeline, cmd);
 	envp = env_to_array(env);
 	nb_pipe = pipeline.nb_cmd - 1;
+	int	pipe_fd[nb_pipe][2];		//pour les extremites de lecture et d'ecriture
 	if(pipeline.nb_cmd == 1)
-		exec_simple_cmd();			//fonction a faire !
+		return(exec_simple_cmd());			//fonction a faire ! 
 	else
-
+		pipe_loop(cmd, pipe_fd, &pipeline, envp);
 
 	
-	while(cmd)
-	{
-		if(cmd->next)		//si on est pas à la derniere commande, on cree un pipe
-			pipe(pipe_fd);
-		
-		pid = fork();
-		
-		
-		cmd = cmd->next;
-	}
+
 }
 
 //permet de savoir combien il y a de commandes, et donc de savoir combien de pipes on va creer.
@@ -106,4 +95,24 @@ void	init_struct_pipe(t_pipeline	*pipeline, t_cmd *cmd)
 		tmp = tmp->next;
 	}
 	pipeline->nb_cmd = i;
+}
+
+
+//fonction qui va boucler pour appliquer a tous les t_cmd
+//dans chaque appel, on va creer un pipe, forker, rediriger les entrées/sorties avec dup2, et executer avec execve.
+int	pipe_loop(t_cmd *cmd, int pipe_fd[][2], t_pipeline *pipeline, char **envp)
+{
+	pid_t	pid;
+		while(cmd)
+	{
+		if(cmd->next)		//si on est pas à la derniere commande, on cree un pipe
+		{
+			if(pipe(pipe_fd) == -1);
+				return (1);
+		}
+		pid = fork();
+		
+		
+		cmd = cmd->next;
+	}
 }
