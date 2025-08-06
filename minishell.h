@@ -72,6 +72,7 @@ typedef struct s_env
 typedef	struct s_pipeline
 {
 	int	nb_cmd;
+	int	nb_pipe;
 }	t_pipeline;
 
 
