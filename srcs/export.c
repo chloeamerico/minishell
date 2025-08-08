@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/16 19:43:15 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/08 16:05:31 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static t_env	*check_in_env(char *key, t_env *env)
 		env = env->next;
 	}
 	return (NULL);									// si key n'est pas present, return (0);
- }
+}
 
 
 //si la var n'existe pas on l'ajoute

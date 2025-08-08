@@ -71,8 +71,11 @@ typedef struct s_env
 
 typedef	struct s_pipeline
 {
+	int	pipefd1[2];	//premier pipe, avec lecture et ecriture
+	int	pipefd2[2];	//duxieme pipe, avec lecture et ecriture
+	int	current_pipe;	//quel pipe on utilise actuellement (1 ou 0)
+	int prev_pipe;		//quel pipe a ete utilise precedemment (-1 au deb), pr savoir quel pipe fermer
 	int	nb_cmd;
-	int	nb_pipe;
 	char	**envp;
 }	t_pipeline;
 
