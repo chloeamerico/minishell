@@ -1,0 +1,40 @@
+#include "minishell.h"
+
+static int	is_number(char *s)
+{
+	int	i;
+
+	if (!s)
+		return (0);
+	i = 0;
+	if (s[i] == '+' || s[i] == '-')
+		i++;
+	while (s[i])
+	{
+		if (s[i] < '0' || s[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int	ft_exit(char **args)
+{
+	int	code;
+
+	write(1, "exit\n", 5);
+	if (!args[1])
+		exit(0);
+	if (!is_number(args[1]))
+	{
+		write(2, "exit: numeric argument required\n", 32);
+		exit(2);
+	}
+	if (args[2])
+	{
+		write(2, "exit: too many arguments\n", 26);
+		return (1);
+	}
+	code = ft_atoi(args[1]);
+	exit((unsigned char)code);
+}
