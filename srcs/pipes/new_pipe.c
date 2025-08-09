@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/08 19:35:11 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/09 20:00:07 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,11 @@ cmd1 | cmd2 | cmd3 | cmd4
 3. cmd3 écrit dans pipe1[1] → cmd4 lit pipe1[0]
 4. etc...
 
+current_pipe = cmd_index % 2;
+	cmd_index 0 → current_pipe = 0 (pipe1)
+	cmd_index 1 → current_pipe = 1 (pipe2)  
+	cmd_index 2 → current_pipe = 0 (pipe1)
+	cmd_index 3 → current_pipe = 1 (pipe2)
 
 le pipe a deux extremites :
 pipefd[0] -> extremite de lecture du pipe
@@ -30,6 +35,13 @@ pipefd[1] -> extremite d'écriture du pipe
 Commande IMPAIRE utilise pipe1, PAIRE utilise pipe2
 
 on alloue 1 PID par process enfant
+
+pour chaque iteration de la boucle on va :
+        1. Créer le pipe si nécessaire
+        2. Fork le processus
+        3. Configurer les redirections
+        4. Exécuter la commande
+        5. Nettoyer dans le parent
 
 */
 
@@ -66,7 +78,7 @@ void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
 
 // une commande = 1 processus
 // on a besoin de tous les PIDs pour faire un waitpid() a la fin
-//on alloue un tableau de PID
+//on alloue un tableau pour stocker les PID
 int	pid_array(t_pipeline *pipeline, t_cmd *cmd, pid_t *pids)
 {
 	int	cmd_count;
@@ -85,6 +97,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	t_pipeline	pipeline;
 	t_cmd	*current_cmd;
 	pid_t	*pids;
+	int	cmd_index;
 	
 	if (!cmd_list)
 		return(1);
@@ -96,6 +109,35 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	init_pipeline(&pipeline);					//2eme partie de l'initialisation
 		
 	current_cmd = cmd_list;
+	while(current_cmd)
+	{
+		if(current_cmd->next)
+			create_pipe(&pipeline);
+	}
 
 	//boucle
+}
+
+//fonction pour creer les pipes
+int	create_pipe(t_pipeline *pipeline)
+{
+	//ajouter une condition pour que ca ne le fasse pas si on est a la derniere cmd
+	
+	if (pipeline->current_pipe == 0)		//si on est dans le pipe1
+	{
+		if (pipeline->pipefd1[0] == -1)		//si le pipe n'a jamais ete cree
+		{
+			if(pipe(pipeline->pipefd1) == -1)
+				return(perror("creation pipe 1 failed"), 1);
+		}
+	}
+	else		//on est dans le pipe 2
+	{
+		if (pipeline->pipefd2[0] == -1)
+		{
+			if (pipe(pipeline->pipefd2) == -1)
+				return(perror("creation pipe 1 failed"), 1);
+		}
+	}
+	return (0);
 }
