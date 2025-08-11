@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/11 19:09:00 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/11 19:25:15 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,15 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env, t_pipeline *pipeline)
 	envp = env_to_array(env);
 	if(!cmd)
 		exit(1);
-	cmd_arg = ft_split(cmd->args, ' ');
+	cmd_arg = token_to_array(cmd->args);
+	// cmd_arg = ft_split(cmd_arg, ' ');
 	if (!cmd_arg || !cmd_arg[0])
 	{
 		ft_printf("Error : invalid command");
 		free_tab(cmd_arg);
 		exit (1);
 	}
-	if (is_builtins(cmd->args[0]))		//si c'est un builtin
+	if (is_builtins(cmd_arg))		//si c'est un builtin
 	{
 		exec_builtins();				//on fait les execute comme des builtins
 		exit(0);

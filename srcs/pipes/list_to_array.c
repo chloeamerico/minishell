@@ -6,14 +6,14 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:40:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/11 19:10:30 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/11 19:24:11 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 
-int	size_env(t_env *env)
+int	size_list(t_env *env)
 {
 	int	i;
 	t_env	*tmp;
@@ -38,7 +38,7 @@ char **env_to_array(t_env *env)
 
 	i = 0;
 	tmp = env;
-	size = size_env(env);
+	size = size_list(env);
 	tab = malloc(sizeof(char *) * (size + 1));
 	if(!tab)
 		return(NULL);
@@ -53,4 +53,26 @@ char **env_to_array(t_env *env)
 	return(tab);
 }
 
+//passe la liste chainee t_token args presente dans cmd en tab 
 char **tokens_to_array(t_token *args)
+{
+	int	i;
+	int	size;
+	t_token	*tmp;
+	char	**tab;
+
+	i = 0;
+	tmp = args;
+	size = size_list(args);
+	tab = malloc(sizeof(char *) * (size + 1));
+	if(!tab)
+		return(NULL);
+	while(tmp)
+	{
+		tab[i] = ft_strdup(tmp->str);
+		tmp = tmp->next;
+		i++;
+	}
+	tab[i] = NULL;
+	return(tab);
+}
