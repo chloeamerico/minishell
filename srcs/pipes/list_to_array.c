@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:40:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/07 17:41:07 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/11 19:10:30 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,3 +52,5 @@ char **env_to_array(t_env *env)
 	tab[i] = NULL;
 	return(tab);
 }
+
+char **tokens_to_array(t_token *args)

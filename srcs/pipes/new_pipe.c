@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/09 20:00:07 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/11 19:06:48 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ cmd1 | cmd2 | cmd3 | cmd4
 4. etc...
 
 current_pipe = cmd_index % 2;
-	cmd_index 0 → current_pipe = 0 (pipe1)
-	cmd_index 1 → current_pipe = 1 (pipe2)  
-	cmd_index 2 → current_pipe = 0 (pipe1)
-	cmd_index 3 → current_pipe = 1 (pipe2)
+	cmd1	cmd_index 0 → current_pipe = 0 (pipe1)
+	cmd2	cmd_index 1 → current_pipe = 1 (pipe2)  
+	cmd3	cmd_index 2 → current_pipe = 0 (pipe1)
+	cmd4	cmd_index 3 → current_pipe = 1 (pipe2)
 
 le pipe a deux extremites :
 pipefd[0] -> extremite de lecture du pipe
@@ -49,8 +49,8 @@ pour chaque iteration de la boucle on va :
 //pour initialiser la structure
 void	init_pipeline(t_pipeline *pipeline)
 {
-	pipeline->current_pipe = 0;
-	pipeline->prev_pipe = -1;		//au deb pas de prev pipe
+	// pipeline->current_pipe = 0;
+	// pipeline->prev_pipe = -1;		//au deb pas de prev pipe
 
 	//on initialise tous les descripteurs a -1 car fermes au debut
 	
@@ -79,16 +79,17 @@ void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
 // une commande = 1 processus
 // on a besoin de tous les PIDs pour faire un waitpid() a la fin
 //on alloue un tableau pour stocker les PID
-int	pid_array(t_pipeline *pipeline, t_cmd *cmd, pid_t *pids)
+pid_t	*pid_array(t_pipeline *pipeline, t_cmd *cmd)
 {
 	int	cmd_count;
+	pid_t	*pids;
 
 	count_cmd(pipeline, cmd);
 	cmd_count = pipeline->nb_cmd;
 	pids = malloc(sizeof(pid_t) * cmd_count);
 	if (!pids)
-		return(perror("malloc"), 1);
-	return (0);
+		return(perror("malloc"), NULL);
+	return (pids);
 }
 
 //boucle principale pour l'exec
@@ -97,7 +98,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	t_pipeline	pipeline;
 	t_cmd	*current_cmd;
 	pid_t	*pids;
-	int	cmd_index;
+	int	cmd_index = 0;
 	
 	if (!cmd_list)
 		return(1);
@@ -105,22 +106,43 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	if (!cmd_list->next)			//cas de 1 seule cmd sans pipe
 		exec_single_without_pipe();		// a faire
 	
-	pid_array(&pipeline, cmd_list, *pids);		//1ere partie de l'initialisation
+	pids = pid_array(&pipeline, cmd_list);		//1ere partie de l'initialisation
+	if(!pids)
+		return(1);
 	init_pipeline(&pipeline);					//2eme partie de l'initialisation
 		
 	current_cmd = cmd_list;
 	while(current_cmd)
 	{
 		if(current_cmd->next)
-			create_pipe(&pipeline);
+			create_pipe(&pipeline, cmd_index);
+
+		pids[cmd_index] = fork();
+
+		if (pids[cmd_index] == -1)		//erreur
+			return(perror("error : fork"), 1);
+			
+		else if (pids[cmd_index] == 0)		//on est dans le processus ENFANT
+		{
+			
+		}
+
+		else		//on est dans le processus PARENT
+		{
+			//on recupere les pids et on wait
+		}
+		current_cmd = current_cmd->next;
+		cmd_index++;
+		
 	}
 
-	//boucle
 }
 
 //fonction pour creer les pipes
-int	create_pipe(t_pipeline *pipeline)
+int	create_pipe(t_pipeline *pipeline, int cmd_index)
 {
+	pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
+	pipeline->prev_pipe = (cmd_index - 1) % 2;
 	//ajouter une condition pour que ca ne le fasse pas si on est a la derniere cmd
 	
 	if (pipeline->current_pipe == 0)		//si on est dans le pipe1
@@ -141,3 +163,5 @@ int	create_pipe(t_pipeline *pipeline)
 	}
 	return (0);
 }
+
+

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 16:05:29 by chloeameric       #+#    #+#             */
-/*   Updated: 2025/08/08 14:18:28 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/11 17:12:07 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void	child_process(t_cmd *cmd, int pipe_fd[][2], t_pipeline *pipeline, int i)
 		dup2(pipe_fd[i - 1][0] ,STDIN_FILENO);
 		dup2(pipe_fd[i][1], STDOUT_FILENO);
 	}
-	close_all_pipes(pipeline, pipe_fd);			//a faire
+	close_all_pipes(pipeline, pipe_fd);
 	exec_simple_cmd();			//a faire		builtins ou execve
 	
 	exit(1);	//si il y a eu un pb

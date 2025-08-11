@@ -100,8 +100,7 @@ char	*get_env_value(char *var, t_env *env, int exit_status);
 int	check_close_quotes(char *line);
 void	delete_quotes(t_token *tokens);
 void	export(char **split, t_env **env);
-void	close_all_pipes(t_pipeline *pipeline, int pipe_fd[][2]);
-void	free_tab(char **tab);
+
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */
