@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/11 19:25:15 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/12 16:30:36 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
 			dup2(pipeline->pipefd2[1], STDOUT_FILENO);
 	}
 	close_all_pipes(pipeline);
-	exec_simple_cmd(cmd, env, pipeline);
+	exec_simple_cmd(cmd, env);
 }
 
 //on ferme tous les pipes et on les met a -1
@@ -60,7 +60,7 @@ void close_all_pipes(t_pipeline *pipeline)
 	}
 }
 
-int	exec_simple_cmd(t_cmd *cmd, t_env *env, t_pipeline *pipeline)
+int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 {
 	char **envp;
 	char	*cmd_path;
@@ -69,15 +69,21 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env, t_pipeline *pipeline)
 	envp = env_to_array(env);
 	if(!cmd)
 		exit(1);
-	cmd_arg = token_to_array(cmd->args);
+	cmd_arg = tokens_to_array(cmd->args);
 	// cmd_arg = ft_split(cmd_arg, ' ');
-	if (!cmd_arg || !cmd_arg[0])
+	if (!cmd_arg)
+	{
+		free_tab(envp);
+		exit (1);
+	}
+	if (!cmd_arg[0])
 	{
 		ft_printf("Error : invalid command");
 		free_tab(cmd_arg);
+		free_tab(envp);
 		exit (1);
 	}
-	if (is_builtins(cmd_arg))		//si c'est un builtin
+	if (is_builtins(cmd_arg[0]))		//si c'est un builtin
 	{
 		exec_builtins();				//on fait les execute comme des builtins
 		exit(0);
@@ -88,6 +94,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env, t_pipeline *pipeline)
 	execve(cmd_path, cmd_arg, envp);
 	perror("execve failed");
 	free_tab(cmd_arg);
+	free_tab(envp);
 	free(cmd_path);
 	exit(1);
 }
@@ -113,7 +120,7 @@ char	*find_cmd_path(char *cmd, char **envp)
 		tmp = ft_strjoin(paths[i], "/");
 		full_path = ft_strjoin(tmp, cmd);
 		if (access(full_path, X_OK) == 0)
-			return (free(tmp), free(paths), full_path);
+			return (free(tmp), free_tab(paths), full_path);
 		free(full_path);
 		free(tmp);
 		i++;
