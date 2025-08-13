@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/11 19:06:48 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/13 18:02:49 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	t_cmd	*current_cmd;
 	pid_t	*pids;
 	int	cmd_index = 0;
+	int	exit_status = 0;
 	
 	if (!cmd_list)
 		return(1);
@@ -124,25 +125,28 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 			
 		else if (pids[cmd_index] == 0)		//on est dans le processus ENFANT
 		{
-			
+			child_process(cmd_index, &pipeline, current_cmd, env);
 		}
-
 		else		//on est dans le processus PARENT
 		{
-			//on recupere les pids et on wait
+			parent_process(&pipeline, cmd_index);
 		}
 		current_cmd = current_cmd->next;
 		cmd_index++;
-		
 	}
-
+	exit_status = wait_children_pid(&pipeline, pids);
+	free(pids);
+	return(exit_status);
 }
 
 //fonction pour creer les pipes
 int	create_pipe(t_pipeline *pipeline, int cmd_index)
 {
 	pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
-	pipeline->prev_pipe = (cmd_index - 1) % 2;
+	if(cmd_index != 0)
+		pipeline->prev_pipe = (cmd_index - 1) % 2;
+	else
+		pipeline->prev_pipe = -1;
 	//ajouter une condition pour que ca ne le fasse pas si on est a la derniere cmd
 	
 	if (pipeline->current_pipe == 0)		//si on est dans le pipe1

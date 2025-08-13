@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/12 16:30:36 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/13 12:32:56 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	if (is_builtins(cmd_arg[0]))		//si c'est un builtin
 	{
 		exec_builtins();				//on fait les execute comme des builtins
+		free_tab(cmd_arg);
+		free_tab(envp);
 		exit(0);
 	}
 	cmd_path = find_cmd_path(cmd_arg[0], envp);
