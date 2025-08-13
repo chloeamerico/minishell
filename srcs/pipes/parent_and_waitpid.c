@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:49:40 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/13 18:00:25 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/13 18:53:56 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,25 @@ Rôle du processus PARENT :
 
 void	parent_process(t_pipeline *pipeline, int cmd_index)
 {
+	pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
+	if(cmd_index != 0)
+		pipeline->prev_pipe = (cmd_index - 1) % 2;
+	else
+		pipeline->prev_pipe = -1;
+
+
 	if (cmd_index > 0)
 	{
 		if(pipeline->prev_pipe == 0)
 		{
-			close(pipeline->pipefd1[0]);
+			if(pipeline->pipefd1[0] != -1)
+				close(pipeline->pipefd1[0]);
 			pipeline->pipefd1[0] = -1;
 		}
 		else
 		{
-			close(pipeline->pipefd2[0]);
+			if(pipeline->pipefd2[0] != -1)
+				close(pipeline->pipefd2[0]);
 			pipeline->pipefd2[0] = -1;
 		}
 	}
@@ -47,12 +56,14 @@ void	parent_process(t_pipeline *pipeline, int cmd_index)
 	{
 		if (pipeline->current_pipe == 0)
 		{
-			close(pipeline->pipefd1[1]);
+			if(pipeline->pipefd1[1] != -1)
+				close(pipeline->pipefd1[1]);
 			pipeline->pipefd1[1] = -1;
 		}
 		else
 		{
-			close(pipeline->pipefd2[1]);
+			if(pipeline->pipefd2[1] != -1)
+				close(pipeline->pipefd2[1]);
 			pipeline->pipefd2[1] = -1;
 		}
 	}
@@ -66,7 +77,7 @@ void	parent_process(t_pipeline *pipeline, int cmd_index)
 	WIFEXITED(status) : Processus terminé normalement
 	WEXITSTATUS(status) : Code de retour (0-255)
 	WIFSIGNALED(status) : Processus tué par un signal
-	WTERMSIG(status) : Numéro du signal */
+	WTERMSIG(status) : Numéro du signal --> si tue par un signal , le code de sortie est 128 + num du signal*/
 
 int	wait_children_pid(t_pipeline *pipeline, pid_t *pid)
 {
@@ -85,8 +96,8 @@ int	wait_children_pid(t_pipeline *pipeline, pid_t *pid)
 			if (i == pipeline->nb_cmd - 1)
 			{
 				if(WIFEXITED(exit_status))		//si tout s'est fini normalemt
-					last_exit_status = WEXITSTATUS(exit_status);
-				else
+					last_exit_status = WEXITSTATUS(exit_status);		//auel est le code de retour
+				else if (WIFSIGNALED(exit_status))		//est ce qu'il a ete tue par un signal (ex: ctl + C)
 					last_exit_status = 128 + WTERMSIG(exit_status);
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:40:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/12 16:32:02 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/13 18:33:05 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ char **tokens_to_array(t_token *args)
 		{
 			while(--i >= 0)
 				free(tab[i]);
-			return(free(tab), NULL);
+			free(tab);
+			return(NULL);
 		}
 		tmp = tmp->next;
 		i++;
