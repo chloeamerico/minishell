@@ -5,185 +5,211 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/14 17:54:36 by camerico         ###   ########.fr       */
+/*   Created: 2025/08/14 18:18:48 by camerico          #+#    #+#             */
+/*   Updated: 2025/08/14 19:01:45 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
-#include "minishell.h"
-#include <stdio.h>
-#include <stdlib.h>
 
-// Libération complète de la liste chaînée de tokens
-void	free_tokens(t_token *tokens)
+#include "minishell.h"
+
+// Fonction pour libérer la mémoire des tokens
+static void free_tokens(t_token *tokens)
 {
     t_token *tmp;
-
+    
     while (tokens)
     {
-        tmp = tokens->next;
-        if (tokens->str)
-            free(tokens->str);
-        free(tokens);
-        tokens = tmp;
+        tmp = tokens;
+        tokens = tokens->next;
+        free(tmp->str);
+        free(tmp);
     }
 }
 
-// int main(int argc, char **argv, char **envp)
-// {
-//     t_env *env_list = NULL;
-//     t_token *tokens = NULL;
-//     t_token *tmp = NULL;
-//     char *input = NULL;
-//     char **split = NULL;
-
-//     (void)argc;
-//     (void)argv;
-
-//     // Initialisation des signaux
-//     setup_signals();
-
-//     // Initialisation des variables d'environnement
-//     env_list = init_env_list(envp);
-//     if (!env_list)
-//     {
-//         fprintf(stderr, "[ERREUR] Échec initialisation env\n");
-//         return (1);
-//     }
-
-//     // Lire la ligne de commande
-//     if (read_line(&input) == 0 || !input)
-//     {
-//         fprintf(stderr, "[ERREUR] Échec lecture ligne\n");
-//         return (1);
-//     }
-
-//     // Vérifier les guillemets fermants avant split
-//     if (check_close_quotes(input))
-//     {
-//         fprintf(stderr, "[ERREUR] Guillemets non fermés\n");
-//         free(input);
-//         return (1);
-//     }
-
-//     // Découper l'entrée en mots (split)
-//     split = split_minishell(input);
-//     if (!split)
-//     {
-//         fprintf(stderr, "[ERREUR] split_minishell a échoué\n");
-//         free(input);
-//         return (1);
-//     }
-
-//     // Tokenisation
-//     tokens = tokenize(split);
-//     if (!tokens)
-//     {
-//         fprintf(stderr, "[ERREUR] tokenize a échoué\n");
-//         free_split(split);
-//         free(input);
-//         return (1);
-//     }
-
-//     // Expansion des variables
-//     expand_tokens(tokens, env_list, 0);
-
-//     // Affichage des tokens pour debug
-//     tmp = tokens;
-//     for (int i = 0; tmp; i++)
-//     {
-//         printf("Token[%d]: type=%d, str=%s\n", i, tmp->type, tmp->str);
-//         tmp = tmp->next;
-//     }
-
-//     // Nettoyage
-//     free_tokens(tokens);
-//     free_split(split);
-//     free(input);
-//     return (0);
-// }
-
-
-int	main(int argc, char **argv, char **envp)
+// Fonction pour libérer la mémoire des commandes
+static void free_commands(t_cmd *cmds)
 {
-	t_env	*env_list;
-	char	*input;
-	char	**split;
-	t_token	*tokens;
+    t_cmd *tmp;
+    
+    while (cmds)
+    {
+        tmp = cmds;
+        cmds = cmds->next;
+        free_tokens(tmp->args);
+        free_tokens(tmp->reds);
+        free(tmp);
+    }
+}
 
-	(void)argc;
-	(void)argv;
+// Fonction pour libérer la mémoire de l'environnement
+static void free_env(t_env *env)
+{
+    t_env *tmp;
+    
+    while (env)
+    {
+        tmp = env;
+        env = env->next;
+        free(tmp->key);
+        free(tmp->value);
+        free(tmp);
+    }
+}
 
-	setup_signals();
-	env_list = init_env_list(envp);
-	if (!env_list)
-	{
-		fprintf(stderr, "[ERREUR] échec init env\n");
-		return (1);
-	}
+// Fonction principale de traitement d'une ligne de commande
+static int process_line(char *line, t_env **env, int *exit_status)
+{
+    char **split;
+    t_token *tokens;
+    t_cmd *cmds;
+    int result;
+    
+    // Étape 1: Split de la ligne
+    split = split_minishell(line);
+    if (!split)
+    {
+        printf("minishell: syntax error: unclosed quotes\n");
+        return (1);
+    }
+    
+    // Étape 2: Gestion de export/env avant tokenisation
+    export(split, env);
+    
+    // Si c'était juste export/env, on s'arrête là
+    if (split[0] && (!ft_strcmp(split[0], "export") || !ft_strcmp(split[0], "env")))
+    {
+        free_split(split);
+        return (0);
+    }
+    
+    // Étape 3: Tokenisation
+    tokens = tokenize(split);
+    free_split(split);
+    if (!tokens)
+    {
+        printf("minishell: tokenization error\n");
+        return (1);
+    }
+    
+    // Étape 4: Validation des tokens
+    if (!validate_tokens(tokens))
+    {
+        printf("minishell: syntax error\n");
+        free_tokens(tokens);
+        return (1);
+    }
+    
+    // Étape 5: Expansion des variables
+    expand_tokens(tokens, *env, *exit_status);
+    
+    // Étape 6: Suppression des quotes
+    delete_quotes(tokens);
+    
+    // Étape 7: Parsing des commandes
+    cmds = parse_commands(tokens);
+    free_tokens(tokens);
+    if (!cmds)
+    {
+        printf("minishell: command parsing error\n");
+        return (1);
+    }
+    
+    // Étape 8: Exécution
+    result = exec_pipeline(cmds, *env);
+    free_commands(cmds);
+    
+    return (result);
+}
 
-	while (1)
-	{
-		tokens = NULL;
-		split = NULL;
-		input = NULL;
+// Fonction pour gérer les commandes built-in
+static int handle_builtins(char *line, t_env **env)
+{
+    char **split;
+    
+    // Gestion de exit
+    if (!ft_strncmp(line, "exit", 4) && (line[4] == '\0' || line[4] == ' '))
+    {
+        split = split_minishell(line);
+        if (split && split[1])
+        {
+            int exit_code = ft_atoi(split[1]);
+            free_split(split);
+            free_env(*env);
+            printf("exit\n");
+            exit(exit_code);
+        }
+        free_split(split);
+        free_env(*env);
+        printf("exit\n");
+        exit(0);
+    }
+    
+    return (0); // Pas un builtin géré ici
+}
 
-		if (!read_line(&input))
-		{
-			printf("exit\n");
-			break;
-		}
-
-		// Quitter avec la commande "exit"
-		if (strcmp(input, "exit") == 0)
-		{
-			free(input);
-			break;
-		}
-
-		if (check_close_quotes(input))
-		{
-			fprintf(stderr, "[ERREUR] Guillemets non fermés\n");
-			free(input);
-			continue;
-		}
-
-		split = split_minishell(input);
-		if (!split)
-		{
-			fprintf(stderr, "[ERREUR] split_minishell a échoué\n");
-			free(input);
-			continue;
-		}
-		
-		export(split, &env_list);
-		
-		tokens = tokenize(split);
-		if (!tokens)
-		{
-			fprintf(stderr, "[ERREUR] tokenize a échoué\n");
-			free_split(split);
-			free(input);
-			continue;
-		}
-
-		expand_tokens(tokens, env_list, 0);
-
-		delete_quotes(tokens);
-
-		// Affichage debug
-		for (t_token *tmp = tokens; tmp; tmp = tmp->next)
-			printf("Token: type=%d, str=%s\n", tmp->type, tmp->str);
-
-		// Libération
-		free_tokens(tokens);
-		free_split(split);
-		free(input);
-	}
-
-	// Libérer la liste env_list si tu as une fonction pour ça
-	// free_env_list(env_list);
-
-	return (0);
+int main(int argc, char **argv, char **envp)
+{
+    char *line;
+    t_env *env;
+    int exit_status;
+    
+    (void)argc;
+    (void)argv;
+    
+    // Initialisation
+    env = init_env_list(envp);
+    if (!env)
+    {
+        printf("minishell: environment initialization failed\n");
+        return (1);
+    }
+    
+    setup_signals();
+    exit_status = 0;
+    
+    printf("Welcome to minishell!\n");
+    printf("Available commands: any shell command, export, env, exit\n");
+    printf("Test examples:\n");
+    printf("  - Simple: ls -la\n");
+    printf("  - Pipes: ls | grep txt | wc -l\n");
+    printf("  - Redirections: echo hello > file.txt\n");
+    printf("  - Variables: export VAR=value; echo $VAR\n");
+    printf("  - Exit status: echo $?\n\n");
+    
+    // Boucle principale
+    while (1)
+    {
+        // Lecture de la ligne
+        if (!read_line(&line))
+        {
+            printf("\nGoodbye!\n");
+            break;
+        }
+        
+        // Ligne vide
+        if (!*line)
+        {
+            free(line);
+            continue;
+        }
+        
+        // Gestion des built-ins spéciaux
+        if (handle_builtins(line, &env))
+        {
+            free(line);
+            continue;
+        }
+        
+        // Traitement de la ligne
+        exit_status = process_line(line, &env, &exit_status);
+        
+        free(line);
+    }
+    
+    // Nettoyage final
+    free_env(env);
+    clear_history();
+    
+    return (exit_status);
 }

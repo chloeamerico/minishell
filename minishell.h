@@ -76,7 +76,6 @@ typedef	struct s_pipeline
 	int	current_pipe;	//quel pipe on utilise actuellement (1 ou 0)
 	int prev_pipe;		//quel pipe a ete utilise precedemment (-1 au deb), pr savoir quel pipe fermer
 	int	nb_cmd;
-	char	**envp;
 }	t_pipeline;
 
 
@@ -100,6 +99,19 @@ char	*get_env_value(char *var, t_env *env, int exit_status);
 int	check_close_quotes(char *line);
 void	delete_quotes(t_token *tokens);
 void	export(char **split, t_env **env);
+t_cmd *parse_commands(t_token *tokens);
+
+//PIPE
+int	exec_pipeline(t_cmd *cmd_list, t_env *env);
+char **env_to_array(t_env *env);
+char **tokens_to_array(t_token *args);
+void	free_tab(char **tab);
+int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env);
+void close_all_pipes(t_pipeline *pipeline);
+int	exec_simple_cmd(t_cmd *cmd, t_env *env);
+void	parent_process(t_pipeline *pipeline, int cmd_index);
+int	wait_children_pid(t_pipeline *pipeline, pid_t *pid);
+
 
 
 /* ************************************************************************** */

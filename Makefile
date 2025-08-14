@@ -15,6 +15,11 @@ SRCS =  init.c \
 	expand.c \
 	utils.c \
 	export.c \
+	commander.c \
+	pipes/child_process.c \
+	pipes/list_to_array.c \
+	pipes/new_pipe.c \
+	pipes/parent_and_waitpid.c \
 
 HEADER = minishell.h
 
@@ -35,8 +40,10 @@ $(NAME): $(LIBFT) $(OBJ_DIR) $(OBJS_MINISHELL)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
+	mkdir -p $(OBJ_DIR)pipes
 
 $(OBJ_DIR)%.o: $(SRCS_DIR)%.c | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -I$(LIBFT_DIR) -c $< -o $@
 
 clean:

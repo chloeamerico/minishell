@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/13 18:27:57 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/14 18:21:16 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
 	}
 	close_all_pipes(pipeline);
 	exec_simple_cmd(cmd, env);
+	return(0);
 }
 
 //on ferme tous les pipes et on les met a -1
@@ -60,48 +61,7 @@ void close_all_pipes(t_pipeline *pipeline)
 	}
 }
 
-int	exec_simple_cmd(t_cmd *cmd, t_env *env)
-{
-	char **envp;
-	char	*cmd_path;
-	char	**cmd_arg;
-
-	envp = env_to_array(env);
-	if(!cmd)
-		exit(1);
-	cmd_arg = tokens_to_array(cmd->args);
-	// cmd_arg = ft_split(cmd_arg, ' ');
-	if (!cmd_arg)
-	{
-		free_tab(envp);
-		exit (1);
-	}
-	if (!cmd_arg[0])
-	{
-		ft_printf("Error : invalid command");
-		free_tab(cmd_arg);
-		free_tab(envp);
-		exit (1);
-	}
-	if (is_builtins(cmd_arg[0]))		//si c'est un builtin
-	{
-		exec_builtins();				//on fait les execute comme des builtins
-		free_tab(cmd_arg);
-		free_tab(envp);
-		exit(0);
-	}
-	cmd_path = find_cmd_path(cmd_arg[0], envp);
-	if (!cmd_path)
-		cmd_not_found(cmd_arg, cmd_arg[0]);
-	execve(cmd_path, cmd_arg, envp);
-	perror("execve failed");
-	free_tab(cmd_arg);
-	free_tab(envp);
-	free(cmd_path);
-	exit(1);
-}
-
-char	*find_cmd_path(char *cmd, char **envp)
+static char	*find_cmd_path(char *cmd, char **envp)
 {
 	int		i;
 	char	**paths;
@@ -130,3 +90,55 @@ char	*find_cmd_path(char *cmd, char **envp)
 	free_tab(paths);
 	return (NULL);
 }
+
+static void	cmd_not_found(char **cmd_arg, char *cmd_name)
+{
+	ft_putstr_fd("Command ", STDERR_FILENO);
+	ft_putstr_fd(cmd_name, STDERR_FILENO);
+	ft_putstr_fd(" not found\n", STDERR_FILENO);
+	free_tab(cmd_arg);
+	exit(127);
+}
+
+int	exec_simple_cmd(t_cmd *cmd, t_env *env)
+{
+	char **envp;
+	char	*cmd_path;
+	char	**cmd_arg;
+
+	envp = env_to_array(env);
+	if(!cmd)
+		exit(1);
+	cmd_arg = tokens_to_array(cmd->args);
+	// cmd_arg = ft_split(cmd_arg, ' ');
+	if (!cmd_arg)
+	{
+		free_tab(envp);
+		exit (1);
+	}
+	if (!cmd_arg[0])
+	{
+		ft_printf("Error : invalid command");
+		free_tab(cmd_arg);
+		free_tab(envp);
+		exit (1);
+	}
+	// if (is_builtins(cmd_arg[0]))		//si c'est un builtin
+	// {
+	// 	exec_builtins();				//on fait les execute comme des builtins
+	// 	free_tab(cmd_arg);
+	// 	free_tab(envp);
+	// 	exit(0);
+	// }
+	cmd_path = find_cmd_path(cmd_arg[0], envp);
+	if (!cmd_path)
+		cmd_not_found(cmd_arg, cmd_arg[0]);
+	execve(cmd_path, cmd_arg, envp);
+	perror("execve failed");
+	free_tab(cmd_arg);
+	free_tab(envp);
+	free(cmd_path);
+	exit(1);
+}
+
+

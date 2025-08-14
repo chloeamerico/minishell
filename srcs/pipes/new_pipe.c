@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/13 18:55:42 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/14 18:52:55 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ pour chaque iteration de la boucle on va :
 
 
 //pour initialiser la structure
-void	init_pipeline(t_pipeline *pipeline, int	cmd_index)
+static void	init_pipeline(t_pipeline *pipeline)
 {
-	pipeline->current_pipe = cmd_index % 2;
+	pipeline->current_pipe = -1;
 	pipeline->prev_pipe = -1;
 
 	//on initialise tous les descripteurs a -1 car fermes au debut
@@ -61,7 +61,7 @@ void	init_pipeline(t_pipeline *pipeline, int	cmd_index)
 //compter les cmd dans la liste
 //permet de savoir combien il y a de commandes, et donc de savoir combien de pipes on va creer.
 //on stocke dans dans une structure.
-void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
+static void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
 {
 	int	i;
 	t_cmd	*tmp;
@@ -92,6 +92,38 @@ pid_t	*pid_array(t_pipeline *pipeline, t_cmd *cmd)
 	return (pids);
 }
 
+
+//NEW VERSION
+//fonction pour creer les pipes
+static int	create_pipe(t_pipeline *pipeline)
+{
+	//ajouter une condition pour que ca ne le fasse pas si on est a la derniere cmd
+	
+	if (pipeline->current_pipe == 0)		//si on est dans le pipe1
+	{
+		if (pipeline->pipefd1[0] != -1)		// si l'ancien pipe 1 existe deja, on le ferme
+		{
+			close(pipeline->pipefd1[0]);
+			close(pipeline->pipefd1[1]);
+		}
+		if(pipe(pipeline->pipefd1) == -1)
+			return(perror("creation pipe 1 failed"), 1);
+	
+	}
+	else		//on est dans le pipe 2
+	{
+		if (pipeline->pipefd2[0] != -1)
+		{
+			close(pipeline->pipefd2[0]);
+			close(pipeline->pipefd2[1]);
+		}
+		if (pipe(pipeline->pipefd2) == -1)
+			return(perror("creation pipe 2 failed"), 1);
+	}
+	return (0);
+}
+
+
 //boucle principale pour l'exec
 int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
@@ -105,31 +137,62 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 		return(1);
 	
 	if (!cmd_list->next)			//cas de 1 seule cmd sans pipe
-		exec_simple_cmd(cmd_list, env);
+	{
+		pid_t pid = fork();
+		if (pid == 0)
+		{
+			exec_simple_cmd(cmd_list, env);  // L'enfant exécute et exit
+		}
+		else if (pid > 0)
+		{
+			int status;
+			waitpid(pid, &status, 0);
+			if (WIFEXITED(status))
+				return (WEXITSTATUS(status));
+			else if (WIFSIGNALED(status))
+				return (128 + WTERMSIG(status));
+			return (1);
+		}
+		else
+		{
+			perror("fork");
+			return (1);
+		}
+	}
 	
 	pids = pid_array(&pipeline, cmd_list);		//1ere partie de l'initialisation
 	if(!pids)
 		return(1);
-	init_pipeline(&pipeline, cmd_index);					//2eme partie de l'initialisation
+	init_pipeline(&pipeline);					//2eme partie de l'initialisation
 		
 	current_cmd = cmd_list;
 	while(current_cmd)
 	{
+
+		pipeline.current_pipe = cmd_index % 2;			//on met a jour la struct
+		if(cmd_index != 0)
+			pipeline.prev_pipe = (cmd_index - 1) % 2;
+		else
+			pipeline.prev_pipe = -1;
+
 		if(current_cmd->next)
-			create_pipe(&pipeline, cmd_index);
+			create_pipe(&pipeline);
 
 		pids[cmd_index] = fork();
 
 		if (pids[cmd_index] == -1)		//erreur
 		{
 			perror("error : fork");
-			close_all_pipes(pipeline);
+			close_all_pipes(&pipeline);
+			while(cmd_index > 0)
+			{
+				cmd_index--;
+				waitpid(pids[cmd_index], NULL, 0);
+			}
 			free(pids);
 			return(1);
 		}
-			return(perror("error : fork"), 1);
-			
-		else if (pids[cmd_index] == 0)		//on est dans le processus ENFANT
+		else if(pids[cmd_index] == 0)		//on est dans le processus ENFANT
 		{
 			child_process(cmd_index, &pipeline, current_cmd, env);
 		}
@@ -174,40 +237,5 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 // 	return (0);
 // }
 
-
-//NEW VERSION
-//fonction pour creer les pipes
-int	create_pipe(t_pipeline *pipeline, int cmd_index)
-{
-	pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
-	if(cmd_index != 0)
-		pipeline->prev_pipe = (cmd_index - 1) % 2;
-	else
-		pipeline->prev_pipe = -1;
-	//ajouter une condition pour que ca ne le fasse pas si on est a la derniere cmd
-	
-	if (pipeline->current_pipe == 0)		//si on est dans le pipe1
-	{
-		if (pipeline->pipefd1[0] != -1)		// si l'ancien pipe 1 existe deja, on le ferme
-		{
-			close(pipeline->pipefd1[0]);
-			close(pipeline->pipefd1[1]);
-		}
-		if(pipe(pipeline->pipefd1) == -1)
-			return(perror("creation pipe 1 failed"), 1);
-	
-	}
-	else		//on est dans le pipe 2
-	{
-		if (pipeline->pipefd2[0] != -1)
-		{
-			close(pipeline->pipefd2[0]);
-			close(pipeline->pipefd2[1]);
-		}
-		if (pipe(pipeline->pipefd2) == -1)
-			return(perror("creation pipe 1 failed"), 1);
-	}
-	return (0);
-}
 
 

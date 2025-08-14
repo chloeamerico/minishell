@@ -6,14 +6,14 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:40:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/13 18:33:05 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/14 16:29:44 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 
-int	size_env(t_env *env)
+static int	size_env(t_env *env)
 {
 	int	i;
 	t_env	*tmp;
@@ -53,7 +53,7 @@ char **env_to_array(t_env *env)
 	return(tab);
 }
 
-int	size_token(t_token *token)
+static int	size_token(t_token *token)
 {
 	int	i;
 	t_token	*tmp;

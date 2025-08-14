@@ -15,18 +15,18 @@
 // represente les commandes entre deux pipes
 static t_cmd *create_cmd(void)
 {
-t_cmd*cmd;
+	t_cmd*cmd;
 
-cmd = malloc(sizeof(t_cmd));
-if (!cmd)
-return (NULL);
-cmd->input = -1; //pas init
-cmd->output = -1; //pas init
-cmd->reds = NULL;
-cmd->args = NULL;
-cmd->prev = NULL; //cmd av si pipe
-cmd->next = NULL; //cmd suiv si pipe
-return (cmd);
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+	return (NULL);
+	cmd->input = -1; //pas init
+	cmd->output = -1; //pas init
+	cmd->reds = NULL;
+	cmd->args = NULL;
+	cmd->prev = NULL; //cmd av si pipe
+	cmd->next = NULL; //cmd suiv si pipe
+	return (cmd);
 }
 
 // cree la liste args ou reds de t_cmd
