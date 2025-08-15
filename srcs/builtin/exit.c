@@ -27,12 +27,12 @@ int	ft_exit(char **args)
 		exit(0);
 	if (!is_number(args[1]))
 	{
-		write(2, "too be done", 32);
+		write(2, "exit: numeric argument required\n", 32);
 		exit(2);
 	}
 	if (args[2])
 	{
-		write(2, "etoo be done\n", 26);
+		write(2, "exit: too many arguments\n", 26);
 		return (1);
 	}
 	code = ft_atoi(args[1]);
