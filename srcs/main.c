@@ -6,56 +6,13 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 18:18:48 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/14 19:01:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/15 17:41:18 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "minishell.h"
 
-// Fonction pour libérer la mémoire des tokens
-static void free_tokens(t_token *tokens)
-{
-    t_token *tmp;
-    
-    while (tokens)
-    {
-        tmp = tokens;
-        tokens = tokens->next;
-        free(tmp->str);
-        free(tmp);
-    }
-}
-
-// Fonction pour libérer la mémoire des commandes
-static void free_commands(t_cmd *cmds)
-{
-    t_cmd *tmp;
-    
-    while (cmds)
-    {
-        tmp = cmds;
-        cmds = cmds->next;
-        free_tokens(tmp->args);
-        free_tokens(tmp->reds);
-        free(tmp);
-    }
-}
-
-// Fonction pour libérer la mémoire de l'environnement
-static void free_env(t_env *env)
-{
-    t_env *tmp;
-    
-    while (env)
-    {
-        tmp = env;
-        env = env->next;
-        free(tmp->key);
-        free(tmp->value);
-        free(tmp);
-    }
-}
 
 // Fonction principale de traitement d'une ligne de commande
 static int process_line(char *line, t_env **env, int *exit_status)
@@ -96,7 +53,7 @@ static int process_line(char *line, t_env **env, int *exit_status)
     if (!validate_tokens(tokens))
     {
         printf("minishell: syntax error\n");
-        free_tokens(tokens);
+        free_token(tokens);
         return (1);
     }
     
@@ -108,7 +65,7 @@ static int process_line(char *line, t_env **env, int *exit_status)
     
     // Étape 7: Parsing des commandes
     cmds = parse_commands(tokens);
-    free_tokens(tokens);
+    free_token(tokens);
     if (!cmds)
     {
         printf("minishell: command parsing error\n");

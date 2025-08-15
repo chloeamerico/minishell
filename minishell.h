@@ -112,7 +112,10 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env);
 void	parent_process(t_pipeline *pipeline, int cmd_index);
 int	wait_children_pid(t_pipeline *pipeline, pid_t *pid);
 
-
+//FREE
+void	free_token(t_token *token);
+void	free_commands(t_cmd *cmd);
+void	free_env(t_env *env);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */

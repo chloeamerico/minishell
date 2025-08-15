@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laurentleichtnam <laurentleichtnam@stud    +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 17:22:42 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/08 15:33:44 by laurentleic      ###   ########.fr       */
+/*   Updated: 2025/08/15 15:54:36 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,4 @@ static int	is_builtin(char *cmd)
 int	exectute_builtin
 
 
-// A finir 
+// A finir

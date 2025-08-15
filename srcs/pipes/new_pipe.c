@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/14 18:52:55 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/15 15:47:39 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,6 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 			return (1);
 		}
 	}
-	
 	pids = pid_array(&pipeline, cmd_list);		//1ere partie de l'initialisation
 	if(!pids)
 		return(1);

@@ -20,6 +20,7 @@ SRCS =  init.c \
 	pipes/list_to_array.c \
 	pipes/new_pipe.c \
 	pipes/parent_and_waitpid.c \
+	free.c \
 
 HEADER = minishell.h
 
