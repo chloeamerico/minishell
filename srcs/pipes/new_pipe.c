@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/15 15:47:39 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/18 14:36:20 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ static int	create_pipe(t_pipeline *pipeline)
 }
 
 
+
 //boucle principale pour l'exec
 int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
@@ -138,26 +139,10 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	
 	if (!cmd_list->next)			//cas de 1 seule cmd sans pipe
 	{
-		pid_t pid = fork();
-		if (pid == 0)
-		{
-			exec_simple_cmd(cmd_list, env);  // L'enfant exécute et exit
-		}
-		else if (pid > 0)
-		{
-			int status;
-			waitpid(pid, &status, 0);
-			if (WIFEXITED(status))
-				return (WEXITSTATUS(status));
-			else if (WIFSIGNALED(status))
-				return (128 + WTERMSIG(status));
+		if(one_cmd_without_pipe(cmd_list, env))
 			return (1);
-		}
 		else
-		{
-			perror("fork");
-			return (1);
-		}
+			return(0);
 	}
 	pids = pid_array(&pipeline, cmd_list);		//1ere partie de l'initialisation
 	if(!pids)
@@ -165,24 +150,61 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	init_pipeline(&pipeline);					//2eme partie de l'initialisation
 		
 	current_cmd = cmd_list;
+	
+	if(loop_pipe(&pipeline, cmd_index, current_cmd, pids, env))
+		return(1);
+
+	exit_status = wait_children_pid(&pipeline, pids);
+	free(pids);
+	return(exit_status);
+}
+
+//dans le cas ou on a pas de pipe (donc 1 seule cmd), on l'execute dans un process enfant
+int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
+{
+	pid_t pid = fork();
+	if (pid == 0)
+	{
+		exec_simple_cmd(cmd_list, env);  // L'enfant exécute et exit
+	}
+	else if (pid > 0)
+	{
+		int status;
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		else if (WIFSIGNALED(status))
+			return (128 + WTERMSIG(status));
+		return (1);
+	}
+	else
+	{
+		perror("fork");
+		return (1);
+	}
+	return (0);
+}
+
+//execution de la boucle pour creer les pipes, et executer les commandes
+int	loop_pipe(t_pipeline *pipeline, int	cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
+{
 	while(current_cmd)
 	{
-
-		pipeline.current_pipe = cmd_index % 2;			//on met a jour la struct
+		pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
 		if(cmd_index != 0)
-			pipeline.prev_pipe = (cmd_index - 1) % 2;
+			pipeline->prev_pipe = (cmd_index - 1) % 2;
 		else
-			pipeline.prev_pipe = -1;
+			pipeline->prev_pipe = -1;
 
 		if(current_cmd->next)
-			create_pipe(&pipeline);
+			create_pipe(pipeline);
 
 		pids[cmd_index] = fork();
 
 		if (pids[cmd_index] == -1)		//erreur
 		{
 			perror("error : fork");
-			close_all_pipes(&pipeline);
+			close_all_pipes(pipeline);
 			while(cmd_index > 0)
 			{
 				cmd_index--;
@@ -193,48 +215,100 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 		}
 		else if(pids[cmd_index] == 0)		//on est dans le processus ENFANT
 		{
-			child_process(cmd_index, &pipeline, current_cmd, env);
+			child_process(cmd_index, pipeline, current_cmd, env);
 		}
 		else		//on est dans le processus PARENT
 		{
-			parent_process(&pipeline, cmd_index);
+			parent_process(pipeline, cmd_index);
 		}
 		current_cmd = current_cmd->next;
 		cmd_index++;
 	}
-	exit_status = wait_children_pid(&pipeline, pids);
-	free(pids);
-	return(exit_status);
+	return (0);
 }
 
-// //fonction pour creer les pipes
-// int	create_pipe(t_pipeline *pipeline, int cmd_index)
+
+
+// OLD VERSION
+//boucle principale pour l'exec
+// int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 // {
-// 	pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
-// 	if(cmd_index != 0)
-// 		pipeline->prev_pipe = (cmd_index - 1) % 2;
-// 	else
-// 		pipeline->prev_pipe = -1;
-// 	//ajouter une condition pour que ca ne le fasse pas si on est a la derniere cmd
+// 	t_pipeline	pipeline;
+// 	t_cmd	*current_cmd;
+// 	pid_t	*pids;
+// 	int	cmd_index = 0;
+// 	int	exit_status = 0;
 	
-// 	if (pipeline->current_pipe == 0)		//si on est dans le pipe1
+// 	if (!cmd_list)
+// 		return(1);
+	
+// 	if (!cmd_list->next)			//cas de 1 seule cmd sans pipe
 // 	{
-// 		if (pipeline->pipefd1[0] == -1)		//si le pipe n'a jamais ete cree
+// 		pid_t pid = fork();
+// 		if (pid == 0)
 // 		{
-// 			if(pipe(pipeline->pipefd1) == -1)
-// 				return(perror("creation pipe 1 failed"), 1);
+// 			exec_simple_cmd(cmd_list, env);  // L'enfant exécute et exit
+// 		}
+// 		else if (pid > 0)
+// 		{
+// 			int status;
+// 			waitpid(pid, &status, 0);
+// 			if (WIFEXITED(status))
+// 				return (WEXITSTATUS(status));
+// 			else if (WIFSIGNALED(status))
+// 				return (128 + WTERMSIG(status));
+// 			return (1);
+// 		}
+// 		else
+// 		{
+// 			perror("fork");
+// 			return (1);
 // 		}
 // 	}
-// 	else		//on est dans le pipe 2
+// 	pids = pid_array(&pipeline, cmd_list);		//1ere partie de l'initialisation
+// 	if(!pids)
+// 		return(1);
+// 	init_pipeline(&pipeline);					//2eme partie de l'initialisation
+		
+// 	current_cmd = cmd_list;
+// 	while(current_cmd)
 // 	{
-// 		if (pipeline->pipefd2[0] == -1)
+
+// 		pipeline.current_pipe = cmd_index % 2;			//on met a jour la struct
+// 		if(cmd_index != 0)
+// 			pipeline.prev_pipe = (cmd_index - 1) % 2;
+// 		else
+// 			pipeline.prev_pipe = -1;
+
+// 		if(current_cmd->next)
+// 			create_pipe(&pipeline);
+
+// 		pids[cmd_index] = fork();
+
+// 		if (pids[cmd_index] == -1)		//erreur
 // 		{
-// 			if (pipe(pipeline->pipefd2) == -1)
-// 				return(perror("creation pipe 1 failed"), 1);
+// 			perror("error : fork");
+// 			close_all_pipes(&pipeline);
+// 			while(cmd_index > 0)
+// 			{
+// 				cmd_index--;
+// 				waitpid(pids[cmd_index], NULL, 0);
+// 			}
+// 			free(pids);
+// 			return(1);
 // 		}
+// 		else if(pids[cmd_index] == 0)		//on est dans le processus ENFANT
+// 		{
+// 			child_process(cmd_index, &pipeline, current_cmd, env);
+// 		}
+// 		else		//on est dans le processus PARENT
+// 		{
+// 			parent_process(&pipeline, cmd_index);
+// 		}
+// 		current_cmd = current_cmd->next;
+// 		cmd_index++;
 // 	}
-// 	return (0);
+// 	exit_status = wait_children_pid(&pipeline, pids);
+// 	free(pids);
+// 	return(exit_status);
 // }
-
-
-
