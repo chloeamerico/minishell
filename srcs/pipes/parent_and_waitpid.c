@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:49:40 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/14 15:50:52 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/19 12:19:39 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,6 @@ Rôle du processus PARENT :
 
 void	parent_process(t_pipeline *pipeline, int cmd_index)
 {
-
-	// pipeline->current_pipe = cmd_index % 2;			//on met a jour la struct
-	// if(cmd_index != 0)
-	// 	pipeline->prev_pipe = (cmd_index - 1) % 2;
-	// else
-	// 	pipeline->prev_pipe = -1;
-
-
 	if (cmd_index > 0)
 	{
 		if(pipeline->prev_pipe == 0)

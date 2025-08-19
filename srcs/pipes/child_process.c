@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/15 15:48:40 by camerico         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:52:07 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
 	exec_simple_cmd(cmd, env);
 	return(0);
 }
+
 
 //on ferme tous les pipes et on les met a -1
 void close_all_pipes(t_pipeline *pipeline)
