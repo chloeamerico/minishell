@@ -119,6 +119,13 @@ void	free_token(t_token *token);
 void	free_commands(t_cmd *cmd);
 void	free_env(t_env *env);
 
+//Builtin
+int		ft_echo(char **args);
+int		ft_cd(char **args, char ***envp);
+int		ft_pwd(void);
+int		ft_unset(char **args, char ***envp);
+int		ft_exit(char **args);
+
 /* ************************************************************************** */
 /* DEBUG                                                                      */
 /* ************************************************************************** */
