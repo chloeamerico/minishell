@@ -69,6 +69,15 @@ typedef struct s_env
     struct s_env    *next;
 }    t_env;
 
+typedef	struct s_pipeline
+{
+	int	pipefd1[2];	//premier pipe, avec lecture et ecriture
+	int	pipefd2[2];	//duxieme pipe, avec lecture et ecriture
+	int	current_pipe;	//quel pipe on utilise actuellement (1 ou 0)
+	int prev_pipe;		//quel pipe a ete utilise precedemment (-1 au deb), pr savoir quel pipe fermer
+	int	nb_cmd;
+}	t_pipeline;
+
 
 /* ************************************************************************** */
 /* PROTO                                                                      */
@@ -91,7 +100,6 @@ char	*get_env_value(char *var, t_env *env, int exit_status);
 int	check_close_quotes(char *line);
 void	delete_quotes(t_token *tokens);
 void	export(char **split, t_env **env);
-t_cmd *parse_commands(t_token *tokens);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/01 10:09:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/07/14 17:54:36 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
+#include <minishell.h>
 #include "minishell.h"
 #include <stdio.h>
 #include <stdlib.h>
