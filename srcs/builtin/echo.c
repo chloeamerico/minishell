@@ -1,4 +1,4 @@
-// #include "minishell.h"
+ #include "minishell.h"
 
 static int	is_n(char *arg)
 {

@@ -15,13 +15,18 @@ SRCS =  init.c \
 	expand.c \
 	utils.c \
 	export.c \
-	commander.c
 	commander.c \
 	pipes/child_process.c \
 	pipes/list_to_array.c \
 	pipes/new_pipe.c \
 	pipes/parent_and_waitpid.c \
 	free.c \
+	builtin/builtin.c \
+	builtin/cd.c \
+	builtin/echo.c \
+	builtin/exit.c \
+	builtin/pwd.c \
+	builtin/unset.c \
 
 HEADER = minishell.h
 

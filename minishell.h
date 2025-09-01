@@ -90,7 +90,6 @@ t_env	*init_env_list(char **envp);
 char	**word_to_array(char **array, char *word);
 int	split_input(char ***array, char *line, int i);
 char	**split_minishell(char *line);
-t_env	*get_env_list(t_env *new_env);
 t_token	*tokenize(char **split);
 int	validate_tokens(t_token *tkn);
 void	free_split(char **split);
@@ -100,6 +99,32 @@ char	*get_env_value(char *var, t_env *env, int exit_status);
 int	check_close_quotes(char *line);
 void	delete_quotes(t_token *tokens);
 void	export(char **split, t_env **env);
+t_cmd *parse_commands(t_token *tokens);
+
+//PIPE
+int	exec_pipeline(t_cmd *cmd_list, t_env *env);
+char **env_to_array(t_env *env);
+char **tokens_to_array(t_token *args);
+void	free_tab(char **tab);
+int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env);
+void close_all_pipes(t_pipeline *pipeline);
+int	exec_simple_cmd(t_cmd *cmd, t_env *env);
+void	parent_process(t_pipeline *pipeline, int cmd_index);
+int	wait_children_pid(t_pipeline *pipeline, pid_t *pid);
+int	loop_pipe(t_pipeline *pipeline, int	cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env);
+int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env);
+
+//FREE
+void	free_token(t_token *token);
+void	free_commands(t_cmd *cmd);
+void	free_env(t_env *env);
+
+//buitlin
+int	ft_cd(char **args, char ***envp);
+int	ft_echo(char **args);
+int	ft_exit(char **args);
+int	ft_pwd(void);
+int	ft_unset(char **args, char ***envp);
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */
