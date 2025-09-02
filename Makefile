@@ -27,6 +27,10 @@ SRCS =  init.c \
 	builtin/exit.c \
 	builtin/pwd.c \
 	builtin/unset.c \
+	status.c \
+	heredoc.c \
+	redirs.c \
+	signal.c \
 
 HEADER = minishell.h
 

@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/16 13:47:25 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/02 13:10:54 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,20 +45,20 @@
 // }
 
 // Signal envoyer lors de ctrl +C
-static void	sigint_handler(int signum)
-{
-	(void)signum;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
+// static void	sigint_handler(int signum)
+// {
+// 	(void)signum;
+// 	write(1, "\n", 1);
+// 	rl_on_new_line();
+// 	rl_replace_line("", 0);
+// 	rl_redisplay();
+// }
 
-void	setup_signals(void)
-{
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
-}
+// void	setup_signals(void)
+// {
+// 	signal(SIGINT, sigint_handler);
+// 	signal(SIGQUIT, SIG_IGN);
+// }
 
 static t_env	*create_node(char *envdeb)
 {

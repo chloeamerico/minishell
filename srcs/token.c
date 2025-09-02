@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 15:10:31 by camerico          #+#    #+#             */
-/*   Updated: 2025/06/11 14:10:37 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/02 15:58:35 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,22 +73,58 @@ static t_token	*create_token(char *str, t_type prev_type)
 //fonction qui cree une liste chainee de t_token
 //gere les liens entre next et prev
 // return la tete de liste (head)
+// t_token	*tokenize(char **split)
+// {
+// 	t_token	*head; //fst tkn celui return
+// 	t_token	*last; //lst tkn
+// 	t_token	*new; //tkn que l on cree
+// 	t_type	prev_type; //type du tkn precedent
+
+// 	head = NULL;
+// 	last = NULL;
+// 	prev_type = PIPE; //comme ca le premier mot est un cmd
+// 	while (*split)
+// 	{
+// 		new = create_token(*split, prev_type);
+// 		if (!new)
+// 			return (NULL);
+// 		if (last)		// donc si au moins 1 token a deja ete cree
+// 		{
+// 			last->next = new;
+// 			new->prev = last;
+// 		}
+// 		else
+// 			head = new;
+// 		last = new;
+// 		prev_type = new->type;
+// 		split++;
+// 	}
+// 	return
 t_token	*tokenize(char **split)
 {
-	t_token	*head; //fst tkn celui return
-	t_token	*last; //lst tkn
-	t_token	*new; //tkn que l on cree
-	t_type	prev_type; //type du tkn precedent
+	t_token	*head;
+	t_token	*last;
+	t_token	*new;
+	t_type	prev_type;
 
 	head = NULL;
 	last = NULL;
-	prev_type = PIPE; //comme ca le premier mot est un cmd
+	prev_type = PIPE;
 	while (*split)
 	{
 		new = create_token(*split, prev_type);
 		if (!new)
 			return (NULL);
-		if (last)		// donc si au moins 1 token a deja ete cree
+		if (prev_type == DRIN && new->type == LIM)
+		{
+			if (mark_limiter_if_quoted(new))
+			{
+				free(new->str);
+				free(new);
+				return (NULL);
+			}
+		}
+		if (last)
 		{
 			last->next = new;
 			new->prev = last;
@@ -127,4 +163,39 @@ int	validate_tokens(t_token *tkn)
         tkn = tkn->next;
     }
     return (1);
+}
+int	mark_limiter_if_quoted(t_token *tok)
+{
+	char	*s;
+	int		i;
+	int		hasq;
+	int		len;
+	char	*tmp;
+
+	s = tok->str;
+	i = 0;
+	hasq = 0;
+	while (s && s[i])
+	{
+		if (s[i] == '\'' || s[i] == '"')
+			hasq = 1;
+		i++;
+	}
+	if (!hasq)
+		return (0);
+	len = ft_strlen(s);
+	tmp = malloc(len + 2);
+	if (!tmp)
+		return (1);
+	tmp[0] = '\1';
+	i = 0;
+	while (i < len)
+	{
+		tmp[i + 1] = s[i];
+		i++;
+	}
+	tmp[i + 1] = '\0';
+	free(tok->str);
+	tok->str = tmp;
+	return (0);
 }

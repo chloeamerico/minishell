@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/19 16:52:07 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/02 15:40:31 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
 		else
 			dup2(pipeline->pipefd2[1], STDOUT_FILENO);
 	}
+	setup_signals_child();
+	if (apply_redirections(cmd, env))   // <<, <, >, >> (annule en cas d’erreur / Ctrl-C heredoc)
+		_exit(1);
 	close_all_pipes(pipeline);
 	exec_simple_cmd(cmd, env);
 	return(0);
