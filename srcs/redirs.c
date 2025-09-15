@@ -33,7 +33,6 @@ static int	open_out(char *path, int *fd, int append)
 	return (0);
 }
 
-/* si lim->str commence par '\1', le limitateur était quoté -> pas d'expansion */
 static int	do_heredoc(t_token *lim, int *fd, t_env *env)
 {
 	int	expand;
@@ -62,7 +61,6 @@ static int	do_heredoc(t_token *lim, int *fd, t_env *env)
 	return (0);
 }
 
-/* parcourt cmd->reds, ouvre/dup2 les bons fd ; retourne 0 si OK, 1 si erreur/annulation */
 int	apply_redirections(t_cmd *cmd, t_env *env)
 {
 	t_token	*t;
