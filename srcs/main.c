@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/02 17:04:41 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/04 12:02:08 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,74 +212,135 @@ void	free_tokens(t_token *tokens)
    - t_global *get_global(void);
 */
 
-static int	process_line(char *line, t_env **env)
-{
-	char	**split;
-	t_token	*tokens;
-	t_cmd	*cmds;
-	int		status;
+/* main.c : harness de test signaux + heredoc */
+#include "minishell.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
 
-	if (!line || line[0] == '\0')
-		return (0);
-	add_history(line);
-	split = split_line(line);
-	if (!split)
-		return (write(2, "minishell: split failed\n", 24), 1);
-	tokens = tokenize(split);
-	free_split(split);
-	if (!tokens || !validate_tokens(tokens))
-	{
-		if (tokens)
-			free_tokens(tokens);
-		get_global()->last_status = 2;
-		return (write(2, "minishell: syntax error\n", 24), 1);
-	}
-	expand_tokens(tokens, *env, get_global()->last_status);
-	delete_quotes(tokens);
-	cmds = parse_commands(tokens);
-	free_tokens(tokens);
-	if (!cmds)
-	{
-		get_global()->last_status = 2;
-		return (write(2, "minishell: parse error\n", 23), 1);
-	}
-	status = exec_pipeline(cmds, *env);
-	free_cmd_list(cmds);
-	get_global()->last_status = status;
-	return (0);
+/* --- helpers --- */
+static int	is_blank(const char *s)
+{
+	int i;
+
+	if (!s)
+		return (1);
+	i = 0;
+	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
+		i++;
+	return (s[i] == '\0');
 }
 
-static void	shell_loop(t_env **env)
+/* heredoc minimal de test: <<DELIM   (écrit rien, teste juste les signaux) */
+static int	handle_heredoc(const char *delim)
 {
 	char	*line;
 
+	setup_signals_hd();
+	get_global()->hd_interrupted = 0;
+	while (1)
+	{
+		line = readline("> ");
+		if (get_global()->hd_interrupted == 1)
+		{
+			get_global()->hd_interrupted = 0;
+			if (line)
+				free(line);
+			break ;
+		}
+		if (!line)
+			break ;
+		if (strcmp(line, delim) == 0)
+		{
+			free(line);
+			break ;
+		}
+		free(line);
+	}
+	setup_signals_interactive();
+	return (0);
+}
+
+/* exécute via /bin/sh -c pour tester Ctrl-C et $? proprement */
+static void	run_cmd_via_sh(const char *line)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid == -1)
+		return ;
+	if (pid == 0)
+	{
+		setup_signals_child();
+		execl("/bin/sh", "sh", "-c", line, (char *)0);
+		perror("exec sh");
+		_exit(127);
+	}
+	get_global()->child_pid = pid;
+	if (waitpid(pid, &status, 0) == -1)
+		perror("waitpid");
+	else
+	{
+		if (WIFEXITED(status))
+			get_global()->last_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			get_global()->last_status = 128 + WTERMSIG(status);
+	}
+	get_global()->child_pid = 0;
+}
+
+/* parse très simple: "heredoc <<DELIM" pour tester handler_hd, sinon exécuter */
+static void	handle_line(char *line)
+{
+	char *p;
+
+	if (!line || is_blank(line))
+		return ;
+	add_history(line);
+	p = strstr(line, "<<");
+	if (p)
+	{
+		p += 2;
+		while (*p == ' ' || *p == '\t')
+			p++;
+		if (*p != '\0')
+			handle_heredoc(p);
+		return ;
+	}
+	if (strcmp(line, "exit") == 0)
+	{
+		int code;
+
+		code = get_global()->last_status;
+		free(line);
+		exit(code);
+	}
+	run_cmd_via_sh(line);
+}
+
+/* --- boucle principale --- */
+int	main(int ac, char **av, char **envp)
+{
+	char *line;
+
+	(void)ac;
+	(void)av;
+	(void)envp;
+	setup_signals_interactive();
 	while (1)
 	{
 		line = readline("minishell$ ");
 		if (!line)
-			break ;
-		if (process_line(line, env))
 		{
-			free(line);
-			continue ;
+			write(1, "exit\n", 5);
+			exit(get_global()->last_status);
 		}
+		handle_line(line);
 		free(line);
 	}
-}
-
-int	main(int ac, char **av, char **envp)
-{
-	t_env	*env;
-
-	(void)ac;
-	(void)av;
-	setup_signals_interactive();
-	env = init_env_list(envp);
-	if (!env)
-		return (write(2, "minishell: env init failed\n", 27), 1);
-	get_global()->last_status = 0;
-	shell_loop(&env);
-	clear_history();
-	free_env_list(env);
 	return (0);
 }

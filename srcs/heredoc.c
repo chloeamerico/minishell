@@ -60,7 +60,7 @@ int	ms_heredoc(char *delim, int expand, t_env *env)
 		return (close(p[0]), close(p[1]), -1);
 	if (pid == 0)
 	{
-		setup_signals_heredoc();
+		setup_signals_hd();
 		close(p[0]);
 		if (hd_loop(p[1], delim, expand, env))
 			_exit(130);

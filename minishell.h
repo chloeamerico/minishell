@@ -82,6 +82,8 @@ typedef struct s_global
 {
 	int sig;          /* dernier signal reçu (ex: SIGINT) */
 	int last_status;  /* dernier code de sortie pour $?   */
+	pid_t child_pid;       /* pid de l'enfant en cours (0 si aucun) */
+	int   hd_interrupted;  /* flag: 1 si heredoc annulé par Ctrl-C */
 }	t_global;
 
 
@@ -131,27 +133,19 @@ int	ft_echo(char **args);
 int	ft_exit(char **args);
 int	ft_pwd(void);
 int	ft_unset(char **args, char ***envp);
+int	try_run_builtin(char **args, char ***envp, int *status);
+int   is_single_builtin(t_cmd *cmd);
+int   run_builtin_parent(t_cmd *cmd, t_env **env, int *status);
+
 
 //signaux
 void	setup_signals_interactive(void);
 void	setup_signals_child(void);
-void	setup_signals_heredoc(void);
-// typedef struct s_global t_global;
+void	setup_signals_hd(void);
 t_global *get_global(void);
 int	 ms_heredoc(char *delim, int expand, t_env *env);
 int	 apply_redirections(t_cmd *cmd, t_env *env);
 int	mark_limiter_if_quoted(t_token *tok);
-
-
-//main
-char    **split_line(char *line);
-void    free_split(char **split);
-t_cmd   *parse_commands(t_token *tokens);
-int     exec_pipeline(t_cmd *cmd_list, t_env *env);
-void    free_cmd_list(t_cmd *cmds);
-void    free_env_list(t_env *env);
-
-
 
 /* ************************************************************************** */
 /* DEBUG                                                                      */

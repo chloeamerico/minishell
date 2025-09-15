@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parent_and_waitpid.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:49:40 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/19 12:19:39 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/04 11:59:37 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,7 @@ int	wait_children_pid(t_pipeline *pipeline, pid_t *pid)
 		}
 		i++;
 	}
+	get_global()->last_status = last_exit_status;
+	get_global()->child_pid = 0;    
 	return (last_exit_status);
 }

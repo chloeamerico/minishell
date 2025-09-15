@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/14 19:03:31 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/03 10:27:10 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,4 +196,8 @@ void	free_split(char **split)
 		i++;
 	}
 	free(split);
+}
+char    **split_line(char *line)
+{
+    return (split_minishell(line));
 }

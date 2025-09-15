@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/02 15:40:31 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/04 12:00:00 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
 			dup2(pipeline->pipefd2[1], STDOUT_FILENO);
 	}
 	setup_signals_child();
+	get_global()->child_pid = 0;
 	if (apply_redirections(cmd, env))   // <<, <, >, >> (annule en cas d’erreur / Ctrl-C heredoc)
 		_exit(1);
 	close_all_pipes(pipeline);
@@ -133,6 +134,13 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	// 	free_tab(envp);
 	// 	exit(0);
 	// }
+	int status;
+	if (try_run_builtin(cmd_arg, &envp, &status))   /* <-- &env, pas &envp */
+	{
+		free_tab(cmd_arg);
+		free_tab(envp);
+		exit(status);
+	}
 	cmd_path = find_cmd_path(cmd_arg[0], envp);
 	if (!cmd_path)
 		cmd_not_found(cmd_arg, cmd_arg[0]);
