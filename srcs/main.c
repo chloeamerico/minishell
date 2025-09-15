@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/04 12:02:08 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/15 12:01:05 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,159 +188,262 @@ void	free_tokens(t_token *tokens)
 // 	return (0);
 // }
 
-/* main.c */
-#include "minishell.h"
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <unistd.h>
-#include <stdlib.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: your_login <your_login@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/15 00:00:00 by your_login       #+#    #+#             */
+/*   Updated: 2025/09/15 00:00:00 by your_login      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-/* Fonctions attendues côté projet :
-   - char    **split_line(char *line);
-   - void     free_split(char **split);
-   - t_token  *tokenize(char **split);
-   - int      validate_tokens(t_token *tkn);
-   - void     expand_tokens(t_token *lst, t_env *env, int last_status);
-   - void     delete_quotes(t_token *lst);
-   - void     free_tokens(t_token *lst);
-   - t_cmd    *parse_commands(t_token *tokens, t_env *env);
-   - void     free_cmd_list(t_cmd *cmds);
-   - int      exec_pipeline(t_cmd *cmd_list, t_env *env);
-   - t_env    *init_env_list(char **envp);
-   - void     free_env_list(t_env *env);
-   - void     setup_signals_interactive(void);
-   - t_global *get_global(void);
-*/
-
-/* main.c : harness de test signaux + heredoc */
 #include "minishell.h"
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <sys/wait.h>
-#include <string.h>
 #include <errno.h>
-#include <stdio.h>
+#include <signal.h>
 
-/* --- helpers --- */
-static int	is_blank(const char *s)
+/* Vérifie si la ligne est vide ou contient que des espaces */
+static int	is_blank_line(const char *line)
 {
-	int i;
+	int	i;
 
-	if (!s)
+	if (!line)
 		return (1);
 	i = 0;
-	while (s[i] && (s[i] == ' ' || s[i] == '\t'))
+	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 		i++;
-	return (s[i] == '\0');
+	return (line[i] == '\0');
 }
 
-/* heredoc minimal de test: <<DELIM   (écrit rien, teste juste les signaux) */
-static int	handle_heredoc(const char *delim)
+/* Gère les commandes builtin qui doivent s'exécuter dans le processus parent */
+static int	handle_single_builtin(t_cmd *cmd, t_env **env)
 {
-	char	*line;
+	char	**args;
+	char	**envp;
+	int		status;
+	int		saved_stdin;
+	int		saved_stdout;
 
-	setup_signals_hd();
-	get_global()->hd_interrupted = 0;
-	while (1)
+	/* Sauvegarde des fd originaux */
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	
+	/* Application des redirections si nécessaire */
+	if (apply_redirections(cmd, *env))
 	{
-		line = readline("> ");
-		if (get_global()->hd_interrupted == 1)
-		{
-			get_global()->hd_interrupted = 0;
-			if (line)
-				free(line);
-			break ;
-		}
-		if (!line)
-			break ;
-		if (strcmp(line, delim) == 0)
-		{
-			free(line);
-			break ;
-		}
-		free(line);
+		close(saved_stdin);
+		close(saved_stdout);
+		return (1);
 	}
-	setup_signals_interactive();
+
+	/* Conversion en format execve */
+	args = tokens_to_array(cmd->args);
+	envp = env_to_array(*env);
+	
+	if (!args || !envp)
+	{
+		free_tab(args);
+		free_tab(envp);
+		dup2(saved_stdin, STDIN_FILENO);
+		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdin);
+		close(saved_stdout);
+		return (1);
+	}
+
+	/* Exécution du builtin */
+	status = 0;
+	if (try_run_builtin(args, &envp, &status))
+	{
+		/* Si c'est export, on met à jour notre env */
+		if (args[0] && !ft_strcmp(args[0], "export"))
+		{
+			free_env(*env);
+			*env = init_env_list(envp);
+		}
+	}
+
+	/* Restauration des fd */
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+
+	/* Nettoyage */
+	free_tab(args);
+	free_tab(envp);
+	
+	get_global()->last_status = status;
 	return (0);
 }
 
-/* exécute via /bin/sh -c pour tester Ctrl-C et $? proprement */
-static void	run_cmd_via_sh(const char *line)
+/* Vérifie si c'est une commande builtin simple (sans pipe) */
+static int	is_single_builtin_cmd(t_cmd *cmd)
 {
-	pid_t	pid;
-	int		status;
+	char	**args;
+	int		result;
 
-	pid = fork();
-	if (pid == -1)
-		return ;
-	if (pid == 0)
+	if (!cmd || cmd->next)
+		return (0);
+	
+	args = tokens_to_array(cmd->args);
+	if (!args || !args[0])
 	{
-		setup_signals_child();
-		execl("/bin/sh", "sh", "-c", line, (char *)0);
-		perror("exec sh");
-		_exit(127);
+		free_tab(args);
+		return (0);
 	}
-	get_global()->child_pid = pid;
-	if (waitpid(pid, &status, 0) == -1)
-		perror("waitpid");
+
+	result = (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "export") ||
+			  !ft_strcmp(args[0], "unset") || !ft_strcmp(args[0], "exit"));
+	
+	free_tab(args);
+	return (result);
+}
+
+/* Traite une ligne de commande complète */
+static void	process_line(char *line, t_env **env)
+{
+	char		**split;
+	t_token		*tokens;
+	t_cmd		*cmds;
+	int			exit_status;
+
+	/* Étape 1: Split de la ligne */
+	split = split_line(line);
+	if (!split)
+		return ;
+
+	/* Étape 2: Tokenisation */
+	tokens = tokenize(split);
+	free_split(split);
+	if (!tokens)
+		return ;
+
+	/* Étape 3: Validation syntaxique */
+	if (!validate_tokens(tokens))
+	{
+		ft_putstr_fd("minishell: syntax error\n", STDERR_FILENO);
+		get_global()->last_status = 2;
+		free_token(tokens);
+		return ;
+	}
+
+	/* Étape 4: Expansion des variables */
+	expand_tokens(tokens, *env, get_global()->last_status);
+
+	/* Étape 5: Suppression des quotes */
+	delete_quotes(tokens);
+
+	/* Étape 6: Parse en commandes */
+	cmds = parse_commands(tokens);
+	free_token(tokens);
+	if (!cmds)
+		return ;
+
+	/* Étape 7: Exécution */
+	if (is_single_builtin_cmd(cmds))
+	{
+		/* Builtin simple - exécution dans le parent */
+		handle_single_builtin(cmds, env);
+	}
 	else
 	{
-		if (WIFEXITED(status))
-			get_global()->last_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			get_global()->last_status = 128 + WTERMSIG(status);
+		/* Pipeline ou commande externe */
+		exit_status = exec_pipeline(cmds, *env);
+		get_global()->last_status = exit_status;
 	}
+
+	/* Nettoyage */
+	free_cmd_list(cmds);
+}
+
+/* Gestion de l'EOF (Ctrl+D) */
+static void	handle_eof(void)
+{
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	exit(get_global()->last_status);
+}
+
+/* Initialisation de l'environnement global */
+static int	init_shell(char **envp, t_env **env)
+{
+	/* Initialisation de la structure globale */
+	get_global()->sig = 0;
+	get_global()->last_status = 0;
 	get_global()->child_pid = 0;
-}
+	get_global()->hd_interrupted = 0;
 
-/* parse très simple: "heredoc <<DELIM" pour tester handler_hd, sinon exécuter */
-static void	handle_line(char *line)
-{
-	char *p;
-
-	if (!line || is_blank(line))
-		return ;
-	add_history(line);
-	p = strstr(line, "<<");
-	if (p)
+	/* Initialisation de l'environnement */
+	*env = init_env_list(envp);
+	if (!*env)
 	{
-		p += 2;
-		while (*p == ' ' || *p == '\t')
-			p++;
-		if (*p != '\0')
-			handle_heredoc(p);
-		return ;
+		ft_putstr_fd("minishell: failed to initialize environment\n", STDERR_FILENO);
+		return (1);
 	}
-	if (strcmp(line, "exit") == 0)
-	{
-		int code;
 
-		code = get_global()->last_status;
-		free(line);
-		exit(code);
-	}
-	run_cmd_via_sh(line);
-}
-
-/* --- boucle principale --- */
-int	main(int ac, char **av, char **envp)
-{
-	char *line;
-
-	(void)ac;
-	(void)av;
-	(void)envp;
+	/* Configuration des signaux */
 	setup_signals_interactive();
+
+	return (0);
+}
+
+/* Nettoyage final */
+static void	cleanup_shell(t_env *env)
+{
+	free_env(env);
+	rl_clear_history();
+}
+
+/* Fonction principale */
+int	main(int argc, char **argv, char **envp)
+{
+	char	*line;
+	t_env	*env;
+
+	/* Vérification des arguments (optionnel) */
+	(void)argc;
+	(void)argv;
+
+	/* Initialisation */
+	if (init_shell(envp, &env))
+		return (1);
+
+	/* Boucle principale */
 	while (1)
 	{
+		/* Lecture de la ligne */
 		line = readline("minishell$ ");
+		
+		/* Gestion de l'EOF (Ctrl+D) */
 		if (!line)
 		{
-			write(1, "exit\n", 5);
-			exit(get_global()->last_status);
+			handle_eof();
+			break ;
 		}
-		handle_line(line);
+
+		/* Ignore les lignes vides */
+		if (is_blank_line(line))
+		{
+			free(line);
+			continue ;
+		}
+
+		/* Ajout à l'historique */
+		add_history(line);
+
+		/* Traitement de la ligne */
+		process_line(line, &env);
+
+		/* Libération de la ligne */
 		free(line);
 	}
-	return (0);
+
+	/* Nettoyage final */
+	cleanup_shell(env);
+	return (get_global()->last_status);
 }
