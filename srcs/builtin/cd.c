@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:13 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/15 11:56:16 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:43:31 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_cd(char **args, char ***envp)
+int	ft_cd(char **args, char ***envp) //more
 {
 	(void)envp;
 	if (!args[1])
@@ -32,3 +32,4 @@ int	ft_cd(char **args, char ***envp)
 	}
 	return (0);
 }
+

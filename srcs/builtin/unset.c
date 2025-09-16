@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/15 11:56:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:43:41 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int	find_env_index(char **envp, char *key)
 	return (-1); //si pas trouvee
 }
 
-//supp var
+//supp var a implementer
 int	ft_unset(char **args, char ***envp)
 {
 	int	i;
