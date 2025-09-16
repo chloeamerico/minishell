@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 18:43:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/15 12:01:05 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/15 14:26:30 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,12 +318,16 @@ static void	process_line(char *line, t_env **env)
 	if (!split)
 		return ;
 
+
+	export(split, env);
+	
 	/* Étape 2: Tokenisation */
 	tokens = tokenize(split);
 	free_split(split);
 	if (!tokens)
 		return ;
 
+	
 	/* Étape 3: Validation syntaxique */
 	if (!validate_tokens(tokens))
 	{
