@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   new_export.c                                       :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/19 18:57:11 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/15 17:35:39 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,22 @@ static void	update_or_add_env(char *key, char *value, t_env **env)
 	match = check_in_env(key, *env);			//on check si il y a eu un match avec les key deja dans la var d'env
 	if(match)
 	{
-		free(match->value);					//on remplace l'ancienne value par la nouvelle
-		match->value = ft_strdup(value);
+		if (value != NULL)
+		{
+			free(match->value);					//on remplace l'ancienne value par la nouvelle
+			match->value = ft_strdup(value);
+		}
+		else
+			return;
 	}
 	else									//on cree un nv t_env
 	{
 		new = malloc(sizeof(t_env));
 		new->key = ft_strdup(key);
-		new->value = ft_strdup(value);
+		if (value != NULL)
+			new->value = ft_strdup(value);
+		else
+			new->value = NULL;
 		new->next = NULL;
 		if (*env == NULL)
 			*env = new;
@@ -117,15 +125,44 @@ static void	divide_key_and_value(char *arg, t_env **env)
 	i = 0;
 	while (clean_arg[i] && clean_arg[i] != '=')		//on detecte le =
 		i++;
-	if (!clean_arg[i])
-		return(free(clean_arg));							//ou exit si il y a pas de = ?
+	// if (!clean_arg[i])
+	// 	return(free(clean_arg));							//ou exit si il y a pas de = ?
 	key = ft_substr(clean_arg, 0, i);
-	value = ft_strdup(clean_arg + i + 1);		//on commence au char juste apres le =
+	if (!clean_arg[i])							//si il n'y a pas de =, pas de value
+		value = NULL;
+	else 
+		value = ft_strdup(clean_arg + i + 1);		//on commence au char juste apres le =
 	update_or_add_env(key, value, env);
 	free(key);
-	free(value);
+	if (!clean_arg[i])
+		free(value);
 	free(clean_arg);
 }
+
+// //on divise l'arg en key et value a partir du =
+// static void	divide_key_and_value(char *arg, t_env **env)
+// {
+// 	int	i;
+// 	char	*key;
+// 	char	*value;
+// 	char	*clean_arg;
+	
+// 	clean_arg = clear_quotes_export(arg);
+// 	i = 0;
+// 	while (clean_arg[i] && clean_arg[i] != '=')		//on detecte le =
+// 		i++;
+// 	// if (!clean_arg[i])
+// 	// 	return(free(clean_arg));							//ou exit si il y a pas de = ?
+// 	key = ft_substr(clean_arg, 0, i);
+// 	if (!clean_arg[i])							//si il n'y a pas de =, pas de value
+// 		value = ft_strdup("NULL");
+// 	else 
+// 		value = ft_strdup(clean_arg + i + 1);		//on commence au char juste apres le =
+// 	update_or_add_env(key, value, env);
+// 	free(key);
+// 	free(value);
+// 	free(clean_arg);
+// }
 
 static void	print_env(t_env *env)
 {
@@ -237,7 +274,7 @@ static void	print_env_for_export(t_env *env)
 	tmp = sorted_list;				//il faut l'imprimer avec le "export devant"
 	while(tmp)
 	{
-		printf("export %s=%s\n", tmp->key, tmp->value);
+		printf("export %s=\"%s\"\n", tmp->key, tmp->value);
 		tmp = tmp->next;
 	}
 

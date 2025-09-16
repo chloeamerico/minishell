@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laurentleichtnam <laurentleichtnam@stud    +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 17:22:42 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/19 17:02:25 by laurentleic      ###   ########.fr       */
+/*   Updated: 2025/09/15 14:20:41 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	execute_builtin(char **args, char ***envp)
 	if (!ft_strcmp(args[0], "pwd"))
 		return (ft_pwd());
 	// if (!ft_strcmp(args[0], "export"))
-	// 	return (ft_export(args, envp));
+	// 	export(args, *envp);
 	if (!ft_strcmp(args[0], "unset"))
 		return (ft_unset(args, envp));
 	// if (!ft_strcmp(args[0], "env"))
