@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/15 11:56:35 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/16 18:43:49 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "minishell.h" 
 
+//works 
 static int	is_number(char *s)
 {
 	int	i;
