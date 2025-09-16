@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laurentleichtnam <laurentleichtnam@stud    +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 17:22:42 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/19 17:02:25 by laurentleic      ###   ########.fr       */
+/*   Updated: 2025/09/15 14:36:50 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

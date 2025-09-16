@@ -98,3 +98,39 @@ int	apply_redirections(t_cmd *cmd, t_env *env)
 	}
 	return (0);
 }
+
+int	apply_redirs(t_cmd *cmd, t_env *env)
+{
+	t_token	*t;
+	int	infd;
+	int	outfd;
+
+	infd = -1;
+	outfd = -1;
+	t = cmd->reds;
+	while (t)
+	{
+		if (t->type == RINT && t->next && t->next->type == FD)
+			if (open_in(t->next->str, &infd))
+				return (perror("infile"), -1);
+		if (t->type == ROUT && t->next && t->next->type == FD)
+			if (open_out(t->next->str, &outfd, 0))
+				return (perror("outfile"), -1);
+		if (t->type == DROUT && t->next && t->next->type == FD)
+			if (open_out(t->next->str, &outfd, 1))
+				return (perror("outfile"), -1);
+		if (t->type == DRIN)
+			if (do_heredoc(t->next, &infd, env))
+				return (-1);
+		t = t->next;
+	}
+	if (infd >= 0 && dup2(infd, STDIN_FILENO) < 0)
+		return (perror("dup2 in"), -1);
+	if (outfd >= 0 && dup2(outfd, STDOUT_FILENO) < 0)
+		return (perror("dup2 out"), -1);
+	if (infd >= 0)
+		close(infd);
+	if (outfd >= 0)
+		close(outfd);
+	return (0);
+}

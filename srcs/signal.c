@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/09/04 11:56:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/15 12:23:57 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void	handler_hd(int s)
 	get_global()->last_status = 130;
 	get_global()->hd_interrupted = 1; 
 	write(1, "\n", 1);
-	close(0);
+	// close(0);
 }
 
 void	setup_signals_interactive(void)

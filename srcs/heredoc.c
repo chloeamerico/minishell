@@ -14,7 +14,7 @@ static char	*hd_expand(char *s, t_env *env, int last)
 	one.type = WRD;
 	one.str = ft_strdup(s);
 	if (!one.str)
-		return (NULL);
+		return (ft_strdup(""));
 	expand_tokens(&one, env, last);
 	res = ft_strdup(one.str);
 	free(one.str);
@@ -28,9 +28,17 @@ static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
 
 	while (1)
 	{
+		if (get_global()->hd_interrupted)
+            return (1); // Interrompu par signal
 		l = readline("> ");
 		if (!l)
 			return (0);
+			            
+        if (get_global()->hd_interrupted) // Vérifier après readline aussi
+        {
+            free(l);
+            return (1);
+        }
 		if (!ft_strcmp(l, delim))
 			return (free(l), 0);
 		if (expand)
@@ -67,6 +75,7 @@ int	ms_heredoc(char *delim, int expand, t_env *env)
 		close(p[1]);
 		_exit(0);
 	}
+	get_global()->child_pid = pid;
 	close(p[1]);
 	if (waitpid(pid, &st, 0) < 0)
 		return (close(p[0]), -1);
