@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:23 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/15 17:35:39 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/16 14:43:14 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,7 +274,7 @@ static void	print_env_for_export(t_env *env)
 	tmp = sorted_list;				//il faut l'imprimer avec le "export devant"
 	while(tmp)
 	{
-		printf("export %s=\"%s\"\n", tmp->key, tmp->value);
+		printf("declare -x %s=\"%s\"\n", tmp->key, tmp->value);
 		tmp = tmp->next;
 	}
 

@@ -136,6 +136,7 @@ int	ft_unset(char **args, char ***envp);
 int	try_run_builtin(char **args, char ***envp, int *status);
 int   is_single_builtin(t_cmd *cmd);
 int   run_builtin_parent(t_cmd *cmd, t_env **env, int *status);
+int	print_env(char **env);
 
 
 //signaux

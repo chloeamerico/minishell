@@ -14,7 +14,6 @@ SRCS =  init.c \
 	token.c \
 	expand.c \
 	utils.c \
-	export.c \
 	commander.c \
 	pipes/child_process.c \
 	pipes/list_to_array.c \
@@ -27,6 +26,8 @@ SRCS =  init.c \
 	builtin/exit.c \
 	builtin/pwd.c \
 	builtin/unset.c \
+	builtin/export.c \
+	builtin/env.c \
 	status.c \
 	heredoc.c \
 	redirs.c \
