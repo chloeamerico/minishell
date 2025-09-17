@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/02 13:10:54 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/17 14:38:53 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,12 +117,47 @@ t_env	*get_env_list(t_env *new_env)
 	return (env);
 }
 
-int	read_line(char **line)
+static char *build_prompt(void)
 {
-	*line = readline("minishell$ "); //met minishell$ sur le bash
-	if (!*line)
-		return (0);
-	if (**line)
-		add_history(*line); //ajout la ligne de commande
-	return (1);
+    char *cwd = getcwd(NULL, 0);                // alloc par libc
+    if (!cwd)
+        return ft_strdup("minishell$ ");        // fallback si erreur
+
+    // taille nécessaire pour "<cwd>$ " + '\0'
+    int need = snprintf(NULL, 0, "%s$ ", cwd);
+    if (need < 0) {
+        free(cwd);
+        return ft_strdup("minishell$ ");
+    }
+    char *prompt = malloc((size_t)need + 1);
+    if (!prompt) {
+        free(cwd);
+        return ft_strdup("minishell$ ");
+    }
+    snprintf(prompt, (size_t)need + 1, "%s$ ", cwd);
+    free(cwd);
+    return prompt;
+}
+
+// int	read_line(char **line)
+// {
+// 	*line = readline("minishell$ "); //met minishell$ sur le bash
+// 	if (!*line)
+// 		return (0);
+// 	if (**line)
+// 		add_history(*line); //ajout la ligne de commande
+// 	return (1);
+// }
+
+int read_line(char **line)
+{
+    char *prompt = build_prompt();         // <- prompt dynamique
+    *line = readline(prompt);
+    free(prompt);
+
+    if (!*line)
+        return (0);
+    if (**line)
+        add_history(*line);
+    return (1);
 }
