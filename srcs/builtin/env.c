@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:07:54 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/16 15:30:48 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/17 14:20:59 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	print_env(char **env)
 	int	i;
 
 	i = 0;
-	while(i)
+	while(env[i])
 	{
 		printf("%s\n", env[i]);
 		i++;
