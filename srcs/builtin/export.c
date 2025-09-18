@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/17 16:33:46 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/17 17:42:58 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,21 +76,7 @@ int	print_export(char **env)
 	return (0);
 }
 
-//fonction principale qui va appeler toutes les autres pour export un arg
-void	export_one_arg(char *arg, char **env)
-{
-	char	*key;
-	
-	key = find_key(arg);
-	
-	if(already_exist(key, env, arg))		//si la key existe deja
-	{
-		if(!ft_strchr(arg, "=")) 	//si l'arg ne possede pas de =
-			return;
-	}
-	if(add_new_line_in_env(arg, env))
-		return;
-}
+
 
 // check si la key existe deja dans la var d'env
 // renvoie 0 n'existe pas (il faut la creer)
@@ -109,40 +95,8 @@ void	export_one_arg(char *arg, char **env)
 // 	return (0);
 // }
 
-int	already_exist(char *key, char **env, char *arg)
-{
-	int	i;
-	
-	i = 0;
-	while(env[i])
-	{
-		if(!ft_strncmp(env[i], key, ft_strlen(key)) && (env[i + 1] == '=' || env[i + 1] == '\0' ))		//si la key existe deja, on va l'update
-		{
-			if(ft_strchr(arg, "="))						//si l'arg existe deja dans la var d'env et possede un =, on va la free puis la rajouter apres
-			{
-				free(env[i]);
-				return(1);
-			}
-		}
-		i++;
-	}
-	return (0);
-}
 
-//on a ajoute un eligne a la fin
-int	add_new_line_in_env(char *arg, char ***env)
-{
-	int	i;
 
-	i = 0;
-	while(*env[i])
-		i++;
-	*env[i] = ft_strdup(arg);
-	if (*env[i])
-		return (1);
-	*env[i + 1] = NULL;
-	return (0);
-}
 
 char *find_key(char *arg)
 {
