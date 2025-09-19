@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/19 16:23:44 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/19 18:32:12 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static char **add_new_line_in_env(char *arg, char **env)
 	count = 0;
 	while(env[count])
 		count++;
-	i = 0;
 	new_env = malloc(sizeof(char*) * (count + 2));		//+2 car +1 pour la ligne supp et +1 pour le NULL
 	if (!new_env)
 		return(NULL);
@@ -43,6 +42,7 @@ static char **add_new_line_in_env(char *arg, char **env)
 	free(env);
 	return(new_env);
 }
+
 
 //fonction qui va modifier une variable dans l'env
 //Trouver l'index de la variable à modifier
