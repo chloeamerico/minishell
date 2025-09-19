@@ -137,6 +137,8 @@ int	try_run_builtin(char **args, char ***envp, int *status);
 int   is_single_builtin(t_cmd *cmd);
 int   run_builtin_parent(t_cmd *cmd, t_env **env, int *status);
 int	print_env(char **env);
+int	ft_export(char **args, char **env);
+char *find_key(char *arg);
 
 
 //signaux
