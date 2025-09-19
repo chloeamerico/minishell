@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/18 17:51:11 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/19 14:44:58 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,55 +71,6 @@ char *find_key(char *arg)
 	return(key);
 }
 
-//fonction pourecrire l'env avec le declare -x devant
-static int	print_export(char **env)
-{
-	int	i;
-	char	*key;
-	char	*value;
-
-	i = 0;
-	while(env[i])
-	{
-		key = find_key(env[i]);
-		value = find_value(env[i]);
-		if (!value)						//si pas de value , juste export VAR
-			printf("%s\n", key);
-		else
-			printf("declare -x %s=\"%s\"\n", env[i]);
-		free(key);
-		if (value)
-			free(value);
-		i++;
-	}
-	return (0);
-}
-
-int	ft_export(char **args, char **env)
-{
-	int	i;
-	
-	if (!args || !args[0])
-		return (1);
-	if (!args[1] && (!ft_strcmp(args[0], "export")))		// si on ecrit juste "export", afficher la var d'env avec "declare -x" devant trie dans l'ordre
-		print_export(env);
-	else
-	{
-		i = 1;
-		while(args[i])
-		{
-			export_one_arg(args[i], env);
-			i++;
-		}
-	}
-}
-
-
-
-
-
-
-
 int	find_index(char *key, char **env)
 {
 	int	i;
@@ -133,3 +84,57 @@ int	find_index(char *key, char **env)
 	}
 	return(-1);
 }
+
+//fonction pourecrire l'env avec le declare -x devant
+static int	print_export(char **env)
+{
+	int	i;
+	char	*key;
+	char	*value;
+
+	i = 0;
+	while(env[i])
+	{
+		key = find_key(env[i]);
+		value = find_value(env[i]);
+		if(!key)
+		{
+			if(value)
+				free(value);
+			continue;
+		}
+		if (!value)						//si pas de value , juste export VAR
+			printf("declare -x %s\n", key);
+		else
+			printf("declare -x %s=\"%s\"\n", key, value);
+		free(key);
+		if (value)
+			free(value);
+		i++;
+	}
+	return (0);
+}
+
+int	ft_export(char **args, char ***env)
+{
+	int	i;
+	
+	if (!args || !args[0])
+		return (1);
+	if (!args[1] && (!ft_strcmp(args[0], "export")))		// si on ecrit juste "export", afficher la var d'env avec "declare -x" devant trie dans l'ordre
+		print_export(*env);
+	else
+	{
+		i = 1;
+		while(args[i])
+		{
+			export_one_arg(args[i], env);
+			i++;
+		}
+	}
+	return (0);
+}
+
+
+
+

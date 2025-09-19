@@ -27,6 +27,7 @@ SRCS =  init.c \
 	builtin/pwd.c \
 	builtin/unset.c \
 	builtin/export.c \
+	builtin/export2.c \
 	builtin/env.c \
 	status.c \
 	heredoc.c \
