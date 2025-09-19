@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/17 17:42:58 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/19 14:44:58 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,72 +31,23 @@ update_env_with_new_key(arg, env);
 
 */
 
-
-int	ft_export(char **args, char **env)
+static char	*find_value(char *arg)
 {
 	int	i;
-	
-	if (!args || !args[0])
-		return (1);
-	if (!args[1] && (!ft_strcmp(args[0], "export")))		// si on ecrit juste "export", afficher la var d'env avec "declare -x" devant trie dans l'ordre
-		print_export(env);
-	else
-	{
-		i = 1;
-		while(args[i])
-		{
-			export_one_arg(args[i], env);
-			i++;
-		}
-	}
-}
-
-//fonction pourecrire l'env avec le declare -x devant
-int	print_export(char **env)
-{
-	int	i;
-	char	*key;
 	char	*value;
-
-
-	i = 0;
-	while(env[i])
-	{
-		key = find_key(env[i]);
-		value = find_value(env[i]);
-		if (!value)						//si pas de value , juste export VAR
-			printf("%s\n", key);
-		else
-			printf("declare -x %s=\"%s\"\n", env[i]);
-		free(key);
-		if (value)
-			free(value);
-		i++;
-	}
-	return (0);
-}
-
-
-
-// check si la key existe deja dans la var d'env
-// renvoie 0 n'existe pas (il faut la creer)
-// renvoie 1 si elle existe deja (il faudra l'update sauf si avant il y avait un = et pas apres)
-// int	already_exist(char *arg, char **env)
-// {
-// 	int	i;
 	
-// 	i = 0;
-// 	while(env[i])
-// 	{
-// 		if(!ft_strncmp(env[i], arg, ft_strlen(arg)));		//si la key existe deja
-// 			return(1);
-// 		i++;
-// 	}
-// 	return (0);
-// }
-
-
-
+	i = 0;
+	while(arg[i] != '=' && arg[i])
+		i++;
+	if (!arg[i])				//si pas de =, pas de value;
+		return(NULL);
+	i++;
+	value = malloc(sizeof(char) * (ft_strlen(arg + i) + 1));
+	if(!value)
+		return(NULL);
+	ft_strcpy(value, arg + i);
+	return (value);
+}
 
 char *find_key(char *arg)
 {
@@ -120,20 +71,70 @@ char *find_key(char *arg)
 	return(key);
 }
 
-char	*find_value(char *arg)
+int	find_index(char *key, char **env)
 {
 	int	i;
-	char	*value;
-	
+
 	i = 0;
-	while(arg[i] != '=' && arg[i])
+	while(env[i])
+	{
+		if(!ft_strncmp(env[i], key, ft_strlen(key)) && (env[i][ft_strlen(key)] == '=' || env[i][ft_strlen(key)] == '\0' ))
+			return(i);
 		i++;
-	if (!arg[i])				//si pas de =, pas de value;
-		return(NULL);
-	i++;
-	value = malloc(sizeof(char) * (ft_strlen(arg + i) + 1));
-	if(!value)
-		return(NULL);
-	ft_strcpy(value, arg + i);
-	return (value);
+	}
+	return(-1);
 }
+
+//fonction pourecrire l'env avec le declare -x devant
+static int	print_export(char **env)
+{
+	int	i;
+	char	*key;
+	char	*value;
+
+	i = 0;
+	while(env[i])
+	{
+		key = find_key(env[i]);
+		value = find_value(env[i]);
+		if(!key)
+		{
+			if(value)
+				free(value);
+			continue;
+		}
+		if (!value)						//si pas de value , juste export VAR
+			printf("declare -x %s\n", key);
+		else
+			printf("declare -x %s=\"%s\"\n", key, value);
+		free(key);
+		if (value)
+			free(value);
+		i++;
+	}
+	return (0);
+}
+
+int	ft_export(char **args, char ***env)
+{
+	int	i;
+	
+	if (!args || !args[0])
+		return (1);
+	if (!args[1] && (!ft_strcmp(args[0], "export")))		// si on ecrit juste "export", afficher la var d'env avec "declare -x" devant trie dans l'ordre
+		print_export(*env);
+	else
+	{
+		i = 1;
+		while(args[i])
+		{
+			export_one_arg(args[i], env);
+			i++;
+		}
+	}
+	return (0);
+}
+
+
+
+
