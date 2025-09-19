@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/19 14:48:09 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/19 16:23:44 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static char **add_new_line_in_env(char *arg, char **env)
 		i++;
 	}
 	new_env[count] = ft_strdup(arg);
-	if(!new_env)
+	if(!new_env[count])
 	{
 		free(new_env);
 		return(NULL);
