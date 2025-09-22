@@ -9,7 +9,7 @@ SRCS_DIR	=	srcs/
 OBJ_DIR		=	obj/
 
 SRCS =  init.c \
-	main.c \
+	main2.c \
 	split.c \
 	token.c \
 	expand.c \
