@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 17:11:52 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:15:19 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,26 +31,26 @@ update_env_with_new_key(arg, env);
 
 */
 
-// static char	*find_value(char *arg)
-// {
-// 	int	i;
-// 	char	*value;
+static char	*find_value(char *arg)
+{
+	int	i;
+	char	*value;
 	
-// 	i = 0;
-// 	while(arg[i] != '=' && arg[i])
-// 		i++;
-// 	if (!arg[i])				//si pas de =, pas de value;
-// 		return(NULL);
-// 	i++;
-// 	value = malloc(sizeof(char) * (ft_strlen(arg + i) + 1));
-// 	if(!value)
-// 		return(NULL);
-// 	if(ft_strlen(arg + i) == 0)
-// 		value[0] = '\0';
-// 	else
-// 		ft_strcpy(value, arg + i);
-// 	return (value);
-// }
+	i = 0;
+	while(arg[i] != '=' && arg[i])
+		i++;
+	if (!arg[i])				//si pas de =, pas de value;
+		return(NULL);
+	i++;
+	value = malloc(sizeof(char) * (ft_strlen(arg + i) + 1));
+	if(!value)
+		return(NULL);
+	if(ft_strlen(arg + i) == 0)
+		value[0] = '\0';
+	else
+		ft_strcpy(value, arg + i);
+	return (value);
+}
 
 char *find_key(char *arg)
 {
@@ -89,93 +89,37 @@ int	find_index(char *key, char **env)
 }
 
 //fonction pourecrire l'env avec le declare -x devant
-// static int	print_export(char **env)
-// {
-// 	int	i;
-// 	char	*key;
-// 	char	*value;
-
-// 	i = 0;
-// 	while(env[i])
-// 	{
-// 		key = find_key(env[i]);
-// 		if (!key)
-// 			return(1);
-// 		value = find_value(env[i]);
-// 		// if(!key)
-// 		// {
-// 		// 	if(value)
-// 		// 		free(value);
-// 		// 	i++;
-// 		// 	continue;
-// 		// }
-// 		if (!value)						//si pas de value , juste export VAR
-// 			printf("declare -x %s\n", key);
-// 		else
-// 			printf("declare -x %s=\"%s\"\n", key, value);
-// 		free(key);
-// 		if (value)
-// 			free(value);
-// 		i++;
-// 	}
-// 	return (0);
-// }
-
-// static int print_export(char **env)
-// {
-//     int i;
-//     int j;
-
-//     i = 0;
-//     while (env && env[i])
-//     {
-//         write(1, "declare -x ", 11);
-//         j = 0;
-//         while (env[i][j] && env[i][j] != '=')
-//         {
-//             write(1, &env[i][j], 1);
-//             j++;
-//         }
-//         if (env[i][j] == '=')
-//         {
-//             write(1, "=\"", 2);
-//             j++;
-//             while (env[i][j])
-//             {
-//                 /* (optionnel) échapper " et \ si tu veux coller à bash strict */
-//                 write(1, &env[i][j], 1);
-//                 j++;
-//             }
-//             write(1, "\"", 1);
-//         }
-//         write(1, "\n", 1);
-//         i++;
-//     }
-//     return (0);
-// }
-
-static int print_export(char **env)
+static int	print_export(char **env)
 {
-	int i; int j;
+	int	i;
+	char	*key;
+	char	*value;
 
 	i = 0;
-	while (env && env[i])
+	while(env[i])
 	{
-		write(1, "declare -x ", 11);
-		j = 0;
-		while (env[i][j] && env[i][j] != '=')
-		{ write(1, &env[i][j], 1); j++; }
-		if (env[i][j] == '=' && env[i][j + 1])
-		{
-			write(1, "=\"", 2); j++;
-			while (env[i][j]) { write(1, &env[i][j], 1); j++; }
-			write(1, "\"", 1);
-		}
-		write(1, "\n", 1); i++;
+		key = find_key(env[i]);
+		if (!key)
+			return(1);
+		value = find_value(env[i]);
+		// if(!key)
+		// {
+		// 	if(value)
+		// 		free(value);
+		// 	i++;
+		// 	continue;
+		// }
+		if (!value)						//si pas de value , juste export VAR
+			printf("declare -x %s\n", key);
+		else
+			printf("declare -x %s=\"%s\"\n", key, value);
+		free(key);
+		if (value)
+			free(value);
+		i++;
 	}
 	return (0);
 }
-
 
 // //FONCTION DE TEST
 // static int	print_export(char **env)
