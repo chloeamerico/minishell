@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 14:58:23 by camerico          #+#    #+#             */
-/*   Updated: 2024/11/27 13:34:43 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/17 16:22:34 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,20 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t siz)
 		dst[i] = '\0';
 	}
 	return (sizesrc);
+}
+
+char	*ft_strcpy(char *dest, char *src)
+{
+	int	i;
+
+	i = 0;
+	while (src[i] != '\0')
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
 }
 
 // int	main(int argc, char **argv)

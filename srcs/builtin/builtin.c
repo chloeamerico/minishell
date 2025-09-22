@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 17:22:42 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/17 14:23:23 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:45:52 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,11 @@ static int	is_builtin(char *cmd)
 		return (1);
 	if (!ft_strcmp(cmd, "pwd"))
 		return (1);
+	if (!ft_strcmp(cmd, "export"))
+		return (1);
 	if (!ft_strcmp(cmd, "unset"))
+		return (1);
+	if (!ft_strcmp(cmd, "env"))
 		return (1);
 	if (!ft_strcmp(cmd, "exit"))
 		return (1);
@@ -99,8 +103,12 @@ int	execute_builtin(char **args, char ***envp)
 		return (ft_cd(args, envp));
 	if (!ft_strcmp(args[0], "pwd"))
 		return (ft_pwd());
+	if (!ft_strcmp(args[0], "export"))
+		return(ft_export(args, envp));
 	if (!ft_strcmp(args[0], "unset"))
 		return (ft_unset(args, envp));
+	if (!args[1] && (!ft_strcmp(args[0], "env")))
+		return(print_env(*envp));
 	if (!ft_strcmp(args[0], "exit"))
 		return (ft_exit(args));
 	return (1);

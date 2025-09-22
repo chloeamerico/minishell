@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I.
+CFLAGS = -Wall -Wextra -Werror -g3 -I.
 
 # dossiers
 LIBFT_DIR 	=	libft/
@@ -14,7 +14,6 @@ SRCS =  init.c \
 	token.c \
 	expand.c \
 	utils.c \
-	export.c \
 	commander.c \
 	pipes/child_process.c \
 	pipes/list_to_array.c \
@@ -27,6 +26,9 @@ SRCS =  init.c \
 	builtin/exit.c \
 	builtin/pwd.c \
 	builtin/unset.c \
+	builtin/export.c \
+	builtin/export2.c \
+	builtin/env.c \
 	status.c \
 	heredoc.c \
 	redirs.c \

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 15:42:13 by camerico          #+#    #+#             */
-/*   Updated: 2025/02/21 14:21:20 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/17 16:23:34 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ struct					s_list
 /* ************************************************************************** */
 
 char					*ft_strdup(const char *s);
+char					*ft_strcpy(char *dest, char *src);
 char					*ft_strchr(const char *s, int c);
 char					*ft_strrchr(const char *s, int c);
 char					*ft_strdup(const char *s);
