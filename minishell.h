@@ -141,6 +141,7 @@ int	ft_export(char **args, char ***env);
 char *find_key(char *arg);
 int	find_index(char *key, char **env);
 void	export_one_arg(char *arg, char ***env);
+int	export_one_arg2(char *key, char ***env);
 
 
 //signaux
