@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 12:33:39 by camerico          #+#    #+#             */
-/*   Updated: 2024/11/22 15:09:47 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:26:24 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ size_t	ft_strlen(const char *s)
 	size_t	i;
 
 	i = 0;
+	if (!s)
+		return(0);
 	while (s[i])
 		i++;
 	return (i);

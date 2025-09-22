@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 14:15:19 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 17:31:52 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ char *find_key(char *arg)
 
 	i = 0;
 	j = 0;
+	if (!arg)
+		return (NULL);
 	while(arg[i] != '=' && arg[i])
 		i++;
 	key = malloc(sizeof(char) * (i + 1));
@@ -121,29 +123,6 @@ static int	print_export(char **env)
 	return (0);
 }
 
-// //FONCTION DE TEST
-// static int	print_export(char **env)
-// {
-// 	int	i;
-// 	char	*key;
-
-// 	i = 0;
-// 	while(env[i])
-// 	{
-// 		key = find_key(env[i]);
-// 		// if(!key)
-// 		// {
-// 		// 	if(value)
-// 		// 		free(value);
-// 		// 	i++;
-// 		// 	continue;
-// 		// }
-// 		printf("declare -x %s\n", key);
-// 		free(key);
-// 		i++;
-// 	}
-// 	return (0);
-// }
 
 int	ft_export(char **args, char ***env)
 {

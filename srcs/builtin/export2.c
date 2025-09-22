@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 14:24:17 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 17:15:21 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	update_var_in_env(char *arg, char **env, int index)
 	char	*new_line_env;
 
 	new_line_env = malloc(sizeof(char) * (ft_strlen(arg) + 1));
-	if(new_line_env)
+	if(!new_line_env)
 		return(1);
 	ft_strcpy(new_line_env, arg);
 	if(env[index])
@@ -124,8 +124,6 @@ void	export_one_arg(char *arg, char ***env)
 // 	}
 // 	return (0);
 // }
-
-
 
 
 // //on a ajoute un eligne a la fin
