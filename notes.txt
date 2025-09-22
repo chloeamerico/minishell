@@ -1,0 +1,11 @@
+ce qui ne passe pas :
+
+export A
+export
+
+export A
+export A=b
+
+export A
+env
+

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/19 18:32:12 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:24:17 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,29 @@ static char **add_new_line_in_env(char *arg, char **env)
 //Trouver l'index de la variable à modifier
 //puis Libérer l'ancienne chaîne (free(env[index]))
 //Créer la nouvelle chaîne ("USER=jane")
+// static int	update_var_in_env(char *arg, char **env, int index)
+// {
+// 	if(index >= 0)
+// 		free(env[index]);
+// 	env[index] = malloc(sizeof(char) * (ft_strlen(arg) + 1));
+// 	if(!env[index])
+// 		return(1);
+// 	ft_strcpy(env[index], arg);
+// 	return (0);
+// }
+
+
 static int	update_var_in_env(char *arg, char **env, int index)
 {
-	if(index >= 0)
-		free(env[index]);
-	env[index] = malloc(sizeof(char) * (ft_strlen(arg) + 1));
-	if(!env[index])
+	char	*new_line_env;
+
+	new_line_env = malloc(sizeof(char) * (ft_strlen(arg) + 1));
+	if(new_line_env)
 		return(1);
-	ft_strcpy(env[index], arg);
+	ft_strcpy(new_line_env, arg);
+	if(env[index])
+		free(env[index]);
+	env[index] = new_line_env;
 	return (0);
 }
 

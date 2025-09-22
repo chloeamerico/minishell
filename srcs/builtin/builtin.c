@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 17:22:42 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/19 16:14:05 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:42:32 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,12 @@ int	execute_builtin(char **args, char ***envp)
 		return (ft_cd(args, envp));
 	if (!ft_strcmp(args[0], "pwd"))
 		return (ft_pwd());
+	if (!args[1] && (!ft_strcmp(args[0], "env")))
+		return(print_env(*envp));
 	if (!ft_strcmp(args[0], "export"))
 		return(ft_export(args, envp));
 	if (!ft_strcmp(args[0], "unset"))
 		return (ft_unset(args, envp));
-	if (!args[1] && (!ft_strcmp(args[0], "env")))
-		return(print_env(*envp));
 	if (!ft_strcmp(args[0], "exit"))
 		return (ft_exit(args));
 	return (1);
