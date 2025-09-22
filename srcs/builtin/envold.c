@@ -1,42 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   envold.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:07:54 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 17:23:06 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/22 17:22:30 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#include "minishell.h"
 
-static int	has_non_empty_value(const char *s)
-{
-	int	i;
-
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i] && s[i] != '=')
-		i++;
-	if (s[i] != '=')
-		return (0);
-	if (s[i + 1] == '\0')
-		return (0);
-	return (1);
-}
-
-int	print_env(char **envp)
+//fonction pour imprimer la var d'env si on fait "env"
+int	print_env(char **env)
 {
 	int	i;
 
 	i = 0;
-	while (envp && envp[i])
+	while(env[i])
 	{
-		if (has_non_empty_value(envp[i]))
-			printf("%s\n", envp[i]);
+		printf("%s\n", env[i]);
 		i++;
 	}
 	return (0);

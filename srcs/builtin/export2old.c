@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 17:35:42 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:24:17 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	update_var_in_env(char *arg, char **env, int index)
 	char	*new_line_env;
 
 	new_line_env = malloc(sizeof(char) * (ft_strlen(arg) + 1));
-	if(!new_line_env)
+	if(new_line_env)
 		return(1);
 	ft_strcpy(new_line_env, arg);
 	if(env[index])
@@ -78,45 +78,28 @@ static int	update_var_in_env(char *arg, char **env, int index)
 void	export_one_arg(char *arg, char ***env)
 {
 	char	*key;
-	int		index;
-
+	int	index;
+	
 	key = find_key(arg);
-	if (!key)
+	if(!key)
 		return;
+	
 	index = find_index(key, *env);
-	if (index != -1)
+	if(index != -1)			//si la key existe deja
 	{
-		if (!ft_strchr(arg, '='))
+		if(!ft_strchr(arg, '=')) 	//si l'arg ne possede pas de =, on ne fait rien
 		{
 			free(key);
 			return;
 		}
 		update_var_in_env(arg, *env, index);
-		free(key);
 		return;
 	}
-	if (!ft_strchr(arg, '='))
+	else
 	{
-		int		len;
-		char	*tmp;
-
-		len = ft_strlen(key);
-		tmp = malloc(sizeof(char) * (len + 2)); /* "KEY=" */
-		if (!tmp)
-		{
-			free(key);
-			return;
-		}
-		ft_strcpy(tmp, key);
-		tmp[len] = '=';
-		tmp[len + 1] = '\0';
-		*env = add_new_line_in_env(tmp, *env);
-		free(tmp);
+		*env = add_new_line_in_env(arg, *env);
 		free(key);
-		return;
 	}
-	*env = add_new_line_in_env(arg, *env);
-	free(key);
 }
 
 // // check si la key existe deja dans la var d'env
@@ -141,6 +124,8 @@ void	export_one_arg(char *arg, char ***env)
 // 	}
 // 	return (0);
 // }
+
+
 
 
 // //on a ajoute un eligne a la fin
