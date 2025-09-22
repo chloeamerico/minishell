@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/19 18:56:03 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:15:19 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ static int	print_export(char **env)
 	while(env[i])
 	{
 		key = find_key(env[i]);
+		if (!key)
+			return(1);
 		value = find_value(env[i]);
 		// if(!key)
 		// {
