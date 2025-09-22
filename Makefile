@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g3 -I.
+CFLAGS = -Wall -Wextra -Werror -I.
 
 # dossiers
 LIBFT_DIR 	=	libft/
@@ -9,7 +9,7 @@ SRCS_DIR	=	srcs/
 OBJ_DIR		=	obj/
 
 SRCS =  init.c \
-	main2.c \
+	main.c \
 	split.c \
 	token.c \
 	expand.c \
