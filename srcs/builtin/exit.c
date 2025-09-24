@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/24 16:38:24 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/24 15:55:35 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,3 +60,4 @@ get_global()->want_exit = 1;
 get_global()->exit_code = (unsigned char)code;
 return ((unsigned char)code);
 }
+

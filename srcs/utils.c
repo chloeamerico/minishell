@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 18:23:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/24 13:38:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/02 13:05:44 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static char	*check_quotes_after_token(char *str)
 void	delete_quotes(t_token *tokens)
 {
 	t_token	*tmp;
-
+	
 	tmp = tokens;
 	while(tmp)
 	{
