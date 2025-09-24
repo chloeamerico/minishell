@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 18:24:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:21:25 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,51 +62,7 @@ static int	update_var_in_env(char *arg, char **env, int index)
 	return (0);
 }
 
-// // fonction principale qui va appeler toutes les autres pour export un arg
-// void	export_one_arg(char *arg, char ***env)
-// {
-// 	char	*key;
-// 	int		index;
-
-// 	key = find_key(arg);
-// 	if (!key)
-// 		return;
-// 	index = find_index(key, *env);
-// 	if (index != -1)
-// 	{
-// 		if (!ft_strchr(arg, '='))
-// 		{
-// 			free(key);
-// 			return;
-// 		}
-// 		update_var_in_env(arg, *env, index);
-// 		free(key);
-// 		return;
-// 	}
-// 	if (!ft_strchr(arg, '='))
-// 	{
-// 		int		len;
-// 		char	*tmp;
-
-// 		len = ft_strlen(key);
-// 		tmp = malloc(sizeof(char) * (len + 2)); /* "KEY=" */
-// 		if (!tmp)
-// 		{
-// 			free(key);
-// 			return;
-// 		}
-// 		ft_strcpy(tmp, key);
-// 		tmp[len] = '=';
-// 		tmp[len + 1] = '\0';
-// 		*env = add_new_line_in_env(tmp, *env);
-// 		free(tmp);
-// 		free(key);
-// 		return;
-// 	}
-// 	*env = add_new_line_in_env(arg, *env);
-// 	free(key);
-// }
-
+// fonction principale qui va appeler toutes les autres pour export un arg
 void	export_one_arg(char *arg, char ***env)
 {
 	char	*key;
@@ -129,33 +85,77 @@ void	export_one_arg(char *arg, char ***env)
 	}
 	if (!ft_strchr(arg, '='))
 	{
-		if(export_one_arg2(key, env))
+		int		len;
+		char	*tmp;
+
+		len = ft_strlen(key);
+		tmp = malloc(sizeof(char) * (len + 2)); /* "KEY=" */
+		if (!tmp)
+		{
+			free(key);
 			return;
+		}
+		ft_strcpy(tmp, key);
+		tmp[len] = '=';
+		tmp[len + 1] = '\0';
+		*env = add_new_line_in_env(tmp, *env);
+		free(tmp);
 		free(key);
+		return;
 	}
 	*env = add_new_line_in_env(arg, *env);
 	free(key);
 }
 
-int	export_one_arg2(char *key, char ***env)
-{
-	int		len;
-	char	*tmp;
+// void	export_one_arg(char *arg, char ***env)
+// {
+// 	char	*key;
+// 	int		index;
 
-	len = ft_strlen(key);
-	tmp = malloc(sizeof(char) * (len + 2)); /* "KEY=" */
-	if (!tmp)
-	{
-		free(key);
-		return(1);
-	}
-	ft_strcpy(tmp, key);
-	tmp[len] = '=';
-	tmp[len + 1] = '\0';
-	*env = add_new_line_in_env(tmp, *env);
-	free(tmp);	
-	return(0);
-}
+// 	key = find_key(arg);
+// 	if (!key)
+// 		return;
+// 	index = find_index(key, *env);
+// 	if (index != -1)
+// 	{
+// 		if (!ft_strchr(arg, '='))
+// 		{
+// 			free(key);
+// 			return;
+// 		}
+// 		update_var_in_env(arg, *env, index);
+// 		free(key);
+// 		return;
+// 	}
+// 	if (!ft_strchr(arg, '='))
+// 	{
+// 		if(export_one_arg2(key, env))
+// 			return;
+// 		free(key);
+// 	}
+// 	*env = add_new_line_in_env(arg, *env);
+// 	free(key);
+// }
+
+// int	export_one_arg2(char *key, char ***env)
+// {
+// 	int		len;
+// 	char	*tmp;
+
+// 	len = ft_strlen(key);
+// 	tmp = malloc(sizeof(char) * (len + 2)); /* "KEY=" */
+// 	if (!tmp)
+// 	{
+// 		free(key);
+// 		return(1);
+// 	}
+// 	ft_strcpy(tmp, key);
+// 	tmp[len] = '=';
+// 	tmp[len + 1] = '\0';
+// 	*env = add_new_line_in_env(tmp, *env);
+// 	free(tmp);	
+// 	return(0);
+// }
 
 // // check si la key existe deja dans la var d'env
 // // renvoie 0 n'existe pas (il faut la creer)
