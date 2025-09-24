@@ -180,14 +180,14 @@ int	main(int argc, char **argv, char **envp)
 		add_history(line);
 		process_line(line, &env);
 		if (get_global()->want_exit)
-	{
-		free(line);
-		cleanup_shell(env);
-		return (get_global()->exit_code);
-		free(line);
-	}
+		{
+			free(line);
+			cleanup_shell(env);
+			return (get_global()->exit_code);
+			free(line);
+		}
 
 	// cleanup_shell(env);
 	// return (get_global()->last_status);
-}
+	}
 }

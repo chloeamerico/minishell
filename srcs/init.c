@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/24 14:46:01 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/24 17:05:26 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,19 @@ static t_env	*create_node(char *envdeb)
 	if (!equal)
 	{
 		node->key = ft_strdup(envdeb);
+		if(!node->key)
+			return(free(node), NULL);
 		node->value = NULL;
 	}
 	else
 	{
 		len = equal - envdeb;
 		node->key = ft_substr(envdeb, 0, len);
+		if(!node->key)
+			return(free(node), NULL);
 		node->value = ft_strdup(equal + 1);
+		if(!node->value)
+			return(free(node->key), free(node), NULL);
 	}
 	node->next = NULL;
 	return (node);
@@ -97,7 +103,7 @@ t_env	*init_env_list(char **envp)
 	{
 		new = create_node(*envp);
 		if (!new)
-			return (NULL);
+			return (free_env(head), NULL);
 		if (!head)
 			head = new;
 		else

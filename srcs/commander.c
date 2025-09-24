@@ -39,6 +39,8 @@ static int add_token(t_token **dest, t_token *src)
 	if (!copy)
 		return (1);
 	copy->str = ft_strdup(src->str);
+	if(!copy->str)
+		return(free(copy), 1);
 	copy->type = src->type; // on garde le même type cmd wrd...
 	copy->next = NULL;
 	copy->prev = NULL;
