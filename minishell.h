@@ -80,11 +80,14 @@ typedef	struct s_pipeline
 
 typedef struct s_global
 {
-	int sig;          /* dernier signal reçu (ex: SIGINT) */
-	int last_status;  /* dernier code de sortie pour $?   */
-	pid_t child_pid;       /* pid de l'enfant en cours (0 si aucun) */
-	int   hd_interrupted;  /* flag: 1 si heredoc annulé par Ctrl-C */
+	int   sig;            /* dernier signal reçu (ex: SIGINT) */
+	int   last_status;    /* dernier code de sortie pour $?   */
+	pid_t child_pid;      /* pid de l'enfant en cours (0 si aucun) */
+	int   hd_interrupted; /* flag: 1 si heredoc annulé par Ctrl-C */
+	int   want_exit;      /* flag: builtin exit demandé         */
+	int   exit_code;      /* code de sortie demandé par builtin */
 }	t_global;
+
 
 
 /* ************************************************************************** */

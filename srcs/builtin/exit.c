@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/16 18:43:49 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/24 15:55:35 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,27 @@ int	ft_exit(char **args)
 
 	write(1, "exit\n", 5);
 	if (!args[1])
-		exit(0);
+	get_global()->want_exit = 1;
+	get_global()->exit_code = 0;
+	return (0);
+
 	if (!is_number(args[1]))
 	{
-		write(2, "exit: numeric argument required\n", 32);
-		exit(2);
+write(2, "exit: numeric argument required\n", 32);
+get_global()->want_exit = 1;
+get_global()->exit_code = 2;
+return (2);
 	}
 	if (args[2])
 	{
-		write(2, "exit: too many arguments\n", 26);
-		return (1);
+write(2, "exit: numeric argument required\n", 32);
+get_global()->want_exit = 1;
+get_global()->exit_code = 2;
+return (2);
 	}
-	code = ft_atoi(args[1]);
-	exit((unsigned char)code);
+code = ft_atoi(args[1]);
+get_global()->want_exit = 1;
+get_global()->exit_code = (unsigned char)code;
+return ((unsigned char)code);
 }
+
