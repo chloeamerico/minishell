@@ -208,39 +208,49 @@ static int	is_blank_line(const char *line)
 	return (line[i] == '\0');
 }
 
-/* Version simplifiée pour builtins dans le parent */
-static int	handle_single_builtin(t_cmd *cmd, t_env **env)
+static int  handle_single_builtin(t_cmd *cmd, t_env **env)
 {
-	char	**args;
-	char	**envp;
-	int		status;
+    char    **args;
+    char    **envp;
+    int     status;
+    int     need_env;
 
-	args = tokens_to_array(cmd->args);
-	envp = env_to_array(*env);
-	
-	if (!args || !envp)
-	{
-		if (args) free_tab(args);
-		if (envp) free_tab(envp);
-		return (1);
-	}
+    args = tokens_to_array(cmd->args);
+    envp = NULL;
+    if (!args)
+        return (1);
 
-	status = 0;
-	if (try_run_builtin(args, &envp, &status))
-	{
-		// Reconstruction de l'env après modifications
-		if (args[0] && (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "unset") || !ft_strcmp(args[0], "export")))
-		{
-			free_env(*env);
-			*env = init_env_list(envp);
-		}
-	}
+    /* on ne construit l'envp que si le builtin en a besoin */
+    need_env = 0;
+    if (args[0] && ( !ft_strcmp(args[0], "cd")
+                  || !ft_strcmp(args[0], "unset")
+                  || !ft_strcmp(args[0], "export")) )
+        need_env = 1;
+    if (need_env)
+        envp = env_to_array(*env);
 
-	free_tab(args);
-	free_tab(envp);
-	
-	get_global()->last_status = status;
-	return (status);
+    status = 0;
+    if (try_run_builtin(args, &envp, &status))
+    {
+        /* si l'env a pu être modifié, on le reconstruit */
+        if (args[0] && ( !ft_strcmp(args[0], "cd")
+                      || !ft_strcmp(args[0], "unset")
+                      || !ft_strcmp(args[0], "export")) )
+        {
+            if (envp)
+            {
+                free_env(*env);
+                *env = init_env_list(envp);
+            }
+        }
+    }
+	    if (args)
+        free_tab(args);
+    if (envp)
+        free_tab(envp);
+
+    get_global()->last_status = status;
+    return (status);
 }
 
 static int	is_single_builtin_cmd(t_cmd *cmd)
@@ -259,8 +269,14 @@ static int	is_single_builtin_cmd(t_cmd *cmd)
 	}
 
 	// Builtins qui ont besoin d'être dans le parent
-	result = (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "unset") || 
-			  !ft_strcmp(args[0], "exit") || !ft_strcmp(args[0], "export"));
+	// result = (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "unset") || 
+	// 		  !ft_strcmp(args[0], "exit") || !ft_strcmp(args[0], "export"));
+	result = ( !ft_strcmp(args[0], "cd")
+        || !ft_strcmp(args[0], "unset")
+        || !ft_strcmp(args[0], "exit")
+        || !ft_strcmp(args[0], "export")
+        || !ft_strcmp(args[0], "pwd")
+        || !ft_strcmp(args[0], "echo") );
 	
 	free_tab(args);
 	return (result);
