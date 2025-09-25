@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:55:55 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/15 17:41:34 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/25 14:38:58 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,6 @@ void	free_token(t_token *token)
 	}
 }
 
-//on libere les cmd
-void	free_commands(t_cmd *cmd)
-{
-	t_cmd	*tmp;
-
-	while(cmd)
-	{
-		tmp = cmd;
-		cmd = cmd->next;
-		free_token(tmp->args);
-		free_token(tmp->reds);
-		free(tmp);
-	}
-}
 
 //on libere struct env
 void	free_env(t_env *env)
@@ -53,6 +39,30 @@ void	free_env(t_env *env)
 		free(tmp->key);
 		free(tmp->value);
 		free(tmp);
+	}
+}
+
+/* libère la liste de commandes :
+   - ferme les fd valides
+   - libère args (t_token*) et reds (t_token*)
+   - libère le maillon t_cmd */
+void	free_cmd_list(t_cmd *cmds)
+{
+	t_cmd	*n;
+
+	while (cmds)
+	{
+		n = cmds->next;
+		if (cmds->input >= 0)
+			close(cmds->input);
+		if (cmds->output >= 0)
+			close(cmds->output);
+		if (cmds->args)
+			free_token(cmds->args);
+		if (cmds->reds)
+			free_token(cmds->reds);
+		free(cmds);
+		cmds = n;
 	}
 }
 

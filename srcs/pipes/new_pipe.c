@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/08/18 14:36:20 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/25 14:23:21 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	current_cmd = cmd_list;
 	
 	if(loop_pipe(&pipeline, cmd_index, current_cmd, pids, env))
-		return(1);
+		return(free(pids), 1);
 
 	exit_status = wait_children_pid(&pipeline, pids);
 	free(pids);

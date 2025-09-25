@@ -127,7 +127,6 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env);
 
 //FREE
 void	free_token(t_token *token);
-void	free_commands(t_cmd *cmd);
 void	free_env(t_env *env);
 
 //builtin

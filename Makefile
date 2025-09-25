@@ -33,7 +33,6 @@ SRCS =  init.c \
 	heredoc.c \
 	redirs.c \
 	signal.c \
-	extra.c \
 
 HEADER = minishell.h
 
