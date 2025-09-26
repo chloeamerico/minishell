@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 18:17:03 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 18:31:11 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,35 @@ add_new_line_in_env;
 update_env_with_new_key(arg, env);
 
 */
+
+static void	sort_env(char **env)
+{
+	int	i;
+	int	j;
+	int	len_env;
+	char	*tmp;
+	
+	len_env = 0;
+	while(env[len_env])
+		len_env++;
+	i = 0;
+	while(i < len_env - 1)
+	{
+		j = 0;
+		while (j < len_env - i - 1)
+		{
+			if (ft_strcmp(env[j], env[j + 1]) > 0)
+			{
+				tmp = env[j];
+				env[j] = env[j + 1];
+				env[j + 1] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
 
 char *find_key(char *arg)
 {
@@ -108,7 +137,10 @@ int	ft_export(char **args, char ***env)
 	if (!args || !args[0])
 		return (1);
 	if (!args[1] && (!ft_strcmp(args[0], "export")))		// si on ecrit juste "export", afficher la var d'env avec "declare -x" devant trie dans l'ordre
+	{
+		sort_env(*env);
 		print_export(*env);
+	}	
 	else
 	{
 		i = 1;
