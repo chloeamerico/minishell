@@ -128,8 +128,8 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env);
 //FREE
 void	free_token(t_token *token);
 void	free_env(t_env *env);
-void	free_pid(pid_t	*pid, int size);
 void	free_tab(char **tab);
+// void	free_pid(pid_t *pid, t_pipeline *pipeline);
 
 //builtin
 int	ft_cd(char **args, char ***envp);

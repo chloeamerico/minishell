@@ -340,7 +340,8 @@ static void	cleanup_shell(t_env *env)
 
 static void	handle_eof(t_env *env)
 {
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO) && isatty(STDERR_FILENO))
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	cleanup_shell(env);
 	exit(get_global()->last_status);
 }
@@ -376,8 +377,10 @@ int	main(int argc, char **argv, char **envp)
 
 	while (1)
 	{
-		line = readline("minishell$ ");
-		
+		if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO) || !isatty(STDERR_FILENO))
+			line = get_next_line(STDIN_FILENO);
+		else
+			line = readline("minishell$ ");
 		if (!line)
 		{
 			handle_eof(env);

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:55:55 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/26 14:54:53 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 15:46:45 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,3 +78,15 @@ void	free_tab(char **tab)
 	}
 	free(tab);
 }
+
+// void	free_pid(pid_t *pid, t_pipeline *pipeline)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (pid[i] < pipeline->nb_cmd)
+// 	{
+// 		free(pid[i]);
+// 		i++;
+// 	}
+// }
