@@ -61,76 +61,112 @@ static int	do_heredoc(t_token *lim, int *fd, t_env *env)
 	return (0);
 }
 
-int	apply_redirections(t_cmd *cmd, t_env *env)
+// int	apply_redirections(t_cmd *cmd, t_env *env)
+// {
+// 	t_token	*t;
+// 	int		fd_in;
+// 	int		fd_out;
+
+// 	fd_in = -1;
+// 	fd_out = -1;
+// 	t = cmd->reds;
+// 	while (t)
+// 	{
+// 		if (t->type == RINT && t->next && t->next->type == FD
+// 			&& open_in(t->next->str, &fd_in))
+// 			return (1);
+// 		if (t->type == ROUT && t->next && t->next->type == FD
+// 			&& open_out(t->next->str, &fd_out, 0))
+// 			return (1);
+// 		if (t->type == DROUT && t->next && t->next->type == FD
+// 			&& open_out(t->next->str, &fd_out, 1))
+// 			return (1);
+// 		if (t->type == DRIN && t->next && t->next->type == LIM
+// 			&& do_heredoc(t->next, &fd_in, env))
+// 			return (1);
+// 		t = t->next;
+// 	}
+// 	if (fd_in >= 0)
+// 	{
+// 		dup2(fd_in, 0);
+// 		close(fd_in);
+// 	}
+// 	if (fd_out >= 0)
+// 	{
+// 		dup2(fd_out, 1);
+// 		close(fd_out);
+// 	}
+// 	return (0);
+// }
+
+int apply_redirections(t_cmd *cmd, t_env *env)
 {
-	t_token	*t;
-	int		fd_in;
-	int		fd_out;
+    t_token *t;
+    int     fd_in;
+    int     fd_out;
 
-	fd_in = -1;
-	fd_out = -1;
-	t = cmd->reds;
-	while (t)
-	{
-		if (t->type == RINT && t->next && t->next->type == FD
-			&& open_in(t->next->str, &fd_in))
-			return (1);
-		if (t->type == ROUT && t->next && t->next->type == FD
-			&& open_out(t->next->str, &fd_out, 0))
-			return (1);
-		if (t->type == DROUT && t->next && t->next->type == FD
-			&& open_out(t->next->str, &fd_out, 1))
-			return (1);
-		if (t->type == DRIN && t->next && t->next->type == LIM
-			&& do_heredoc(t->next, &fd_in, env))
-			return (1);
-		t = t->next;
-	}
-	if (fd_in >= 0)
-	{
-		dup2(fd_in, 0);
-		close(fd_in);
-	}
-	if (fd_out >= 0)
-	{
-		dup2(fd_out, 1);
-		close(fd_out);
-	}
-	return (0);
-}
-
-int	apply_redirs(t_cmd *cmd, t_env *env)
-{
-	t_token	*t;
-	int	infd;
-	int	outfd;
-
-	infd = -1;
-	outfd = -1;
-	t = cmd->reds;
-	while (t)
-	{
-		if (t->type == RINT && t->next && t->next->type == FD)
-			if (open_in(t->next->str, &infd))
-				return (perror("infile"), -1);
-		if (t->type == ROUT && t->next && t->next->type == FD)
-			if (open_out(t->next->str, &outfd, 0))
-				return (perror("outfile"), -1);
-		if (t->type == DROUT && t->next && t->next->type == FD)
-			if (open_out(t->next->str, &outfd, 1))
-				return (perror("outfile"), -1);
-		if (t->type == DRIN)
-			if (do_heredoc(t->next, &infd, env))
-				return (-1);
-		t = t->next;
-	}
-	if (infd >= 0 && dup2(infd, STDIN_FILENO) < 0)
-		return (perror("dup2 in"), -1);
-	if (outfd >= 0 && dup2(outfd, STDOUT_FILENO) < 0)
-		return (perror("dup2 out"), -1);
-	if (infd >= 0)
-		close(infd);
-	if (outfd >= 0)
-		close(outfd);
-	return (0);
+    fd_in = -1;
+    fd_out = -1;
+    t = cmd->reds;
+    
+    while (t)
+    {
+        if (t->type == RINT && t->next && t->next->type == FD)
+        {
+            if (open_in(t->next->str, &fd_in))
+            {
+                perror(t->next->str);
+                return (1);
+            }
+        }
+        else if (t->type == ROUT && t->next && t->next->type == FD)
+        {
+            if (open_out(t->next->str, &fd_out, 0))
+            {
+                perror(t->next->str);
+                return (1);
+            }
+        }
+        else if (t->type == DROUT && t->next && t->next->type == FD)
+        {
+            if (open_out(t->next->str, &fd_out, 1))
+            {
+                perror(t->next->str);
+                return (1);
+            }
+        }
+        else if (t->type == DRIN && t->next && t->next->type == LIM)
+        {
+            if (do_heredoc(t->next, &fd_in, env))
+            {
+                if (get_global()->hd_interrupted)
+                    get_global()->last_status = 130;
+                return (1);
+            }
+        }
+        t = t->next;
+    }
+    
+    if (fd_in >= 0)
+    {
+        if (dup2(fd_in, STDIN_FILENO) < 0)
+        {
+            perror("dup2");
+            close(fd_in);
+            if (fd_out >= 0) close(fd_out);
+            return (1);
+        }
+        close(fd_in);
+    }
+    if (fd_out >= 0)
+    {
+        if (dup2(fd_out, STDOUT_FILENO) < 0)
+        {
+            perror("dup2");
+            close(fd_out);
+            return (1);
+        }
+        close(fd_out);
+    }
+    return (0);
 }

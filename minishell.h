@@ -156,7 +156,8 @@ t_global *get_global(void);
 int	 ms_heredoc(char *delim, int expand, t_env *env);
 int	 apply_redirections(t_cmd *cmd, t_env *env);
 int	mark_limiter_if_quoted(t_token *tok);
-int	apply_redirs(t_cmd *cmd, t_env *env);
+int apply_redirections(t_cmd *cmd, t_env *env);
+// static char	*hd_expand(char *s, t_env *env, int last);
 
 //main
 char    **split_line(char *line);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/26 11:29:30 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 14:28:18 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	char	**cmd_arg;
 	int		status;
 
-	if (apply_redirs(cmd, env) < 0)
+	if (apply_redirections(cmd, env) < 0)
 		exit(1);
 	envp = env_to_array(env);
 	if (!envp)
