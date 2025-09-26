@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/26 11:29:30 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 12:26:10 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,53 +105,6 @@ static void	cmd_not_found(char **cmd_arg, char *cmd_name)
 	exit(127);
 }
 
-// int	exec_simple_cmd(t_cmd *cmd, t_env *env)
-// {
-// 	char **envp;
-// 	char	*cmd_path;
-// 	char	**cmd_arg;
-
-// 	envp = env_to_array(env);
-// 	if(!cmd)
-// 		exit(1);
-// 	cmd_arg = tokens_to_array(cmd->args);
-// 	if (!cmd_arg)
-// 	{
-// 		free_tab(envp);
-// 		exit (1);
-// 	}
-// 	if (!cmd_arg[0])
-// 	{
-// 		ft_printf("Error : invalid command");
-// 		free_tab(cmd_arg);
-// 		free_tab(envp);
-// 		exit (1);
-// 	}
-// 	// if (is_builtins(cmd_arg[0]))		//si c'est un builtin
-// 	// {
-// 	// 	exec_builtins();				//on fait les execute comme des builtins
-// 	// 	free_tab(cmd_arg);
-// 	// 	free_tab(envp);
-// 	// 	exit(0);
-// 	// }
-// 	int status;
-// 	if (try_run_builtin(cmd_arg, &envp, &status))   /* <-- &env, pas &envp */
-// 	{
-// 		free_tab(cmd_arg);
-// 		free_tab(envp);
-// 		exit(status);
-// 	}
-// 	cmd_path = find_cmd_path(cmd_arg[0], envp);
-// 	if (!cmd_path)
-// 		cmd_not_found(cmd_arg, cmd_arg[0]);
-// 	execve(cmd_path, cmd_arg, envp);
-// 	perror("execve failed");
-// 	free_tab(cmd_arg);
-// 	free_tab(envp);
-// 	free(cmd_path);
-// 	exit(1);
-// }
-
 int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 {
 	char	**envp;
@@ -183,6 +136,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	{
 		free_tab(cmd_arg);
 		free_tab(envp);
+		free_env(env);
 		exit(status);
 	}
 	cmd_path = find_cmd_path(cmd_arg[0], envp);
@@ -194,6 +148,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		cmd_not_found(cmd_arg, cmd_arg[0]); 	//exit a la fin
 		return(1);
 	}
+	// free_env(env);
 	execve(cmd_path, cmd_arg, envp);
 	perror("execve failed");
 	free_tab(cmd_arg);
