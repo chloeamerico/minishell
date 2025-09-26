@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/25 20:21:39 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:05:54 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
 		return (free(pids), 1);
 
 	exit_status = wait_children_pid(&pipeline, pids);
-	// free(pids);
+	free(pids);
 	return (exit_status);
 }
 
@@ -210,17 +210,19 @@ int loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pi
 		}
 		else if (pids[cmd_index] == 0) // on est dans le processus ENFANT
 		{
-			child_process(cmd_index, pipeline, current_cmd, env);
+			child_process(cmd_index, pipeline, current_cmd, env, pids);
 			// free(pids);
 		}
 		else // on est dans le processus PARENT
 		{
 			parent_process(pipeline, cmd_index);
-			// free(pids);
 		}
 		current_cmd = current_cmd->next;
 		cmd_index++;
 	}
+	// if (pids)
+	// 	free(pids);
+	
 	return (0);
 }
 

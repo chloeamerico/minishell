@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/26 14:59:29 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 16:38:13 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 
 //on LIT depuis le prev_pipe;
 //on ECRIT dans le current_pipe;
-int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
+int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
 {
+	free(pids);
 	if (cmd_index > 0)		//on configure STDIN si on est pas a la 1 ere cmd
 	{
 		if (pipeline->prev_pipe == 0)
