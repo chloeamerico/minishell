@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/02 13:31:45 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:38:30 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ static char	*build_expand(char *str, t_env *env, int exit_status)
 			var_name = extract_var(&str[i], &i);		//on recup VAR dans $VAR + on avance i
 			value = get_env_value(var_name, env, exit_status);	//on cherche sa value dans l'env
 			new_str = ft_strjoin_free(new_str, value);
+			free(var_name);
 			free(value);
 		}
 		else

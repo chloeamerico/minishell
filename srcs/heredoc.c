@@ -31,8 +31,10 @@ static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
             return (1); // Interrompu par signal
 		l = readline("> ");
 		if (!l)
+        {
+            printf("heredoc delimited by end-of-file (wanted `%s')\n", delim);
 			return (0);
-			            
+        }	            
         if (get_global()->hd_interrupted) // Vérifier après readline aussi
         {
             free(l);
