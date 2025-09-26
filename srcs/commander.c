@@ -39,6 +39,7 @@ static int add_token(t_token **dest, t_token *src)
 	if (!copy)
 		return (1);
 	copy->str = ft_strdup(src->str);
+	// free(src->str);
 	if(!copy->str)
 		return(free(copy), 1);
 	copy->type = src->type; // on garde le même type cmd wrd...
@@ -54,6 +55,8 @@ static int add_token(t_token **dest, t_token *src)
 		tmp->next = copy;
 		copy->prev = tmp;
 	}
+	// free_token(copy);
+	// free(copy->str);
 	return (0);
 }
 
@@ -84,12 +87,12 @@ static int fill_cmds(t_cmd **head, t_token *tkn)
 		{
 			curr->next = create_cmd(); // nv cmd
 			if (!curr->next)
-				return (1);
+				return (free_cmd_list(*head), 1);
 			curr->next->prev = curr;
 			curr = curr->next;
 		}
 		else if (assign_token(curr, tkn)) // tri
-			return (1);
+			return (free_cmd_list(*head), 1);
 		tkn = tkn->next;
 	}
 	return (0);
@@ -104,6 +107,6 @@ t_cmd *parse_commands(t_token *tokens)
 	if (!tokens)
 		return (NULL);
 	if (fill_cmds(&cmds, tokens))
-		return (NULL);
+		return (free_cmd_list(cmds) ,NULL);
 	return (cmds); // retourne la cmd
 }

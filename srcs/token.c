@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 15:10:31 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/04 12:01:29 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/25 15:07:09 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ static t_token	*create_token(char *str, t_type prev_type)
 	if (!new)
 		return (NULL);
 	new->str = ft_strdup(str); // copie str split ds tkn
+	if(!new->str)
+		return(free(new), NULL);
 	new->next = NULL;
 	new->prev = NULL;
 	new->type = get_token_type(str); // recup le type du tkn
@@ -114,7 +116,7 @@ t_token	*tokenize(char **split)
 	{
 		new = create_token(*split, prev_type);
 		if (!new)
-			return (NULL);
+			return (free_token(head), NULL);
 		if (prev_type == DRIN && new->type == LIM)
 		{
 			if (mark_limiter_if_quoted(new))

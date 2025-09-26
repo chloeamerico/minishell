@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/03 10:27:10 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/25 15:05:01 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ int	split_input(char ***array, char *line, int i)
 			return (1);
 		*array = word_to_array(*array, word);
 		if (!*array)
-			return (1);
+			return (free(word), 1);
 	}
 	return (0);
 }

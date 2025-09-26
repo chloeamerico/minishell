@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:55:55 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/25 14:38:58 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/25 18:33:53 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,3 +66,15 @@ void	free_cmd_list(t_cmd *cmds)
 	}
 }
 
+void	free_tab(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
+}

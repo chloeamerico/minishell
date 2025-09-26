@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/15 14:17:22 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/25 20:28:09 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,8 +162,10 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	if (apply_redirs(cmd, env) < 0)
 		exit(1);
 	envp = env_to_array(env);
-	if (!cmd)
-		exit(1);
+	if (!envp)
+		return(1);
+	// if (!cmd)
+	// 	exit(1);
 	cmd_arg = tokens_to_array(cmd->args);
 	if (!cmd_arg)
 	{
@@ -185,7 +187,12 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	}
 	cmd_path = find_cmd_path(cmd_arg[0], envp);
 	if (!cmd_path)
-		cmd_not_found(cmd_arg, cmd_arg[0]);
+	{
+		free_cmd_list(cmd);
+		cmd_not_found(cmd_arg, cmd_arg[0]); 	//exit a la fin
+		free_tab(envp);
+		return(1);
+	}
 	execve(cmd_path, cmd_arg, envp);
 	perror("execve failed");
 	free_tab(cmd_arg);

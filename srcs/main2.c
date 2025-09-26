@@ -289,6 +289,7 @@ static void	process_line(char *line, t_env **env)
 	t_cmd		*cmds;
 	int			exit_status;
 
+
 	split = split_minishell(line);
 	if (!split)
 		return ;
@@ -314,7 +315,10 @@ static void	process_line(char *line, t_env **env)
 	cmds = parse_commands(tokens);
 	free_token(tokens);
 	if (!cmds)
-		return ;
+	{
+		free_cmd_list(cmds);
+		return;
+	}
 
 	if (is_single_builtin_cmd(cmds))
 	{
@@ -329,9 +333,17 @@ static void	process_line(char *line, t_env **env)
 	free_cmd_list(cmds);
 }
 
-static void	handle_eof(void)
+static void	cleanup_shell(t_env *env)
+{
+	if(env)
+		free_env(env);
+	rl_clear_history();
+}
+
+static void	handle_eof(t_env *env)
 {
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	cleanup_shell(env);
 	exit(get_global()->last_status);
 }
 
@@ -353,12 +365,6 @@ static int	init_shell(char **envp, t_env **env)
 	return (0);
 }
 
-static void	cleanup_shell(t_env *env)
-{
-	free_env(env);
-	rl_clear_history();
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
@@ -376,8 +382,8 @@ int	main(int argc, char **argv, char **envp)
 		
 		if (!line)
 		{
-			handle_eof();
-			break ;
+			handle_eof(env);
+			break;
 		}
 
 		if (is_blank_line(line))
@@ -393,10 +399,9 @@ int	main(int argc, char **argv, char **envp)
 			free(line);
 			cleanup_shell(env);
 			return (get_global()->exit_code);
-			free(line);
 		}
-
-	// cleanup_shell(env);
-	// return (get_global()->last_status);
+		free(line);
 	}
+	cleanup_shell(env);
+	return (get_global()->last_status);
 }
