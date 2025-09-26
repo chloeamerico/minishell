@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/26 14:30:47 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 14:59:29 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_tab(cmd_arg);
 		free_tab(envp);
 		free_env(env);
+		free_cmd_list(cmd);
 		exit(status);
 	}
 	cmd_path = find_cmd_path(cmd_arg[0], envp);

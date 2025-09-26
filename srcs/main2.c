@@ -327,7 +327,7 @@ static void	process_line(char *line, t_env **env)
 		exit_status = exec_pipeline(cmds, *env);
 		get_global()->last_status = exit_status;
 	}
-
+	// printf("printf debug : cmd\n");
 	free_cmd_list(cmds);
 }
 
