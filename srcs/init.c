@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/24 17:11:21 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/26 11:21:54 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,12 +131,14 @@ static char *build_prompt(void)
 
     // taille nécessaire pour "<cwd>$ " + '\0'
     int need = snprintf(NULL, 0, "%s$ ", cwd);
-    if (need < 0) {
+    if (need < 0) 
+	{
         free(cwd);
         return ft_strdup("minishell$ ");
     }
     char *prompt = malloc((size_t)need + 1);
-    if (!prompt) {
+    if (!prompt)
+	{
         free(cwd);
         return ft_strdup("minishell$ ");
     }

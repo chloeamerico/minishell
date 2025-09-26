@@ -293,8 +293,6 @@ static void	process_line(char *line, t_env **env)
 	split = split_minishell(line);
 	if (!split)
 		return ;
-
-	// On supprime l'ancien appel à export() ici car c'est maintenant géré par les builtins
 	
 	tokens = tokenize(split);
 	free_split(split);
