@@ -95,18 +95,19 @@ static int fill_cmds(t_cmd **head, t_token *tkn)
 			return (free_cmd_list(*head), 1);
 		tkn = tkn->next;
 	}
+	// free_token(tkn);
 	return (0);
 }
 
 // Transforme la liste de tokens en liste de commandes prêtes à exécuter
 t_cmd *parse_commands(t_token *tokens)
 {
-	t_cmd*cmds;
+	t_cmd *cmds;
 
 	cmds = NULL;
 	if (!tokens)
 		return (NULL);
 	if (fill_cmds(&cmds, tokens))
-		return (free_cmd_list(cmds) ,NULL);
+		return (free_cmd_list(cmds), NULL);
 	return (cmds); // retourne la cmd
 }
