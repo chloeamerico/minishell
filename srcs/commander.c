@@ -72,32 +72,82 @@ static int assign_token(t_cmd *cmd, t_token *tkn)
 	return (0);
 }
 
-// Sépare les commandes à chaque PIPE et distribue les tokens dans args/reds
+// // Sépare les commandes à chaque PIPE et distribue les tokens dans args/reds
+// static int fill_cmds(t_cmd **head, t_token *tkn)
+// {
+// 	t_cmd *curr;
+
+// 	curr = create_cmd(); //prem cmd
+// 	if (!curr)
+// 		return (1);
+// 	*head = curr;
+// 	while (tkn)
+// 	{
+// 		if (tkn->type == PIPE) // nv pipe = nv cmd
+// 		{
+// 			curr->next = create_cmd(); // nv cmd
+// 			if (!curr->next)
+// 				return (free_cmd_list(*head), 1);
+// 			curr->next->prev = curr;
+// 			curr = curr->next;
+// 		}
+// 		else if (assign_token(curr, tkn)) // tri
+// 			return (free_cmd_list(*head), 1);
+// 		tkn = tkn->next;
+// 	}
+// 	// free_token(tkn);
+// 	return (0);
+// }
+
+void	free_commands(t_cmd *cmd)
+{
+	t_cmd	*next;
+
+	while (cmd)
+	{
+		next = cmd->next;
+		if (cmd->args)
+			free_token(cmd->args);
+		if (cmd->reds)
+			free_token(cmd->reds);
+		free(cmd);
+		cmd = next;
+	}
+}
+
+static int clean_and_fail(t_cmd **head)
+{
+	if (head && *head)
+		free_commands(*head);
+	*head = NULL;
+	return (1);
+}
+
 static int fill_cmds(t_cmd **head, t_token *tkn)
 {
 	t_cmd *curr;
 
-	curr = create_cmd(); //prem cmd
+	curr = create_cmd();
 	if (!curr)
 		return (1);
 	*head = curr;
 	while (tkn)
 	{
-		if (tkn->type == PIPE) // nv pipe = nv cmd
+		if (tkn->type == PIPE)
 		{
-			curr->next = create_cmd(); // nv cmd
+			curr->next = create_cmd();
 			if (!curr->next)
-				return (free_cmd_list(*head), 1);
+				return (clean_and_fail(head));
 			curr->next->prev = curr;
 			curr = curr->next;
 		}
-		else if (assign_token(curr, tkn)) // tri
-			return (free_cmd_list(*head), 1);
+		else if (assign_token(curr, tkn))
+			return (clean_and_fail(head));   // *** nouveau ***
 		tkn = tkn->next;
 	}
-	// free_token(tkn);
 	return (0);
 }
+
 
 // Transforme la liste de tokens en liste de commandes prêtes à exécuter
 t_cmd *parse_commands(t_token *tokens)
