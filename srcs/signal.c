@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/09/29 11:46:11 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 14:06:06 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,21 +41,23 @@ void	setup_signals_child(void)
 	signal(SIGQUIT, SIG_DFL);
 }
 
-static void	handler_hd(int s)
-{
-	(void)s;
-	get_global()->last_status = 130;
-	get_global()->hd_interrupted = 1;
-	_exit(130);
-}
+// static void	handler_hd(int s)
+// {
+// 	(void)s;
+// 	get_global()->last_status = 130;
+// 	get_global()->hd_interrupted = 1;
+// 	_exit(130);
+// }
 
 void	setup_signals_hd(void)
 {
-	struct sigaction sa;
+// 	struct sigaction sa;
 
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sa.sa_handler = handler_hd;
-	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
+// 	sigemptyset(&sa.sa_mask);
+// 	sa.sa_flags = 0;
+// 	sa.sa_handler = handler_hd;
+// 	sigaction(SIGINT, &sa, NULL);
+// 	signal(SIGQUIT, SIG_IGN);
+signal(SIGINT, SIG_DFL);
+    signal(SIGQUIT, SIG_IGN);
 }

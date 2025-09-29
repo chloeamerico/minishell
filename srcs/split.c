@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 14:25:34 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/29 15:52:28 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static char	*get_word(char *line, int start, int end)
 		// 	start++;
 		// }
 		// else
-			word[j++] = line[start++]; // on copie le carac ds le mot
+		word[j++] = line[start++]; // on copie le carac ds le mot
 	}
 	word[j] = '\0';
 	return (word);
