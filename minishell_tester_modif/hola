@@ -14,10 +14,7 @@
 
 a
 autoload_lists.sh
-<<<<<<< HEAD
-=======
 bash_outfiles
->>>>>>> 220c8346463db986b46e3b470c767998709b5898
 bash.supp
 bonus_easy.tests
 bonus_hard.tests
@@ -29,11 +26,6 @@ common_redirects.tests
 common_syntax.tests
 common_wildcards
 echo
-<<<<<<< HEAD
-hello
-
-=======
->>>>>>> 220c8346463db986b46e3b470c767998709b5898
 hola
 hola1
 hola2
@@ -53,17 +45,11 @@ lst_common
 lst_lapinou
 lst_wildcat
 manual_tests
-<<<<<<< HEAD
-minishell
-minitester.sh
-outfile01
-=======
 mini_outfiles
 minishell
 minitester.sh
 outfile01
 outfiles
->>>>>>> 220c8346463db986b46e3b470c767998709b5898
 pwd
 pwd
 
