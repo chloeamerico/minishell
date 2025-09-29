@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:49:40 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 11:09:13 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 16:12:40 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,25 +77,36 @@ int	wait_children_pid(t_pipeline *pipeline, pid_t *pid)
 	int	i;
 	int	exit_status;
 	int	last_exit_status;
+	void (*old_sigquit)(int);
 
 	i = 0;
 	last_exit_status = 0;
+	
+	// Restaurer SIGQUIT pendant l'attente des enfants
+	old_sigquit = signal(SIGQUIT, SIG_DFL);
+	
 	while(i < pipeline->nb_cmd)
 	{
 		if(waitpid(pid[i], &exit_status, 0) == -1)
 			perror("waitpid");
-		else					//on recup le code de sortie de la derniere cmd
+		else
 		{
 			if (i == pipeline->nb_cmd - 1)
 			{
-				if(WIFEXITED(exit_status))		//si tout s'est fini normalemt
-					last_exit_status = WEXITSTATUS(exit_status);		//auel est le code de retour
-				else if (WIFSIGNALED(exit_status))		//est ce qu'il a ete tue par un signal (ex: ctl + C)
-					last_exit_status = 128 + WTERMSIG(exit_status);
+				if(WIFEXITED(exit_status))
+					last_exit_status = WEXITSTATUS(exit_status);
+				else if (WIFSIGNALED(exit_status))
+				{
+					int sig = WTERMSIG(exit_status);
+					last_exit_status = 128 + sig;
+					if (sig == SIGQUIT)
+						write(STDERR_FILENO, "Quit (core dumped)\n", 19);
+				}
 			}
 		}
 		i++;
 	}
+	signal(SIGQUIT, old_sigquit);
 	get_global()->last_status = last_exit_status;
 	get_global()->child_pid = 0;    
 	return (last_exit_status);

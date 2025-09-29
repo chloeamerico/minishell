@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/09/29 14:06:06 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 16:00:41 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,34 @@ static void sigint_interactive(int sig)
 	rl_redisplay();
 }
 
+// void	setup_signals_interactive(void)
+// {
+// 	struct sigaction sa;
+
+// 	sigemptyset(&sa.sa_mask);
+// 	sa.sa_flags = SA_RESTART;
+// 	sa.sa_handler = sigint_interactive;
+// 	sigaction(SIGINT, &sa, NULL);
+// 	signal(SIGQUIT, SIG_IGN);
+// }
+
 void	setup_signals_interactive(void)
 {
-	struct sigaction sa;
+	struct sigaction sa_int;
+	struct sigaction sa_quit;
 
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = sigint_interactive;
-	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
+	// SIGINT
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = SA_RESTART;
+	sa_int.sa_handler = sigint_interactive;
+	sigaction(SIGINT, &sa_int, NULL);
+	
+	// SIGQUIT - ne pas ignorer, juste ne rien faire dans le parent
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	sa_quit.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa_quit, NULL);
 }
-
 
 void	setup_signals_child(void)
 {
