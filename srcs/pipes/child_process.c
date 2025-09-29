@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 11:43:55 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 14:18:00 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,7 +320,6 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 	}
 	setup_signals_child();
 	get_global()->child_pid = 0;
-	// apply_redirections sera fait dans exec_simple_cmd
 	close_all_pipes(pipeline);
 	exec_simple_cmd(cmd, env);
 	return(0);
