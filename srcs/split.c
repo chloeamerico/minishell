@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/25 15:05:01 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/29 12:08:14 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,10 @@ int	check_close_quotes(char *line)
 			while(line[i] && line[i] != 39)
 				i++;
 			if (!line[i])
+			{
+				ft_putendl_fd("Syntax error: unclosed quote", 2);
 				return (1);
+			}
 			else
 				i++;
 		}
@@ -128,7 +131,10 @@ int	check_close_quotes(char *line)
 			while(line[i] && line[i] != 34)
 				i++;
 			if (!line[i])
+			{
+				ft_putendl_fd("Syntax error: unclosed quote", 2);
 				return (1);
+			}
 			else
 				i++;
 		}
