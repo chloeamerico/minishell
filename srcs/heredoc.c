@@ -118,8 +118,8 @@ int ms_heredoc(char *delim, int expand, t_env *env)
     {
         get_global()->hd_interrupted = 1;
         get_global()->last_status = 130;
-        close(p[0]);
         write(STDOUT_FILENO, "\n", 1); 
+        close(p[0]);
         return -1;                 
     }
 }
