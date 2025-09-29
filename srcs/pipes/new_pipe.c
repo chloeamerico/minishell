@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   new_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 16:51:23 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 18:25:32 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,7 +302,6 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
 	if (!cmd_list)
 		return (1);
 
-	// ✅ FIX: Retourner directement la valeur au lieu de if/else
 	if (!cmd_list->next)
 		return (one_cmd_without_pipe(cmd_list, env));
 	
@@ -429,9 +428,8 @@ int loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pi
 		}
 		else
 		{
-			// Donner le contrôle du terminal au dernier enfant du pipeline
-			if (!current_cmd->next)
-				tcsetpgrp(STDIN_FILENO, pids[cmd_index]);
+			// if (!current_cmd->next)
+			// 	tcsetpgrp(STDIN_FILENO, pids[cmd_index]);
 			
 			parent_process(pipeline, cmd_index);
 		}

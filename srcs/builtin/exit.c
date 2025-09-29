@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 16:52:35 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/29 18:27:03 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int	is_number(char *s)
 int	ft_exit(char **args)
 {
 	int	code;
-	int	fd_tty;
+	int	fd_tty;		 //a remettre quand on remet le tty
 
 	fd_tty = open("/dev/tty", O_RDWR);
 	if (fd_tty)
