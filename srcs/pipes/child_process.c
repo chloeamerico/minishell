@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 11:43:55 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 15:40:48 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -402,6 +402,7 @@ static int	print_cmd_error(char *cmd, char **envp)
 		}
 		if (access(cmd, X_OK) != 0)
 		{
+			// printf("test2\n");
 			fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
 			return (126);
 		}
@@ -449,10 +450,11 @@ static int	print_cmd_error(char *cmd, char **envp)
 	
 	if (found_but_no_exec)
 	{
+		// printf("test1\n");
 		fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
 		return (126);
 	}
-	
+	// printf("test cmd not found\n");
 	fprintf(stderr, "minishell: %s: command not found\n", cmd);
 	return (127);
 }
@@ -513,7 +515,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_cmd_list(cmd);
 		exit(127);
 	}
-	
+	// printf("test\n");
 	execve(cmd_path, cmd_arg, envp);
 	
 	perror("execve failed");
