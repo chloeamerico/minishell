@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 16:22:51 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/29 16:51:23 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,116 +320,6 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
 	free(pids);
 	return (exit_status);
 }
-
-// int one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
-// {
-// 	pid_t pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		exec_simple_cmd(cmd_list, env);
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		int status;
-// 		waitpid(pid, &status, 0);
-// 		if (WIFEXITED(status))
-// 			return (WEXITSTATUS(status));
-// 		else if (WIFSIGNALED(status))
-// 			return (128 + WTERMSIG(status));
-// 		return (1);
-// 	}
-// 	else
-// 	{
-// 		perror("fork");
-// 		return (1);
-// 	}
-// 	return (0);
-// }
-
-
-
-
-// int one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
-// {
-// 	pid_t pid;
-// 	int status;
-// 	void (*old_sigquit)(int);
-	
-// 	// DEBUG - À ENLEVER APRÈS
-// 	fprintf(stderr, "Parent PID=%d, PGID=%d\n", getpid(), getpgid(0));
-	
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		// DEBUG - À ENLEVER APRÈS
-// 		fprintf(stderr, "Child PID=%d, PGID=%d\n", getpid(), getpgid(0));
-// 		exec_simple_cmd(cmd_list, env);
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		old_sigquit = signal(SIGQUIT, SIG_DFL);
-		
-// 		waitpid(pid, &status, 0);
-// 		signal(SIGQUIT, old_sigquit);
-		
-// 		// DEBUG - À ENLEVER APRÈS
-// 		if (WIFSIGNALED(status))
-// 			fprintf(stderr, "Child killed by signal %d\n", WTERMSIG(status));
-		
-// 		if (WIFEXITED(status))
-// 			return (WEXITSTATUS(status));
-// 		else if (WIFSIGNALED(status))
-// 		{
-// 			int sig = WTERMSIG(status);
-// 			if (sig == SIGQUIT)
-// 				write(STDERR_FILENO, "Quit (core dumped)\n", 19);
-// 			return (128 + sig);
-// 		}
-// 		return (1);
-// 	}
-// 	else
-// 	{
-// 		perror("fork");
-// 		return (1);
-// 	}
-// 	return (0);
-// }
-
-// int one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
-// {
-// 	pid_t pid;
-// 	int status;
-	
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		// L'enfant restaure les signaux par défaut
-// 		exec_simple_cmd(cmd_list, env);
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		// Le parent GARDE l'ignore de SIGQUIT
-// 		// Mais attend juste l'enfant
-// 		waitpid(pid, &status, 0);
-		
-// 		if (WIFEXITED(status))
-// 			return (WEXITSTATUS(status));
-// 		else if (WIFSIGNALED(status))
-// 		{
-// 			int sig = WTERMSIG(status);
-// 			if (sig == SIGQUIT)
-// 				write(STDERR_FILENO, "Quit (core dumped)\n", 19);
-// 			return (128 + sig);
-// 		}
-// 		return (1);
-// 	}
-// 	else
-// 	{
-// 		perror("fork");
-// 		return (1);
-// 	}
-// 	return (0);
-// }
 
 int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 {

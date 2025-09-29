@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:24 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 15:52:33 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/29 16:55:16 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	ft_echo(char **args)
 
 	n_flag = 0;
 	i = 1;
-	if (args[i] && is_n(args[i]))
+	while (args[i] && is_n(args[i]))
 	{
 		n_flag = 1;
 		i++;
