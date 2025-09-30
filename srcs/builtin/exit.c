@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/30 17:15:01 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/30 17:16:46 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,44 @@ static int	is_number(char *s)
 // int	ft_exit(char **args)
 // {
 // 	int	code;
+// 	int	fd_tty;
+
+// 	fd_tty = open("/dev/tty", O_RDWR);
+// 	if (fd_tty)
+// 	{
+// 		write(fd_tty, "exit\n", 5);
+// 		close(fd_tty);
+// 	}
+// 	if (!args[1])
+// 	get_global()->want_exit = 1;
+// 	get_global()->exit_code = 0;
+// 	return (0);
+
+// 	if (!is_number(args[1]))
+// 	{
+// write(2, "exit: numeric argument required\n", 32);
+// get_global()->want_exit = 1;
+// get_global()->exit_code = 2;
+// return (2);
+// 	}
+// 	if (args[2])
+// 	{
+// write(2, "exit: numeric argument required\n", 32);
+// get_global()->want_exit = 1;
+// get_global()->exit_code = 2;
+// return (2);
+// 	}
+// code = ft_atoi(args[1]);
+// get_global()->want_exit = 1;
+// get_global()->exit_code = (unsigned char)code;
+// return ((unsigned char)code);
+// }
+
+// SANS TTY
+// int	ft_exit(char **args)
+// {
+// 	int	code;
+// 	// int	fd_tty;		 //a remettre quand on remet le tty
 
 // 	write(1, "exit\n", 5);
 // 	if (!args[1])

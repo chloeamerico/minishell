@@ -244,7 +244,7 @@ static int  handle_single_builtin(t_cmd *cmd, t_env **env)
             }
         }
     }
-	    if (args)
+	if (args)
         free_tab(args);
     if (envp)
         free_tab(envp);
