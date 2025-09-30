@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 18:10:34 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/09/30 16:30:26 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,17 +67,45 @@ static int	is_number(char *s)
 // return ((unsigned char)code);
 // }
 
+// int	ft_exit(char **args)
+// {
+// 	int	code;
+
+// 	write(1, "exit\n", 5);
+// 	if (!args[1])
+// 		exit(0);
+// 	if (!is_number(args[1]))
+// 	{
+// 		write(2, "exit: numeric argument required\n", 32);
+// 		exit(2);
+// 	}
+// 	if (args[2])
+// 	{
+// 		write(2, "exit: too many arguments\n", 26);
+// 		return (1);
+// 	}
+// 	code = ft_atoi(args[1]);
+// 	exit((unsigned char)code);
+// }
+
+
 int	ft_exit(char **args)
 {
 	int	code;
 
 	write(1, "exit\n", 5);
 	if (!args[1])
-		exit(0);
+	{
+		get_global()->want_exit = 1;
+		get_global()->exit_code = 0;
+		return (0);
+	}
 	if (!is_number(args[1]))
 	{
 		write(2, "exit: numeric argument required\n", 32);
-		exit(2);
+		get_global()->want_exit = 1;
+		get_global()->exit_code = 2;
+		return (2);
 	}
 	if (args[2])
 	{
@@ -85,5 +113,7 @@ int	ft_exit(char **args)
 		return (1);
 	}
 	code = ft_atoi(args[1]);
-	exit((unsigned char)code);
+	get_global()->want_exit = 1;
+	get_global()->exit_code = (unsigned char)code;
+	return ((unsigned char)code);
 }
