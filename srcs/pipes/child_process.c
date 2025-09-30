@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 16:05:50 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/30 15:17:55 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,12 +198,14 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_tab(envp);
 		exit(1);
 	}
-	if (!cmd_arg[0])
+	if (!cmd_arg[0] || !cmd_arg[0][0])
 	{
-		ft_printf("Error : invalid command\n");
+		fprintf(stderr, "minishell: command not found\n");
 		free_tab(cmd_arg);
 		free_tab(envp);
-		exit(1);
+		free_env(env);
+		free_cmd_list(cmd);
+		exit(127);
 	}
 	
 	if (try_run_builtin(cmd_arg, &envp, &status))
