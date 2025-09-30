@@ -62,7 +62,7 @@ static int	do_heredoc(t_token *lim, int *fd, t_env *env)
 			i++;
 		}
 	}
-	hfd = ms_heredoc(d, expand, env);
+	hfd = ms_heredoc(d, expand, env, lim);
 	if (hfd < 0)
 		return (1);
 	if (*fd >= 0)

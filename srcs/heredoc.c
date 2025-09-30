@@ -51,9 +51,10 @@ static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
 			return (free(l), close(wfd), 1);
 		free(l);
 	}
+	return (0);
 }
 
-int	ms_heredoc(char *delim, int expand, t_env *env)
+int	ms_heredoc(char *delim, int expand, t_env *env, t_token *token)
 {
 	int		p[2];
 	pid_t	pid;
@@ -69,18 +70,25 @@ int	ms_heredoc(char *delim, int expand, t_env *env)
 		setup_signals_hd();
 		close(p[0]);
 		if (hd_loop(p[1], delim, expand, env))
+		{
+			free_env(env);
+			free_token(token);
 			_exit(130);
+		}
 		close(p[1]);
+		free_env(env);
+		free_token(token);
 		_exit(0);
 	}
 	close(p[1]);
 	if (waitpid(pid, &st, 0) < 0)
 		return (close(p[0]), -1);
 	if (WIFEXITED(st) && WEXITSTATUS(st) == 0)
-{
+	{
 		fcntl(p[0], F_SETFD, FD_CLOEXEC);
 		return (p[0]);
 	}
     close(p[0]);
+
     return (-1);
 }

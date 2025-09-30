@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 18:56:00 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/30 16:23:22 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int	is_number(char *s)
 // return ((unsigned char)code);
 // }
 
-//SANS TTY
+// SANS TTY
 // int	ft_exit(char **args)
 // {
 // 	int	code;
