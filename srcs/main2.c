@@ -274,9 +274,10 @@ static int	is_single_builtin_cmd(t_cmd *cmd)
 	result = ( !ft_strcmp(args[0], "cd")
         || !ft_strcmp(args[0], "unset")
         || !ft_strcmp(args[0], "exit")
-        || !ft_strcmp(args[0], "export")
-        || !ft_strcmp(args[0], "pwd")
-        || !ft_strcmp(args[0], "echo") );
+        || !ft_strcmp(args[0], "export"));
+        // || !ft_strcmp(args[0], "pwd")
+        // || !ft_strcmp(args[0], "echo") );
+
 	
 	free_tab(args);
 	return (result);
