@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:13:33 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 16:23:10 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,11 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	int		error_code;
 
 	if (apply_redirections(cmd, env) < 0)
+	{
+		free_env(env);
+		free_cmd_list(cmd);
 		exit(1);
+	}
 	envp = env_to_array(env);
 	if (!envp)
 		exit(1);

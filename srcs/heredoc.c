@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 13:26:28 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 16:22:50 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,5 +101,6 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 		return (p[0]);
 	}
 	close(p[0]);
+	free_cmd_list(cmd);
 	return (-1);
 }
