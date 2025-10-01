@@ -14,6 +14,7 @@ SRCS =  init.c \
 	token.c \
 	expand.c \
 	utils.c \
+	hd_helper.c \
 	commander.c \
 	pipes/child_process.c \
 	pipes/list_to_array.c \
