@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:55:55 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:23:10 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 17:16:52 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ void	free_token(t_token *token)
 	{
 		tmp = token;
 		token = token->next;
-		free(tmp->str);
+		if (tmp->str)
+			free(tmp->str);
 		free(tmp);
 	}
 }

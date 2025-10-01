@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 11:36:32 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 16:31:15 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ int	ft_exit(char **args)
 	{
 		write(fd_tty, "exit\n", 5);
 		close(fd_tty);
+		return (0);
 	}
 	if (!args[1])
 	{

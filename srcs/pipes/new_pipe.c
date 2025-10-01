@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:19:21 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 16:32:56 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@ static void	init_pipeline(t_pipeline *pipeline)
 {
 	pipeline->current_pipe = -1;
 	pipeline->prev_pipe = -1;
-	pipeline->pipefd1[0] = pipeline->pipefd1[1] = -1;
-	pipeline->pipefd2[0] = pipeline->pipefd2[1] = -1;
+	pipeline->pipefd1[0] = -1;
+	pipeline->pipefd1[1] = -1;
+	pipeline->pipefd2[0] = -1;
+	pipeline->pipefd2[1] = -1;
 }
 
 static void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 12:38:27 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 16:29:33 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,6 @@ static void sigint_interactive(int sig)
 	rl_redisplay();
 }
 
-// void	setup_signals_interactive(void)
-// {
-// 	struct sigaction sa;
-
-// 	sigemptyset(&sa.sa_mask);
-// 	sa.sa_flags = SA_RESTART;
-// 	sa.sa_handler = sigint_interactive;
-// 	sigaction(SIGINT, &sa, NULL);
-// 	signal(SIGQUIT, SIG_IGN);
-// }
 void	setup_signals_interactive(void)
 {
 	struct sigaction	sa_int;
@@ -53,32 +43,6 @@ void	setup_signals_child(void)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
-
-// void	setup_signals_interactive(void)
-// {
-// 	struct sigaction sa_int;
-// 	struct sigaction sa_quit;
-// 	// SIGINT
-// 	sigemptyset(&sa_int.sa_mask);
-// 	sa_int.sa_flags = SA_RESTART;
-// 	sa_int.sa_handler = sigint_interactive;
-// 	sigaction(SIGINT, &sa_int, NULL);
-// 	// SIGQUIT - ne pas ignorer, juste ne rien faire dans le parent
-// 	sigemptyset(&sa_quit.sa_mask);
-// 	sa_quit.sa_flags = 0;
-// 	sa_quit.sa_handler = SIG_IGN;
-// 	sigaction(SIGQUIT, &sa_quit, NULL);
-
-// 	signal(SIGTSTP, SIG_IGN);
-// }
-
-// void	setup_signals_child(void)
-// {
-// 	signal(SIGINT, SIG_DFL);
-// 	signal(SIGQUIT, SIG_DFL);
-// 	signal(SIGTSTP, SIG_DFL);
-// 	signal(SIGPIPE, SIG_DFL);
-// }
 
 void	setup_signals_hd(void)
 {
