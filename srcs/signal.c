@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/09/29 17:50:21 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:38:27 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,15 @@ static void sigint_interactive(int sig)
 // 	sigaction(SIGINT, &sa, NULL);
 // 	signal(SIGQUIT, SIG_IGN);
 // }
-
 void	setup_signals_interactive(void)
 {
-	struct sigaction sa_int;
-	struct sigaction sa_quit;
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
-	// SIGINT
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
 	sa_int.sa_handler = sigint_interactive;
 	sigaction(SIGINT, &sa_int, NULL);
-	
-	// SIGQUIT - ne pas ignorer, juste ne rien faire dans le parent
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	sa_quit.sa_handler = SIG_IGN;
@@ -58,18 +54,15 @@ void	setup_signals_child(void)
 	signal(SIGQUIT, SIG_DFL);
 }
 
-
 // void	setup_signals_interactive(void)
 // {
 // 	struct sigaction sa_int;
 // 	struct sigaction sa_quit;
-
 // 	// SIGINT
 // 	sigemptyset(&sa_int.sa_mask);
 // 	sa_int.sa_flags = SA_RESTART;
 // 	sa_int.sa_handler = sigint_interactive;
 // 	sigaction(SIGINT, &sa_int, NULL);
-	
 // 	// SIGQUIT - ne pas ignorer, juste ne rien faire dans le parent
 // 	sigemptyset(&sa_quit.sa_mask);
 // 	sa_quit.sa_flags = 0;
@@ -87,16 +80,8 @@ void	setup_signals_child(void)
 // 	signal(SIGPIPE, SIG_DFL);
 // }
 
-
 void	setup_signals_hd(void)
 {
-// 	struct sigaction sa;
-
-// 	sigemptyset(&sa.sa_mask);
-// 	sa.sa_flags = 0;
-// 	sa.sa_handler = handler_hd;
-// 	sigaction(SIGINT, &sa, NULL);
-// 	signal(SIGQUIT, SIG_IGN);
-signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_IGN);
 }

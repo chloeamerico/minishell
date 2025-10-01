@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
+/*   Updated: 2025/10/01 12:52:02 by lleichtn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static char	*hd_expand(char *s, t_env *env, int last)
@@ -88,7 +100,6 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_token *token)
 		fcntl(p[0], F_SETFD, FD_CLOEXEC);
 		return (p[0]);
 	}
-    close(p[0]);
-
-    return (-1);
+	close(p[0]);
+	return (-1);
 }

@@ -6,13 +6,13 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:13 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/16 18:43:31 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 11:30:54 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_cd(char **args, char ***envp) //more
+int	ft_cd(char **args, char ***envp)
 {
 	(void)envp;
 	if (!args[1])
@@ -32,4 +32,3 @@ int	ft_cd(char **args, char ***envp) //more
 	}
 	return (0);
 }
-

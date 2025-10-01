@@ -6,12 +6,9 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:47:49 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 13:13:33 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// #include "minishell.h"
-
 
 #include "minishell.h"
 
@@ -36,27 +33,27 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 	get_global()->child_pid = 0;
 	close_all_pipes(pipeline);
 	exec_simple_cmd(cmd, env);
-	return(0);
+	return (0);
 }
 
-void close_all_pipes(t_pipeline *pipeline)
+void	close_all_pipes(t_pipeline *pipeline)
 {
-	if(pipeline->pipefd1[0] != -1)
+	if (pipeline->pipefd1[0] != -1)
 	{
 		close(pipeline->pipefd1[0]);
 		pipeline->pipefd1[0] = -1;
 	}
-	if(pipeline->pipefd1[1] != -1)
+	if (pipeline->pipefd1[1] != -1)
 	{
 		close(pipeline->pipefd1[1]);
 		pipeline->pipefd1[1] = -1;
 	}
-	if(pipeline->pipefd2[0] != -1)
+	if (pipeline->pipefd2[0] != -1)
 	{
 		close(pipeline->pipefd2[0]);
 		pipeline->pipefd2[0] = -1;
 	}
-	if(pipeline->pipefd2[1] != -1)
+	if (pipeline->pipefd2[1] != -1)
 	{
 		close(pipeline->pipefd2[1]);
 		pipeline->pipefd2[1] = -1;
@@ -95,48 +92,15 @@ static char	*find_cmd_path(char *cmd, char **envp)
 	return (NULL);
 }
 
-static int has_invalid_chars(char *cmd)
-{
-    int i = 0;
-    
-    while (cmd[i])
-    {
-        if (!ft_isalnum(cmd[i]) && cmd[i] != '_' && cmd[i] != '/' 
-            && cmd[i] != '.' && cmd[i] != '-')
-            return (1);
-        i++;
-    }
-    return (0);
-}
-
-
-
 static int	print_cmd_error(char *cmd, char **envp)
 {
-	int		i;
-	char	**paths;
-	char	*tmp;
-	char	*full_path;
-	int		found_but_no_exec;
+	int			i;
+	char		**paths;
+	char		*tmp;
+	char		*full_path;
+	int			found_but_no_exec;
 	struct stat	st;
-	
-	if (!ft_strcmp(cmd, "."))
-    {
-        fprintf(stderr, ".: filename argument required\n.: usage: . filename [arguments]\n");
-        return (2);
-    }
-
-	if (has_invalid_chars(cmd))
-	{
-		if (ft_strchr(cmd, ';'))
-			fprintf(stderr, "minishell: syntax error near unexpected token `;'\n");
-		else
-			fprintf(stderr, "minishell: %s: command not found\n", cmd);
-		return (127);
-	}
-	
 	found_but_no_exec = 0;
-	
 	if (ft_strchr(cmd, '/'))
 	{
 		if (access(cmd, F_OK) != 0)
@@ -144,20 +108,18 @@ static int	print_cmd_error(char *cmd, char **envp)
 			fprintf(stderr, "minishell: %s: No such file or directory\n", cmd);
 			return (127);
 		}
-		if(stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
+		if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
 		{
 			fprintf(stderr, "minishell: %s: is a directory\n", cmd);
-            return (126);
+			return (126);
 		}
 		if (access(cmd, X_OK) != 0)
 		{
-			// printf("test2\n");
 			fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
 			return (126);
 		}
 		return (0);
 	}
-	
 	i = 0;
 	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5) != 0)
 		i++;
@@ -166,21 +128,18 @@ static int	print_cmd_error(char *cmd, char **envp)
 		fprintf(stderr, "minishell: %s: command not found\n", cmd);
 		return (127);
 	}
-	
 	paths = ft_split(envp[i] + 5, ':');
 	if (!paths)
 	{
 		fprintf(stderr, "minishell: %s: command not found\n", cmd);
 		return (127);
 	}
-	
 	i = 0;
 	while (paths[i])
 	{
 		tmp = ft_strjoin(paths[i], "/");
 		full_path = ft_strjoin(tmp, cmd);
 		free(tmp);
-		
 		if (access(full_path, F_OK) == 0)
 		{
 			if (access(full_path, X_OK) != 0)
@@ -196,14 +155,11 @@ static int	print_cmd_error(char *cmd, char **envp)
 		i++;
 	}
 	free_tab(paths);
-	
 	if (found_but_no_exec)
 	{
-		// printf("test1\n");
 		fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
 		return (126);
 	}
-	// printf("test cmd not found\n");
 	fprintf(stderr, "minishell: %s: command not found\n", cmd);
 	return (127);
 }
@@ -217,10 +173,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	int		error_code;
 
 	if (apply_redirections(cmd, env) < 0)
-	{
 		exit(1);
-	}
-	
 	envp = env_to_array(env);
 	if (!envp)
 		exit(1);
@@ -241,7 +194,6 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_cmd_list(cmd);
 		exit(127);
 	}
-	
 	if (try_run_builtin(cmd_arg, &envp, &status))
 	{
 		free_tab(cmd_arg);
@@ -250,7 +202,6 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_cmd_list(cmd);
 		exit(status);
 	}
-	
 	error_code = print_cmd_error(cmd_arg[0], envp);
 	if (error_code != 0)
 	{
@@ -260,7 +211,6 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_cmd_list(cmd);
 		exit(error_code);
 	}
-	
 	cmd_path = find_cmd_path(cmd_arg[0], envp);
 	if (!cmd_path)
 	{
@@ -271,7 +221,6 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		exit(127);
 	}
 	execve(cmd_path, cmd_arg, envp);
-	
 	perror("execve failed");
 	free_tab(cmd_arg);
 	free_tab(envp);
