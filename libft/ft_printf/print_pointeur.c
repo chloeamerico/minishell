@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_pointeur.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 18:47:44 by camerico          #+#    #+#             */
-/*   Updated: 2024/12/02 19:05:02 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 11:42:24 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 // 		write(1, &str[i], 1);
 // 		i++;
 // 	}
-// 	return(i);
+// 	return (i);
 // }
 
 // int	print_hexa(unsigned long n, const char format)

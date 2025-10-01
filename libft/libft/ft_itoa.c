@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 18:02:46 by camerico          #+#    #+#             */
-/*   Updated: 2025/02/25 18:56:29 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 11:49:27 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*ft_itoa(int nb)
 
 	n = nb;
 	i = ft_strlen2(n);
-	final = malloc(sizeof(char) * (i + 1));
+	final = malloc (sizeof(char) * (i + 1));
 	if (!final)
 		return (NULL);
 	final[i] = '\0';

@@ -3,46 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/26 18:31:11 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 11:51:28 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/*A FAIRE 
-
-les char autorises :
-- Doit commencer par une lettre (a–z, A–Z) ou un underscore (_).
-- Les caractères suivants peuvent être :
-		lettres (a–z, A–Z),
-		chiffres (0–9),
-		underscore (_) 
-
-- gerer les quotes
-		
-print_export(env);		//print l'env dans l'ordre avec declare -x avant
-
-add_new_line_in_env;
-
-update_env_with_new_key(arg, env);
-
-*/
-
 static void	sort_env(char **env)
 {
-	int	i;
-	int	j;
-	int	len_env;
+	int		i;
+	int		j;
+	int		len_env;
 	char	*tmp;
-	
+
 	len_env = 0;
-	while(env[len_env])
+	while (env[len_env])
 		len_env++;
 	i = 0;
-	while(i < len_env - 1)
+	while (i < len_env - 1)
 	{
 		j = 0;
 		while (j < len_env - i - 1)
@@ -59,29 +40,28 @@ static void	sort_env(char **env)
 	}
 }
 
-
-char *find_key(char *arg)
+char	*find_key(char *arg)
 {
-	int	i;
-	int j;
-	char *key;
+	int		i;
+	int		j;
+	char	*key;
 
 	i = 0;
 	j = 0;
 	if (!arg)
 		return (NULL);
-	while(arg[i] != '=' && arg[i])
+	while (arg[i] != '=' && arg[i])
 		i++;
-	key = malloc(sizeof(char) * (i + 1));
+	key = malloc (sizeof(char) * (i + 1));
 	if (!key)
-		return(NULL);
-	while(j < i)
+		return (NULL);
+	while (j < i)
 	{
 		key[j] = arg[j];
 		j++;
 	}
 	key[j] = '\0';
-	return(key);
+	return (key);
 }
 
 int	find_index(char *key, char **env)
@@ -89,19 +69,21 @@ int	find_index(char *key, char **env)
 	int	i;
 
 	i = 0;
-	while(env[i])
+	while (env[i])
 	{
-		if(!ft_strncmp(env[i], key, ft_strlen(key)) && (env[i][ft_strlen(key)] == '=' || env[i][ft_strlen(key)] == '\0' ))
-			return(i);
+		if (!ft_strncmp(env[i], key, ft_strlen(key))
+			&& (env[i][ft_strlen(key)] == '='
+			|| env[i][ft_strlen(key)] == '\0' ))
+			return (i);
 		i++;
 	}
-	return(-1);
+	return (-1);
 }
 
-static int print_export(char **env)
+static int	print_export(char **env)
 {
-	int i; 
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
 	while (env && env[i])
@@ -115,7 +97,7 @@ static int print_export(char **env)
 		}
 		if (env[i][j] == '=' && env[i][j + 1])
 		{
-			write(1, "=\"", 2); 
+			write(1, "=\"", 2);
 			j++;
 			while (env[i][j])
 			{
@@ -133,10 +115,10 @@ static int print_export(char **env)
 int	ft_export(char **args, char ***env)
 {
 	int	i;
-	
+
 	if (!args || !args[0])
 		return (1);
-	if (!args[1] && (!ft_strcmp(args[0], "export")))		// si on ecrit juste "export", afficher la var d'env avec "declare -x" devant trie dans l'ordre
+	if (!args[1] && (!ft_strcmp(args[0], "export")))
 	{
 		sort_env(*env);
 		print_export(*env);
@@ -144,7 +126,7 @@ int	ft_export(char **args, char ***env)
 	else
 	{
 		i = 1;
-		while(args[i])
+		while (args[i])
 		{
 			export_one_arg(args[i], env);
 			i++;
@@ -152,7 +134,3 @@ int	ft_export(char **args, char ***env)
 	}
 	return (0);
 }
-
-
-
-

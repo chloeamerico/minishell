@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 15:25:50 by camerico          #+#    #+#             */
-/*   Updated: 2025/02/21 18:36:05 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 11:40:48 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	fill_stash(char *line, char *buffer)
 // 		printf("%s", "une erreur s'est produite dans l'ouverture du fichier");
 // 		return (1);
 // 	}
-// 	while((str = get_next_line(fd)) != 0)
+// 	while ((str = get_next_line(fd)) != 0)
 // 	{
 // 		printf("%s", str);
 // 		free(str);
@@ -129,7 +129,7 @@ void	fill_stash(char *line, char *buffer)
 // 		printf("%s", "une erreur s'est produite dans l'ouverture du fichier");
 // 		return (1);
 // 	}
-// 	while(line <= 3)
+// 	while (line <= 3)
 // 	{
 // 		str = get_next_line(fd);
 // 		printf("%s", str);

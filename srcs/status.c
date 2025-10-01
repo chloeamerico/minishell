@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:30:08 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/09/02 13:37:20 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:43:33 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_global	*get_global(void)
 {
-	static t_global g;
+	static t_global	g;
 
 	return (&g);
 }

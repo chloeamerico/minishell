@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chloeamerico <chloeamerico@student.42.f    +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 15:53:11 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/24 19:51:04 by chloeameric      ###   ########.fr       */
+/*   Updated: 2025/10/01 11:49:27 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ char	*ft_strjoin_free(char *s1, char *s2)
 
 	if (!s1 && !s2)
 		return (NULL);
-	s3 = malloc(sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2)) + 1));
+	s3 = malloc (sizeof(char) * ((ft_strlen(s1) + ft_strlen(s2)) + 1));
 	if (!s3)
 		return (NULL);
 	i = 0;
@@ -79,7 +79,7 @@ char	*ft_strdup_free(char *s)
 
 	if (!s)
 		return (NULL);
-	dest = malloc((ft_strlen(s) + 1) * sizeof(char));
+	dest = malloc ((ft_strlen(s) + 1) * sizeof(char));
 	if (!dest)
 	{
 		free(s);

@@ -3,22 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   split.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/30 16:25:27 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:42:53 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 //verifie les metachar
-static int is_metachar(char c)
+static int	is_metachar(char c)
 {
-	return(c == '|' || c == '>' || c == '<');
+	return (c == '|' || c == '>' || c == '<');
 }
+
 // met a jour le state
-void quote_state(char c, int *state)
+void	quote_state(char c, int *state)
 {
 	if (*state == STATE_NONE && c == '\'')
 		*state = STATE_SINGLE;
@@ -33,16 +34,17 @@ void quote_state(char c, int *state)
 //obtient fin d'un mot en respectant les quotes
 static int	get_word_len(char *line, int *i)
 {
-	int state;
-	int len;
+	int	state;
+	int	len;
 
 	state = STATE_NONE;
 	len = 0;
 	while (line[*i])
 	{
 		quote_state(line[*i], &state);
-		if (state == STATE_NONE && (line[*i] == ' ' || is_metachar(line[*i]))) //si spc ou metac stop
-			break;
+		if (state == STATE_NONE && (line[*i] == ' '
+				|| is_metachar(line[*i])))
+			break ;
 		(*i)++;
 		len++;
 	}
@@ -52,31 +54,17 @@ static int	get_word_len(char *line, int *i)
 // Alloue mot (sans quotes) extrait de start à end
 static char	*get_word(char *line, int start, int end)
 {
-	int copy_state;//etat de la quote
-	char *word; //mot fiinal
-	int j;
+	int		copy_state;
+	char	*word;
+	int		j;
 
 	copy_state = STATE_NONE;
-	word = malloc(sizeof(char) * (end - start + 1));
+	word = malloc (sizeof(char) * (end - start + 1));
 	j = 0;
 	if (!word)
 		return (NULL);
 	while (start < end)
-	{
-		// if(copy_state == STATE_NONE && (line[start] == '\'' || line[start] == '"'))
-		// {
-		// 	quote_state(line[start], &copy_state);
-		// 	start++;
-		// }
-		// else if((copy_state == STATE_SINGLE && line[start] == '\'')
-		// 	|| (copy_state == STATE_DOUBLE && line[start] == '"'))
-		// {
-		// 	quote_state(line[start], &copy_state);
-		// 	start++;
-		// }
-		// else
-		word[j++] = line[start++]; // on copie le carac ds le mot
-	}
+		word[j++] = line[start++];
 	word[j] = '\0';
 	return (word);
 }
@@ -84,19 +72,19 @@ static char	*get_word(char *line, int start, int end)
 //fonction qui va prendre un mot et l'ajouter au tableau array
 char	**word_to_array(char **array, char *word)
 {
-	int	i;
-	char **new_array;
-	
+	int		i;
+	char	**new_array;
+
 	i = 0;
-	while(array && array[i])
+	while (array && array[i])
 		i++;
-	new_array = malloc(sizeof(char *) * (i + 2));	// on ajoute 2 pour garder une place pour le NULL
+	new_array = malloc (sizeof(char *) * (i + 2));
 	if (!new_array)
 		return (NULL);
 	i = 0;
-	while(array && array[i])
+	while (array && array[i])
 	{
-		new_array[i] = array[i];	// on duplique array dans new_array
+		new_array[i] = array[i];
 		i++;
 	}
 	new_array[i] = word;
@@ -110,15 +98,14 @@ int	check_close_quotes(char *line)
 	int	i;
 
 	i = 0;
-	while(line[i])
+	while (line[i])
 	{
-		if (line[i] == 39)		//single
+		if (line[i] == 39)
 		{
 			i++;
-			while(line[i] && line[i] != 39)
+			while (line[i] && line[i] != 39)
 				i++;
 			if (!line[i])
-				// return(1);
 			{
 				ft_putendl_fd("Syntax error: unclosed quote", 2);
 				return (1);
@@ -126,13 +113,12 @@ int	check_close_quotes(char *line)
 			else
 				i++;
 		}
-		else if (line[i] == 34)		//double
+		else if (line[i] == 34)
 		{
 			i++;
-			while(line[i] && line[i] != 34)
+			while (line[i] && line[i] != 34)
 				i++;
 			if (!line[i])
-				// return(1);
 			{
 				ft_putendl_fd("Syntax error: unclosed quote", 2);
 				return (1);
@@ -148,19 +134,19 @@ int	check_close_quotes(char *line)
 
 int	split_input(char ***array, char *line, int i)
 {
-	int	start;		// pour stocker ou commence le mot/token qu'on va extraire
-	char *word;		// pour stocker le mot extrait
+	int		start;
+	char	*word;	
 
-	while(line[i])
+	while (line[i])
 	{
-		while(line[i] == ' ')		// on saute les epace entre les mots
+		while (line[i] == ' ')
 			i++;
 		if (!line[i])
-			break;
+			break ;
 		start = i;
 		if (is_metachar(line[i]))
 		{
-			if (line[i] == line[i + 1])		//on gere les << et >>
+			if (line[i] == line[i + 1])
 				i++;
 			i++;
 		}
@@ -176,17 +162,16 @@ int	split_input(char ***array, char *line, int i)
 	return (0);
 }
 
-
 char	**split_minishell(char *line)
 {
-	char	**array;	//c'est le tableau qui va accueillir les mots separes
+	char	**array;
 
 	array = NULL;
 	if (!line)
 		return (NULL);
 	if (check_close_quotes(line))
 		return (NULL);
-	if (split_input(&array, line, 0))		//fonction qui va appliquer le split
+	if (split_input(&array, line, 0))
 		return (NULL);
 	return (array);
 }
@@ -196,16 +181,17 @@ void	free_split(char **split)
 	int	i;
 
 	if (!split)
-		return;
+		return ;
 	i = 0;
-	while(split[i])
+	while (split[i])
 	{
 		free(split[i]);
 		i++;
 	}
 	free(split);
 }
-char    **split_line(char *line)
+
+char	**split_line(char *line)
 {
-    return (split_minishell(line));
+	return (split_minishell(line));
 }

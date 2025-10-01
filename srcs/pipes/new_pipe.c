@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   new_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/29 18:48:37 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:58:06 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void init_pipeline(t_pipeline *pipeline)
+static void	init_pipeline(t_pipeline *pipeline)
 {
 	pipeline->current_pipe = -1;
 	pipeline->prev_pipe = -1;
@@ -20,10 +20,10 @@ static void init_pipeline(t_pipeline *pipeline)
 	pipeline->pipefd2[0] = pipeline->pipefd2[1] = -1;
 }
 
-static void count_cmd(t_pipeline *pipeline, t_cmd *cmd)
+static void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
 {
-	int i;
-	t_cmd *tmp;
+	int		i;
+	t_cmd	*tmp;
 
 	i = 0;
 	tmp = cmd;
@@ -35,20 +35,20 @@ static void count_cmd(t_pipeline *pipeline, t_cmd *cmd)
 	pipeline->nb_cmd = i;
 }
 
-pid_t *pid_array(t_pipeline *pipeline, t_cmd *cmd)
+pid_t	*pid_array(t_pipeline *pipeline, t_cmd *cmd)
 {
-	int cmd_count;
-	pid_t *pids;
+	int		cmd_count;
+	pid_t	*pids;
 
 	count_cmd(pipeline, cmd);
 	cmd_count = pipeline->nb_cmd;
-	pids = malloc(sizeof(pid_t) * cmd_count);
+	pids = malloc (sizeof(pid_t) * cmd_count);
 	if (!pids)
 		return (perror("malloc"), NULL);
 	return (pids);
 }
 
-static int create_pipe(t_pipeline *pipeline)
+static int	create_pipe(t_pipeline *pipeline)
 {
 	if (pipeline->current_pipe == 0)
 	{
@@ -73,30 +73,27 @@ static int create_pipe(t_pipeline *pipeline)
 	return (0);
 }
 
-int exec_pipeline(t_cmd *cmd_list, t_env *env)
+int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
-	t_pipeline pipeline;
-	t_cmd *current_cmd;
-	pid_t *pids;
-	int cmd_index = 0;
-	int exit_status = 0;
+	t_pipeline	pipeline;
+	t_cmd		*current_cmd;
+	pid_t		*pids;
+	int			cmd_index;
+	int			exit_status;
 
+	cmd_index = 0;
+	exit_status = 0;
 	if (!cmd_list)
 		return (1);
-
 	if (!cmd_list->next)
 		return (one_cmd_without_pipe(cmd_list, env));
-	
 	pids = pid_array(&pipeline, cmd_list);
 	if (!pids)
 		return (1);
 	init_pipeline(&pipeline);
-
 	current_cmd = cmd_list;
-
 	if (loop_pipe(&pipeline, cmd_index, current_cmd, pids, env))
 		return (free(pids), 1);
-
 	exit_status = wait_children_pid(&pipeline, pids);
 	free(pids);
 	return (exit_status);
@@ -106,6 +103,7 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 {
 	pid_t	pid;
 	int		status;
+	int		sig;
 
 	pid = fork();
 	if (pid == 0)
@@ -122,8 +120,6 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 			return (WEXITSTATUS(status));
 		if (WIFSIGNALED(status))
 		{
-			int sig;
-
 			sig = WTERMSIG(status);
 			if (sig == SIGQUIT)
 				write(2, "Quit (core dumped)\n", 20);
@@ -137,7 +133,7 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 	return (1);
 }
 
-int loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
+int	oop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
 {
 	while (current_cmd)
 	{
@@ -146,12 +142,9 @@ int loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pi
 			pipeline->prev_pipe = (cmd_index - 1) % 2;
 		else
 			pipeline->prev_pipe = -1;
-
 		if (current_cmd->next)
 			create_pipe(pipeline);
-
 		pids[cmd_index] = fork();
-
 		if (pids[cmd_index] == -1)
 		{
 			perror("error : fork");
@@ -169,9 +162,6 @@ int loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pi
 		}
 		else
 		{
-			// if (!current_cmd->next)
-			// 	tcsetpgrp(STDIN_FILENO, pids[cmd_index]);
-			
 			parent_process(pipeline, cmd_index);
 		}
 		current_cmd = current_cmd->next;
