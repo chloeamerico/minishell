@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 12:55:47 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 17:52:41 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ static void	process_line(char *line, t_env **env)
 	if (is_single_builtin_cmd(cmds))
 	{
 		handle_single_builtin(cmds, env);
-		free_commands(cmds);
+		free_cmd_list(cmds);
 		return ;
 	}
 	else
@@ -129,7 +129,7 @@ static void	process_line(char *line, t_env **env)
 		exit_status = exec_pipeline(cmds, *env);
 		get_global()->last_status = exit_status;
 	}
-	free_commands(cmds);
+	free_cmd_list(cmds);
 }
 
 static void	cleanup_shell(t_env *env)

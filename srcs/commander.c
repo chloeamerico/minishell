@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commander.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:15:07 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 12:20:02 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 17:52:18 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,42 +69,42 @@ static int	assign_token(t_cmd *cmd, t_token *tkn)
 	return (0);
 }
 
-void	free_commands(t_cmd *cmd)
-{
-	t_cmd	*next;
-	t_token	*x;
-	t_token	*n;
+// void	free_commands(t_cmd *cmd)
+// {
+// 	t_cmd	*next;
+// 	t_token	*x;
+// 	t_token	*n;
 
-	while (cmd)
-	{
-		next = cmd->next;
-		x = cmd->args;
-		while (x)
-		{
-			n = x->next;
-			if (x->str)
-				free(x->str);
-			free(x);
-			x = n;
-		}
-		x = cmd->reds;
-		while (x)
-		{
-			n = x->next;
-			if (x->str)
-				free(x->str);
-			free(x);
-			x = n;
-		}
-		free(cmd);
-		cmd = next;
-	}
-}
+// 	while (cmd)
+// 	{
+// 		next = cmd->next;
+// 		x = cmd->args;
+// 		while (x)
+// 		{
+// 			n = x->next;
+// 			if (x->str)
+// 				free(x->str);
+// 			free(x);
+// 			x = n;
+// 		}
+// 		x = cmd->reds;
+// 		while (x)
+// 		{
+// 			n = x->next;
+// 			if (x->str)
+// 				free(x->str);
+// 			free(x);
+// 			x = n;
+// 		}
+// 		free(cmd);
+// 		cmd = next;
+// 	}
+// }
 
 static int	clean_and_fail(t_cmd **head)
 {
 	if (head && *head)
-		free_commands(*head);
+		free_cmd_list(*head);
 	*head = NULL;
 	return (1);
 }
