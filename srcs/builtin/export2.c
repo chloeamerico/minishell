@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:12:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 16:25:05 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,10 @@ void	export_one_arg(char *arg, char ***env)
 	}
 	if (!ft_strchr(arg, '='))
 	{
-		if(export_one_arg2(key, env))
+		if (export_one_arg2 (key, env))
 		{
 			free(key);
-			return;
+			return ;
 		}
 	}
 	*env = add_new_line_in_env(arg, *env);
@@ -100,7 +100,7 @@ int	export_one_arg2(char *key, char ***env)
 	len = ft_strlen(key);
 	tmp = malloc (sizeof(char) * (len + 2));
 	if (!tmp)
-		return(1);
+		return (1) ;
 	ft_strcpy(tmp, key);
 	tmp[len] = '=';
 	tmp[len + 1] = '\0';
