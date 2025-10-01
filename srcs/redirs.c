@@ -140,5 +140,6 @@ int apply_redirections(t_cmd *cmd, t_env *env)
         }
         close(fd_out);
     }
+
     return (0);
 }

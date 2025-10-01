@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/30 15:38:29 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:47:49 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "minishell.h"
 
 int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
-{
+{	
 	free(pids);
 	if (cmd_index > 0)
 	{
@@ -95,6 +95,21 @@ static char	*find_cmd_path(char *cmd, char **envp)
 	return (NULL);
 }
 
+static int has_invalid_chars(char *cmd)
+{
+    int i = 0;
+    
+    while (cmd[i])
+    {
+        if (!ft_isalnum(cmd[i]) && cmd[i] != '_' && cmd[i] != '/' 
+            && cmd[i] != '.' && cmd[i] != '-')
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
+
 
 static int	print_cmd_error(char *cmd, char **envp)
 {
@@ -104,6 +119,21 @@ static int	print_cmd_error(char *cmd, char **envp)
 	char	*full_path;
 	int		found_but_no_exec;
 	struct stat	st;
+	
+	if (!ft_strcmp(cmd, "."))
+    {
+        fprintf(stderr, ".: filename argument required\n.: usage: . filename [arguments]\n");
+        return (2);
+    }
+
+	if (has_invalid_chars(cmd))
+	{
+		if (ft_strchr(cmd, ';'))
+			fprintf(stderr, "minishell: syntax error near unexpected token `;'\n");
+		else
+			fprintf(stderr, "minishell: %s: command not found\n", cmd);
+		return (127);
+	}
 	
 	found_but_no_exec = 0;
 	
@@ -187,7 +217,9 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 	int		error_code;
 
 	if (apply_redirections(cmd, env) < 0)
+	{
 		exit(1);
+	}
 	
 	envp = env_to_array(env);
 	if (!envp)
@@ -238,7 +270,6 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 		free_cmd_list(cmd);
 		exit(127);
 	}
-	// printf("test\n");
 	execve(cmd_path, cmd_arg, envp);
 	
 	perror("execve failed");

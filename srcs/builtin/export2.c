@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/22 18:24:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/09/30 17:54:05 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,10 @@ void	export_one_arg(char *arg, char ***env)
 	if (!ft_strchr(arg, '='))
 	{
 		if(export_one_arg2(key, env))
+		{
+			free(key);
 			return;
-		free(key);
+		}
 	}
 	*env = add_new_line_in_env(arg, *env);
 	free(key);
@@ -146,7 +148,7 @@ int	export_one_arg2(char *key, char ***env)
 	tmp = malloc(sizeof(char) * (len + 2)); /* "KEY=" */
 	if (!tmp)
 	{
-		free(key);
+		// free(key);
 		return(1);
 	}
 	ft_strcpy(tmp, key);
