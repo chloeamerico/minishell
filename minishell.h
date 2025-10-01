@@ -146,6 +146,9 @@ char *find_key(char *arg);
 int	find_index(char *key, char **env);
 void	export_one_arg(char *arg, char ***env);
 int	export_one_arg2(char *key, char ***env);
+t_env	*hd_env(int op, t_env *val);
+t_cmd	*hd_cmd(int op, t_cmd *val);
+// static void	hd_sigint_handler(int sig);
 
 
 //signaux
