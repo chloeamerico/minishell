@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/09/30 17:16:46 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 11:36:32 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ static int	is_number(char *s)
 int	ft_exit(char **args)
 {
 	int	code;
-	int	fd_tty;		 //a remettre quand on remet le tty
+	int	fd_tty;
 
 	fd_tty = open("/dev/tty", O_RDWR);
 	if (fd_tty)
