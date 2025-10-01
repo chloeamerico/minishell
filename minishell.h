@@ -153,10 +153,9 @@ void	setup_signals_interactive(void);
 void	setup_signals_child(void);
 void	setup_signals_hd(void);
 t_global *get_global(void);
-int	 ms_heredoc(char *delim, int expand, t_env *env, t_token *token);
+int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd);
 int	 apply_redirections(t_cmd *cmd, t_env *env);
 int	mark_limiter_if_quoted(t_token *tok);
-int apply_redirections(t_cmd *cmd, t_env *env);
 // static char	*hd_expand(char *s, t_env *env, int last);
 
 //main

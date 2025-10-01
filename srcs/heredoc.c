@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 12:52:02 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/01 13:26:28 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
 	return (0);
 }
 
-int	ms_heredoc(char *delim, int expand, t_env *env, t_token *token)
+int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 {
 	int		p[2];
 	pid_t	pid;
@@ -84,12 +84,12 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_token *token)
 		if (hd_loop(p[1], delim, expand, env))
 		{
 			free_env(env);
-			free_token(token);
+			free_cmd_list(cmd);
 			_exit(130);
 		}
 		close(p[1]);
 		free_env(env);
-		free_token(token);
+		free_cmd_list(cmd);
 		_exit(0);
 	}
 	close(p[1]);

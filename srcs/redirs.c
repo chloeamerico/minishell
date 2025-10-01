@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:34:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 13:13:57 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/01 13:27:18 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static int	open_out(char *path, int *fd, int append)
 	return (0);
 }
 
-static int	do_heredoc(t_token *lim, int *fd, t_env *env)
+static int	do_heredoc(t_token *lim, int *fd, t_env *env, t_cmd *cmd)
 {
 	int		expand;
 	char	*d;
@@ -72,7 +72,7 @@ static int	do_heredoc(t_token *lim, int *fd, t_env *env)
 			i++;
 		}
 	}
-	hfd = ms_heredoc(d, expand, env, lim);
+	hfd = ms_heredoc(d, expand, env, cmd);
 	if (hfd < 0)
 		return (1);
 	if (*fd >= 0)
@@ -118,7 +118,7 @@ int	apply_redirections(t_cmd *cmd, t_env *env)
 		}
 		else if (t->type == DRIN && t->next && t->next->type == LIM)
 		{
-			if (do_heredoc(t->next, &fd_in, env))
+			if (do_heredoc(t->next, &fd_in, env, cmd))
 			{
 				if (get_global()->hd_interrupted)
 					get_global()->last_status = 130;
