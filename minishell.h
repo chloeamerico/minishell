@@ -94,6 +94,12 @@ typedef struct s_expand
 	char	*new_str;
 } t_expand;
 
+typedef struct s_hd_params
+{
+	t_env	*env;
+	t_cmd	*cmd;
+}	t_hd_params;
+
 /* ************************************************************************** */
 /* PROTO                                                                      */
 /* ************************************************************************** */
