@@ -127,7 +127,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env);
 char **env_to_array(t_env *env);
 char **tokens_to_array(t_token *args);
 void	free_tab(char **tab);
-int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids);
+int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env);
 void close_all_pipes(t_pipeline *pipeline);
 int	exec_simple_cmd(t_cmd *cmd, t_env *env);
 void	parent_process(t_pipeline *pipeline, int cmd_index);

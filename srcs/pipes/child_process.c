@@ -3,38 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:13:33 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 19:29:03 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
-{	
-	free(pids);
-	if (cmd_index > 0)
+int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env)
+{
+	int rc;
+
+	rc = apply_redirections(cmd, env);
+	if (rc == -2)
+		exit(130);
+	if (rc < 0)
+		exit(1);
+
+	if (cmd->input != -1)
+	{
+		dup2(cmd->input, STDIN_FILENO);
+		close(cmd->input);
+	}
+	else if (cmd_index > 0)
 	{
 		if (pipeline->prev_pipe == 0)
 			dup2(pipeline->pipefd1[0], STDIN_FILENO);
 		else
 			dup2(pipeline->pipefd2[0], STDIN_FILENO);
 	}
-	if (cmd_index < (pipeline->nb_cmd - 1))
+
+	if (cmd->output != -1)
+	{
+		dup2(cmd->output, STDOUT_FILENO);
+		close(cmd->output);
+	}
+	else if (cmd_index < (pipeline->nb_cmd - 1))
 	{
 		if (pipeline->current_pipe == 0)
 			dup2(pipeline->pipefd1[1], STDOUT_FILENO);
 		else
 			dup2(pipeline->pipefd2[1], STDOUT_FILENO);
 	}
-	setup_signals_child();
-	get_global()->child_pid = 0;
+
 	close_all_pipes(pipeline);
 	exec_simple_cmd(cmd, env);
 	return (0);
 }
+
 
 void	close_all_pipes(t_pipeline *pipeline)
 {
@@ -92,140 +110,125 @@ static char	*find_cmd_path(char *cmd, char **envp)
 	return (NULL);
 }
 
-static int	print_cmd_error(char *cmd, char **envp)
-{
-	int			i;
-	char		**paths;
-	char		*tmp;
-	char		*full_path;
-	int			found_but_no_exec;
-	struct stat	st;
-	found_but_no_exec = 0;
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK) != 0)
-		{
-			fprintf(stderr, "minishell: %s: No such file or directory\n", cmd);
-			return (127);
-		}
-		if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
-		{
-			fprintf(stderr, "minishell: %s: is a directory\n", cmd);
-			return (126);
-		}
-		if (access(cmd, X_OK) != 0)
-		{
-			fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
-			return (126);
-		}
-		return (0);
-	}
-	i = 0;
-	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5) != 0)
-		i++;
-	if (!envp[i])
-	{
-		fprintf(stderr, "minishell: %s: command not found\n", cmd);
-		return (127);
-	}
-	paths = ft_split(envp[i] + 5, ':');
-	if (!paths)
-	{
-		fprintf(stderr, "minishell: %s: command not found\n", cmd);
-		return (127);
-	}
-	i = 0;
-	while (paths[i])
-	{
-		tmp = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(tmp, cmd);
-		free(tmp);
-		if (access(full_path, F_OK) == 0)
-		{
-			if (access(full_path, X_OK) != 0)
-				found_but_no_exec = 1;
-			else
-			{
-				free(full_path);
-				free_tab(paths);
-				return (0);
-			}
-		}
-		free(full_path);
-		i++;
-	}
-	free_tab(paths);
-	if (found_but_no_exec)
-	{
-		fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
-		return (126);
-	}
-	fprintf(stderr, "minishell: %s: command not found\n", cmd);
-	return (127);
-}
+// static int	print_cmd_error(char *cmd, char **envp)
+// {
+// 	int			i;
+// 	char		**paths;
+// 	char		*tmp;
+// 	char		*full_path;
+// 	int			found_but_no_exec;
+// 	struct stat	st;
+// 	found_but_no_exec = 0;
+// 	if (ft_strchr(cmd, '/'))
+// 	{
+// 		if (access(cmd, F_OK) != 0)
+// 		{
+// 			fprintf(stderr, "minishell: %s: No such file or directory\n", cmd);
+// 			return (127);
+// 		}
+// 		if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
+// 		{
+// 			fprintf(stderr, "minishell: %s: is a directory\n", cmd);
+// 			return (126);
+// 		}
+// 		if (access(cmd, X_OK) != 0)
+// 		{
+// 			fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
+// 			return (126);
+// 		}
+// 		return (0);
+// 	}
+// 	i = 0;
+// 	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5) != 0)
+// 		i++;
+// 	if (!envp[i])
+// 	{
+// 		fprintf(stderr, "minishell: %s: command not found\n", cmd);
+// 		return (127);
+// 	}
+// 	paths = ft_split(envp[i] + 5, ':');
+// 	if (!paths)
+// 	{
+// 		fprintf(stderr, "minishell: %s: command not found\n", cmd);
+// 		return (127);
+// 	}
+// 	i = 0;
+// 	while (paths[i])
+// 	{
+// 		tmp = ft_strjoin(paths[i], "/");
+// 		full_path = ft_strjoin(tmp, cmd);
+// 		free(tmp);
+// 		if (access(full_path, F_OK) == 0)
+// 		{
+// 			if (access(full_path, X_OK) != 0)
+// 				found_but_no_exec = 1;
+// 			else
+// 			{
+// 				free(full_path);
+// 				free_tab(paths);
+// 				return (0);
+// 			}
+// 		}
+// 		free(full_path);
+// 		i++;
+// 	}
+// 	free_tab(paths);
+// 	if (found_but_no_exec)
+// 	{
+// 		fprintf(stderr, "minishell: %s: Permission denied\n", cmd);
+// 		return (126);
+// 	}
+// 	fprintf(stderr, "minishell: %s: command not found\n", cmd);
+// 	return (127);
+// }
 
 int	exec_simple_cmd(t_cmd *cmd, t_env *env)
 {
 	char	**envp;
-	char	*cmd_path;
 	char	**cmd_arg;
-	int		status;
-	int		error_code;
+	char	*cmd_path;
+	int		rc;
 
-	if (apply_redirections(cmd, env) < 0)
+	if (!cmd)
 		exit(1);
+
+	rc = apply_redirections(cmd, env);
+	if (rc == -2)
+		exit(130);
+	if (rc < 0)
+		exit(1);
+
 	envp = env_to_array(env);
-	if (!envp)
-		exit(1);
 	cmd_arg = tokens_to_array(cmd->args);
 	if (!cmd_arg)
 	{
 		free_tab(envp);
-		free_env(env);
-		free_cmd_list(cmd);
 		exit(1);
 	}
-	if (!cmd_arg[0] || !cmd_arg[0][0])
-	{
-		fprintf(stderr, "minishell: command not found\n");
-		free_tab(cmd_arg);
-		free_tab(envp);
-		free_env(env);
-		free_cmd_list(cmd);
-		exit(127);
-	}
-	if (try_run_builtin(cmd_arg, &envp, &status))
+	if (!cmd_arg[0])
 	{
 		free_tab(cmd_arg);
 		free_tab(envp);
-		free_env(env);
-		free_cmd_list(cmd);
-		exit(status);
+		exit(0);
 	}
-	error_code = print_cmd_error(cmd_arg[0], envp);
-	if (error_code != 0)
-	{
-		free_tab(cmd_arg);
-		free_tab(envp);
-		free_env(env);
-		free_cmd_list(cmd);
-		exit(error_code);
-	}
-	cmd_path = find_cmd_path(cmd_arg[0], envp);
+	cmd_path = NULL;
+	if (access(cmd_arg[0], X_OK) == 0)
+		cmd_path = ft_strdup(cmd_arg[0]);
+	if (!cmd_path)
+		cmd_path = find_cmd_path(cmd_arg[0], envp);
 	if (!cmd_path)
 	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd_arg[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		free_tab(cmd_arg);
 		free_tab(envp);
-		free_env(env);
-		free_cmd_list(cmd);
 		exit(127);
 	}
 	execve(cmd_path, cmd_arg, envp);
-	perror("execve failed");
+	perror("execve");
+	free(cmd_path);
 	free_tab(cmd_arg);
 	free_tab(envp);
-	free(cmd_path);
-	free_env(env);
-	free_cmd_list(cmd);
-	exit(126);
+	exit(1);
 }
