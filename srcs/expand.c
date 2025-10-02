@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:22:46 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/02 11:35:23 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,39 +56,83 @@ static char	*extract_var(char *str, int *i)
 }
 
 //on va construire l'expand
-static char	*build_expand(char *str, t_env *env, int exit_status)
+//AVANT DE REDUIRE
+// static char	*build_expand(char *str, t_env *env, int exit_status)
+// {
+// 	int		quotes;
+// 	int		i;
+// 	char	*new_str;
+// 	char	*var_name;
+// 	char	*value;
+// 	char	tmp[2];
+
+// 	i = 0;
+// 	new_str = ft_strdup("");
+// 	quotes = STATE_NONE;
+// 	while (str[i])
+// 	{
+// 		quote_state(str[i], &quotes);
+// 		if (str[i] == '$' && quotes != STATE_SINGLE)
+// 		{
+// 			i++;
+// 			var_name = extract_var(&str[i], &i);
+// 			value = get_env_value(var_name, env, exit_status);
+// 			new_str = ft_strjoin_free(new_str, value);
+// 			free(var_name);
+// 			free(value);
+// 		}
+// 		else
+// 		{
+// 			tmp[0] = str[i];
+// 			tmp[1] = '\0';
+// 			new_str = ft_strjoin_free(new_str, tmp);
+// 			i++;
+// 		}
+// 	}
+// 	return (new_str);
+// }
+static char	*process_variable(char *str, int *i, t_env *env, int exit_status)
 {
-	int		quotes;
-	int		i;
-	char	*new_str;
 	char	*var_name;
 	char	*value;
-	char	tmp[2];
+	char	*result;
 
-	i = 0;
-	new_str = ft_strdup("");
-	quotes = STATE_NONE;
-	while (str[i])
+	(*i)++;
+	var_name = extract_var(&str[*i], i);
+	value = get_env_value(var_name, env, exit_status);
+	result = ft_strdup(value);
+	free(var_name);
+	free(value);
+	return (result);
+}
+
+static char	*build_expand(char *str, t_env *env, int exit_status)
+{
+	t_expand	state;
+	char		*temp;
+	char		tmp[2];
+
+	state.i = 0;
+	state.new_str = ft_strdup("");
+	state.quotes = STATE_NONE;
+	while (str[state.i])
 	{
-		quote_state(str[i], &quotes);
-		if (str[i] == '$' && quotes != STATE_SINGLE)
+		quote_state(str[state.i], &state.quotes);
+		if (str[state.i] == '$' && state.quotes != STATE_SINGLE)
 		{
-			i++;
-			var_name = extract_var(&str[i], &i);
-			value = get_env_value(var_name, env, exit_status);
-			new_str = ft_strjoin_free(new_str, value);
-			free(var_name);
-			free(value);
+			temp = process_variable(str, &state.i, env, exit_status);
+			state.new_str = ft_strjoin_free(state.new_str, temp);
+			free(temp);
 		}
 		else
 		{
-			tmp[0] = str[i];
+			temp[0] = str[state.i];
 			tmp[1] = '\0';
-			new_str = ft_strjoin_free(new_str, tmp);
-			i++;
+			state.new_str = ft_strjoin_free(state.new_str, tmp);
+			state.i++;
 		}
 	}
-	return (new_str);
+	return (state.new_str);
 }
 
 //on va chercher dans la var d'env quelle value correspond a la key
