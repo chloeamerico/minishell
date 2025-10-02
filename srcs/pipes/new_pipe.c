@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:19:21 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 16:08:26 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@ static void	init_pipeline(t_pipeline *pipeline)
 {
 	pipeline->current_pipe = -1;
 	pipeline->prev_pipe = -1;
-	pipeline->pipefd1[0] = pipeline->pipefd1[1] = -1;
-	pipeline->pipefd2[0] = pipeline->pipefd2[1] = -1;
+	pipeline->pipefd1[0] = -1;
+	pipeline->pipefd1[1] = -1;
+	pipeline->pipefd2[0] = -1;
+	pipeline->pipefd2[1] = -1;
 }
 
 static void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
@@ -99,6 +101,48 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	return (exit_status);
 }
 
+//AVANT DE DIVISER
+// int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
+// {
+// 	pid_t	pid;
+// 	int		status;
+// 	int		sig;
+
+// 	pid = fork();
+// 	if (pid == 0)
+// 	{
+// 		setup_signals_child();
+// 		exec_simple_cmd(cmd_list, env);
+// 		exit(127);
+// 	}
+// 	else if (pid > 0)
+// 	{
+// 		if (waitpid(pid, &status, 0) == -1)
+// 			return (1);
+// 		if (WIFEXITED(status))
+// 			return (WEXITSTATUS(status));
+// 		if (WIFSIGNALED(status))
+// 		{
+// 			sig = WTERMSIG(status);
+// 			if (sig == SIGQUIT)
+// 				write(2, "Quit (core dumped)\n", 20);
+// 			else if (sig == SIGINT)
+// 				write(2, "\n", 1);
+// 			return (128 + sig);
+// 		}
+// 		return (1);
+// 	}
+// 	perror("fork");
+// 	return (1);
+// }
+
+static void	child(t_cmd *cmd_list, t_env *env)
+{
+	setup_signals_child();
+	exec_simple_cmd(cmd_list, env);
+	exit(127);
+}
+
 int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 {
 	pid_t	pid;
@@ -107,11 +151,7 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 
 	pid = fork();
 	if (pid == 0)
-	{
-		setup_signals_child();
-		exec_simple_cmd(cmd_list, env);
-		exit(127);
-	}
+		child(cmd_list, env);
 	else if (pid > 0)
 	{
 		if (waitpid(pid, &status, 0) == -1)
@@ -129,8 +169,7 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 		}
 		return (1);
 	}
-	perror("fork");
-	return (1);
+	return (perror("fork"), 1);
 }
 
 int	loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
@@ -157,13 +196,9 @@ int	loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pi
 			return (1);
 		}
 		else if (pids[cmd_index] == 0)
-		{
 			child_process(cmd_index, pipeline, current_cmd, env, pids);
-		}
 		else
-		{
 			parent_process(pipeline, cmd_index);
-		}
 		current_cmd = current_cmd->next;
 		cmd_index++;
 	}
