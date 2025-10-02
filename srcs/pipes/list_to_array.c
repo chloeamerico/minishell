@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_to_array.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:40:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:11:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/02 15:04:05 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,7 @@ char	**tokens_to_array(t_token *args)
 		{
 			while (--i >= 0)
 				free(tab[i]);
-			free(tab);
-			return (NULL);
+			return (free(tab), NULL);
 		}
 		tmp = tmp->next;
 		i++;
