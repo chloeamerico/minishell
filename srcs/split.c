@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:42:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/02 14:39:37 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,38 +93,66 @@ char	**word_to_array(char **array, char *word)
 	return (new_array);
 }
 
+// AVANT DE REDUIRE
+// int	check_close_quotes(char *line)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (line[i])
+// 	{
+// 		if (line[i] == 39)
+// 		{
+// 			i++;
+// 			while (line[i] && line[i] != 39)
+// 				i++;
+// 			if (!line[i])
+// 			{
+// 				ft_putendl_fd("Syntax error: unclosed quote", 2);
+// 				return (1);
+// 			}
+// 			else
+// 				i++;
+// 		}
+// 		else if (line[i] == 34)
+// 		{
+// 			i++;
+// 			while (line[i] && line[i] != 34)
+// 				i++;
+// 			if (!line[i])
+// 			{
+// 				ft_putendl_fd("Syntax error: unclosed quote", 2);
+// 				return (1);
+// 			}
+// 			else
+// 				i++;
+// 		}
+// 		else
+// 			i++;
+// 	}
+// 	return (0);
+// }
+
 int	check_close_quotes(char *line)
 {
-	int	i;
+	int		i;
+	char	quotes;
 
 	i = 0;
 	while (line[i])
 	{
-		if (line[i] == 39)
+		if (line[i] == 39 || line[i] == 34)
 		{
+			quotes = line[i];
 			i++;
-			while (line[i] && line[i] != 39)
+			while (line[i] && line[i] != quotes)
 				i++;
 			if (!line[i])
 			{
 				ft_putendl_fd("Syntax error: unclosed quote", 2);
 				return (1);
 			}
-			else
-				i++;
-		}
-		else if (line[i] == 34)
-		{
 			i++;
-			while (line[i] && line[i] != 34)
-				i++;
-			if (!line[i])
-			{
-				ft_putendl_fd("Syntax error: unclosed quote", 2);
-				return (1);
-			}
-			else
-				i++;
 		}
 		else
 			i++;
@@ -132,10 +160,22 @@ int	check_close_quotes(char *line)
 	return (0);
 }
 
+static int	token_for_split(char ***array, char *line, int start, int end)
+{
+	char	*word;
+
+	word = get_word(line, start, end);
+	if (!word)
+		return (1);
+	*array = word_to_array(*array, word);
+	if (!*array)
+		return (free(word), 1);
+	return (0);
+}
+
 int	split_input(char ***array, char *line, int i)
 {
 	int		start;
-	char	*word;	
 
 	while (line[i])
 	{
@@ -152,15 +192,42 @@ int	split_input(char ***array, char *line, int i)
 		}
 		else
 			get_word_len(line, &i);
-		word = get_word(line, start, i);
-		if (!word)
+		if (token_for_split(array, line, start, i))
 			return (1);
-		*array = word_to_array(*array, word);
-		if (!*array)
-			return (free(word), 1);
 	}
 	return (0);
 }
+
+//AVANT DE DIVISER
+// int	split_input(char ***array, char *line, int i)
+// {
+// 	int		start;
+// 	char	*word;
+
+// 	while (line[i])
+// 	{
+// 		while (line[i] == ' ')
+// 			i++;
+// 		if (!line[i])
+// 			break ;
+// 		start = i;
+// 		if (is_metachar(line[i]))
+// 		{
+// 			if (line[i] == line[i + 1])
+// 				i++;
+// 			i++;
+// 		}
+// 		else
+// 			get_word_len(line, &i);
+// 		word = get_word(line, start, i);
+// 		if (!word)
+// 			return (1);
+// 		*array = word_to_array(*array, word);
+// 		if (!*array)
+// 			return (free(word), 1);
+// 	}
+// 	return (0);
+// }
 
 char	**split_minishell(char *line)
 {
