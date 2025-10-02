@@ -92,7 +92,15 @@ typedef struct s_expand
 {
 	int	i;
 	char	*new_str;
-} t_expand;
+}	t_expand;
+
+typedef struct s_pipec
+{
+	t_pipeline	*pipeline;
+	t_cmd		*current_cmd;
+	pid_t		*pids;
+	t_env		*env;
+}	t_pipec;
 
 /* ************************************************************************** */
 /* PROTO                                                                      */
@@ -126,7 +134,7 @@ void close_all_pipes(t_pipeline *pipeline);
 int	exec_simple_cmd(t_cmd *cmd, t_env *env);
 void	parent_process(t_pipeline *pipeline, int cmd_index);
 int	wait_children_pid(t_pipeline *pipeline, pid_t *pid);
-int	loop_pipe(t_pipeline *pipeline, int	cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env);
+int	loop_pipe(t_pipec *pipec, int cmd_index);
 int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env);
 
 //FREE

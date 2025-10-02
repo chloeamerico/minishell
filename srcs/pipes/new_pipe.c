@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 16:42:31 by camerico         ###   ########.fr       */
+/*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
+/*   Updated: 2025/10/02 17:46:02 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,28 @@ static void	init_pipeline(t_pipeline *pipeline)
 	pipeline->pipefd2[1] = -1;
 }
 
-static void	count_cmd(t_pipeline *pipeline, t_cmd *cmd)
+static void	child(t_cmd *cmd_list, t_env *env)
+{
+	setup_signals_child();
+	exec_simple_cmd(cmd_list, env);
+	exit(127);
+}
+
+pid_t	*pid_array(t_pipeline *pipeline, t_cmd *cmd)
 {
 	int		i;
 	t_cmd	*tmp;
+	pid_t	*pids;
 
 	i = 0;
 	tmp = cmd;
-	while (tmp)
+	while(tmp)
 	{
 		i++;
 		tmp = tmp->next;
 	}
 	pipeline->nb_cmd = i;
-}
-
-pid_t	*pid_array(t_pipeline *pipeline, t_cmd *cmd)
-{
-	int		cmd_count;
-	pid_t	*pids;
-
-	count_cmd(pipeline, cmd);
-	cmd_count = pipeline->nb_cmd;
-	pids = malloc (sizeof(pid_t) * cmd_count);
+	pids = malloc (sizeof(pid_t) * i);
 	if (!pids)
 		return (perror("malloc"), NULL);
 	return (pids);
@@ -75,16 +74,14 @@ static int	create_pipe(t_pipeline *pipeline)
 	return (0);
 }
 
+
 int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
 	t_pipeline	pipeline;
-	t_cmd		*current_cmd;
 	pid_t		*pids;
-	int			cmd_index;
 	int			exit_status;
+	t_pipec		pipec;
 
-	cmd_index = 0;
-	exit_status = 0;
 	if (!cmd_list)
 		return (1);
 	if (!cmd_list->next)
@@ -93,55 +90,17 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	if (!pids)
 		return (1);
 	init_pipeline(&pipeline);
-	current_cmd = cmd_list;
-	if (loop_pipe(&pipeline, cmd_index, current_cmd, pids, env))
+	pipec.current_cmd = cmd_list;
+	pipec.pipeline = &pipeline;
+	pipec.pids = pids;
+	pipec.env = env;
+	if (loop_pipe(&pipec, 0))
 		return (free(pids), 1);
 	exit_status = wait_children_pid(&pipeline, pids);
 	free(pids);
 	return (exit_status);
 }
 
-//AVANT DE DIVISER
-// int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
-// {
-// 	pid_t	pid;
-// 	int		status;
-// 	int		sig;
-
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		setup_signals_child();
-// 		exec_simple_cmd(cmd_list, env);
-// 		exit(127);
-// 	}
-// 	else if (pid > 0)
-// 	{
-// 		if (waitpid(pid, &status, 0) == -1)
-// 			return (1);
-// 		if (WIFEXITED(status))
-// 			return (WEXITSTATUS(status));
-// 		if (WIFSIGNALED(status))
-// 		{
-// 			sig = WTERMSIG(status);
-// 			if (sig == SIGQUIT)
-// 				write(2, "Quit (core dumped)\n", 20);
-// 			else if (sig == SIGINT)
-// 				write(2, "\n", 1);
-// 			return (128 + sig);
-// 		}
-// 		return (1);
-// 	}
-// 	perror("fork");
-// 	return (1);
-// }
-
-static void	child(t_cmd *cmd_list, t_env *env)
-{
-	setup_signals_child();
-	exec_simple_cmd(cmd_list, env);
-	exit(127);
-}
 
 int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 {
@@ -172,76 +131,43 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 	return (perror("fork"), 1);
 }
 
-static int	loop_pipe2(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
+
+static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 {
-	pipeline->current_pipe = cmd_index % 2;
+	pipec->pipeline->current_pipe = cmd_index % 2;
 	if (cmd_index != 0)
-		pipeline->prev_pipe = (cmd_index - 1) % 2;
+		pipec->pipeline->prev_pipe = (cmd_index - 1) % 2;
 	else
-		pipeline->prev_pipe = -1;
-	if (current_cmd->next)
-		create_pipe(pipeline);
-	pids[cmd_index] = fork();
-	if (pids[cmd_index] == -1)
+		pipec->pipeline->prev_pipe = -1;
+	if (pipec->current_cmd->next)
+		create_pipe(pipec->pipeline);
+	pipec->pids[cmd_index] = fork();
+	if (pipec->pids[cmd_index] == -1)
 	{
 		perror("error : fork");
-		close_all_pipes(pipeline);
+		close_all_pipes(pipec->pipeline);
 		while (cmd_index > 0)
 		{
 			cmd_index--;
-			waitpid(pids[cmd_index], NULL, 0);
+			waitpid(pipec->pids[cmd_index], NULL, 0);
 		}
 		return (1);
 	}
-	else if (pids[cmd_index] == 0)
-		child_process(cmd_index, pipeline, current_cmd, env, pids);
+	else if (pipec->pids[cmd_index] == 0)
+		child_process(cmd_index, pipec->pipeline, pipec->current_cmd, pipec->env, pipec->pids);
 	else
-		parent_process(pipeline, cmd_index);
+		parent_process(pipec->pipeline, cmd_index);
 	return (0);
 }
 
-int	loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
+int	loop_pipe(t_pipec *pipec, int cmd_index)
 {
-	while (current_cmd)
+	while (pipec->current_cmd)
 	{
-		if (loop_pipe2(pipeline, cmd_index, current_cmd, pids, env))
+		if (loop_pipe2(pipec, cmd_index))
 			return (1);
-		current_cmd = current_cmd->next;
+		pipec->current_cmd = pipec->current_cmd->next;
 		cmd_index++;
 	}
 	return (0);
 }
-
-//AVANT DE REDUIRE
-// int	loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
-// {
-// 	while (current_cmd)
-// 	{
-// 		pipeline->current_pipe = cmd_index % 2;
-// 		if (cmd_index != 0)
-// 			pipeline->prev_pipe = (cmd_index - 1) % 2;
-// 		else
-// 			pipeline->prev_pipe = -1;
-// 		if (current_cmd->next)
-// 			create_pipe(pipeline);
-// 		pids[cmd_index] = fork();
-// 		if (pids[cmd_index] == -1)
-// 		{
-// 			perror("error : fork");
-// 			close_all_pipes(pipeline);
-// 			while (cmd_index > 0)
-// 			{
-// 				cmd_index--;
-// 				waitpid(pids[cmd_index], NULL, 0);
-// 			}
-// 			return (1);
-// 		}
-// 		else if (pids[cmd_index] == 0)
-// 			child_process(cmd_index, pipeline, current_cmd, env, pids);
-// 		else
-// 			parent_process(pipeline, cmd_index);
-// 		current_cmd = current_cmd->next;
-// 		cmd_index++;
-// 	}
-// 	return (0);
-// }
