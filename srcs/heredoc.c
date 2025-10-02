@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/02 16:58:34 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 18:37:24 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ static void	hd_sigquit_handler(int sig)
 		free_cmd_list(c);
 	_exit(131);
 }
-// ex fct
+//ex
 // int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 // {
 // 	int		p[2];
@@ -212,47 +212,54 @@ static void	hd_sigquit_handler(int sig)
 // 	return (-1);
 // }
 
-static void	ms_heredoc_child(int p[2], char *delim,
-	int expand, t_env *env, t_cmd *cmd)
+static void	hd_child_exit_error(int *p, t_env *env, t_cmd *cmd)
 {
-	hd_env(0, env);
-	hd_cmd(0, cmd);
-	signal(SIGINT, hd_sigint_handler);
-	signal(SIGQUIT, hd_sigquit_handler);
-	close(p[0]);
-	if (hd_loop(p[1], delim, expand, env))
-	{
-		close(p[1]);
-		free_env(env);
-		free_cmd_list(cmd);
-		_exit(130);
-	}
+	close(p[1]);
+	free_env(env);
+	free_cmd_list(cmd);
+	_exit(130);
+}
+
+static void	hd_child_exit_success(int *p, t_env *env, t_cmd *cmd)
+{
 	close(p[1]);
 	free_env(env);
 	free_cmd_list(cmd);
 	_exit(0);
 }
 
-static int	ms_heredoc_parent(int p[2], pid_t pid, 
-	void (*old_int)(int), void (*old_quit)(int))
+// static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
+// {
+// 	hd_env(0, params->env);
+// 	hd_cmd(0, params->cmd);
+// 	signal(SIGINT, hd_sigint_handler);
+// 	signal(SIGQUIT, hd_sigquit_handler);
+// 	signal(SIGPIPE, SIG_IGN);
+// 	close(p[0]);
+// 	if (hd_loop(p[1], delim, expand, params->env))
+// 		hd_child_exit_error(p, params->env, params->cmd);
+// 	hd_child_exit_success(p, params->env, params->cmd);
+// }
+
+static int	hd_parent_wait(int *p, pid_t pid)
 {
 	int		st;
+	void	(*old_int)(int);
+	void	(*old_quit)(int);
 
 	close(p[1]);
+	old_int = signal(SIGINT, SIG_IGN);
+	old_quit = signal(SIGQUIT, SIG_IGN);
 	if (waitpid(pid, &st, 0) < 0)
 	{
 		signal(SIGINT, old_int);
 		signal(SIGQUIT, old_quit);
-		close(p[0]);
-		return (-1);
+		return (close(p[0]), -1);
 	}
 	signal(SIGINT, old_int);
 	signal(SIGQUIT, old_quit);
 	if (WIFEXITED(st) && WEXITSTATUS(st) == 0)
-	{
-		fcntl(p[0], F_SETFD, FD_CLOEXEC);
-		return (p[0]);
-	}
+		return (fcntl(p[0], F_SETFD, FD_CLOEXEC), p[0]);
 	if (WIFEXITED(st) && WEXITSTATUS(st) == 130)
 		get_global()->hd_interrupted = 1;
 	close(p[0]);
@@ -263,9 +270,10 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 {
 	int			p[2];
 	pid_t		pid;
-	void		(*old_int)(int);
-	void		(*old_quit)(int);
+	t_hd_params	params;
 
+	params.env = env;
+	params.cmd = cmd;
 	if (pipe(p) < 0)
 		return (-1);
 	pid = fork();
@@ -275,11 +283,7 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 		close(p[1]);
 		return (-1);
 	}
-	else
-		close(p[1]);
 	if (pid == 0)
-		ms_heredoc_child(p, delim, expand, env, cmd);
-	old_int = signal(SIGINT, SIG_IGN);
-	old_quit = signal(SIGQUIT, SIG_IGN);
-	return (ms_heredoc_parent(p, pid, old_int, old_quit));
+		hd_child(p, delim, expand, &params);
+	return (hd_parent_wait(p, pid));
 }
