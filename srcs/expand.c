@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 11:35:23 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 12:20:12 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,17 @@ static char	*extract_var(char *str, int *i)
 // 	}
 // 	return (new_str);
 // }
-static char	*process_variable(char *str, int *i, t_env *env, int exit_status)
+static char	*variable(char *str, t_expand *expand, t_env *env, int exit_status)
 {
 	char	*var_name;
 	char	*value;
 	char	*result;
 
-	(*i)++;
-	var_name = extract_var(&str[*i], i);
+	expand->i++;
+	var_name = extract_var(&str[expand->i], &expand->i);
 	value = get_env_value(var_name, env, exit_status);
 	result = ft_strdup(value);
+	expand->new_str = ft_strjoin_free(expand->new_str, result);
 	free(var_name);
 	free(value);
 	return (result);
@@ -108,31 +109,31 @@ static char	*process_variable(char *str, int *i, t_env *env, int exit_status)
 
 static char	*build_expand(char *str, t_env *env, int exit_status)
 {
-	t_expand	state;
-	char		*temp;
+	int			quotes;
+	t_expand	expand;
 	char		tmp[2];
+	char		*var_result;
 
-	state.i = 0;
-	state.new_str = ft_strdup("");
-	state.quotes = STATE_NONE;
-	while (str[state.i])
+	expand.i = 0;
+	expand.new_str = ft_strdup("");
+	quotes = STATE_NONE;
+	while (str[expand.i])
 	{
-		quote_state(str[state.i], &state.quotes);
-		if (str[state.i] == '$' && state.quotes != STATE_SINGLE)
+		quote_state(str[expand.i], &quotes);
+		if (str[expand.i] == '$' && quotes != STATE_SINGLE)
 		{
-			temp = process_variable(str, &state.i, env, exit_status);
-			state.new_str = ft_strjoin_free(state.new_str, temp);
-			free(temp);
+			var_result = variable(str, &expand, env, exit_status);
+			free(var_result);
 		}
 		else
 		{
-			temp[0] = str[state.i];
+			tmp[0] = str[expand.i];
 			tmp[1] = '\0';
-			state.new_str = ft_strjoin_free(state.new_str, tmp);
-			state.i++;
+			expand.new_str = ft_strjoin_free(expand.new_str, tmp);
+			expand.i++;
 		}
 	}
-	return (state.new_str);
+	return (expand.new_str);
 }
 
 //on va chercher dans la var d'env quelle value correspond a la key

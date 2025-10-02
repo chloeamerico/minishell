@@ -90,7 +90,6 @@ typedef struct s_global
 
 typedef struct s_expand
 {
-	int	quotes;
 	int	i;
 	char	*new_str;
 } t_expand;
