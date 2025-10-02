@@ -88,7 +88,12 @@ typedef struct s_global
 	int   exit_code;      /* code de sortie demandé par builtin */
 }	t_global;
 
-
+typedef struct s_expand
+{
+	int	quotes;
+	int	i;
+	char	*new_str;
+} t_expand;
 
 /* ************************************************************************** */
 /* PROTO                                                                      */
