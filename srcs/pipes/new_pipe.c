@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 16:08:26 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 16:42:31 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,35 +172,76 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 	return (perror("fork"), 1);
 }
 
+static int	loop_pipe2(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
+{
+	pipeline->current_pipe = cmd_index % 2;
+	if (cmd_index != 0)
+		pipeline->prev_pipe = (cmd_index - 1) % 2;
+	else
+		pipeline->prev_pipe = -1;
+	if (current_cmd->next)
+		create_pipe(pipeline);
+	pids[cmd_index] = fork();
+	if (pids[cmd_index] == -1)
+	{
+		perror("error : fork");
+		close_all_pipes(pipeline);
+		while (cmd_index > 0)
+		{
+			cmd_index--;
+			waitpid(pids[cmd_index], NULL, 0);
+		}
+		return (1);
+	}
+	else if (pids[cmd_index] == 0)
+		child_process(cmd_index, pipeline, current_cmd, env, pids);
+	else
+		parent_process(pipeline, cmd_index);
+	return (0);
+}
+
 int	loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
 {
 	while (current_cmd)
 	{
-		pipeline->current_pipe = cmd_index % 2;
-		if (cmd_index != 0)
-			pipeline->prev_pipe = (cmd_index - 1) % 2;
-		else
-			pipeline->prev_pipe = -1;
-		if (current_cmd->next)
-			create_pipe(pipeline);
-		pids[cmd_index] = fork();
-		if (pids[cmd_index] == -1)
-		{
-			perror("error : fork");
-			close_all_pipes(pipeline);
-			while (cmd_index > 0)
-			{
-				cmd_index--;
-				waitpid(pids[cmd_index], NULL, 0);
-			}
+		if (loop_pipe2(pipeline, cmd_index, current_cmd, pids, env))
 			return (1);
-		}
-		else if (pids[cmd_index] == 0)
-			child_process(cmd_index, pipeline, current_cmd, env, pids);
-		else
-			parent_process(pipeline, cmd_index);
 		current_cmd = current_cmd->next;
 		cmd_index++;
 	}
 	return (0);
 }
+
+//AVANT DE REDUIRE
+// int	loop_pipe(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, pid_t *pids, t_env *env)
+// {
+// 	while (current_cmd)
+// 	{
+// 		pipeline->current_pipe = cmd_index % 2;
+// 		if (cmd_index != 0)
+// 			pipeline->prev_pipe = (cmd_index - 1) % 2;
+// 		else
+// 			pipeline->prev_pipe = -1;
+// 		if (current_cmd->next)
+// 			create_pipe(pipeline);
+// 		pids[cmd_index] = fork();
+// 		if (pids[cmd_index] == -1)
+// 		{
+// 			perror("error : fork");
+// 			close_all_pipes(pipeline);
+// 			while (cmd_index > 0)
+// 			{
+// 				cmd_index--;
+// 				waitpid(pids[cmd_index], NULL, 0);
+// 			}
+// 			return (1);
+// 		}
+// 		else if (pids[cmd_index] == 0)
+// 			child_process(cmd_index, pipeline, current_cmd, env, pids);
+// 		else
+// 			parent_process(pipeline, cmd_index);
+// 		current_cmd = current_cmd->next;
+// 		cmd_index++;
+// 	}
+// 	return (0);
+// }

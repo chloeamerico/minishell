@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/02 16:08:01 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 16:30:59 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,11 +154,6 @@ static int	init_shell(char **envp, t_env **env)
 	get_global()->child_pid = 0;
 	get_global()->hd_interrupted = 0;
 	*env = init_env_list(envp);
-	//if (!*env)
-	//{
-	//	ft_putstr_fd("minishell: failed to initialize env\n", STDERR_FILENO);
-	//	return (1);
-	//}
 	if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO) && isatty(STDERR_FILENO))
 		setup_signals_interactive();
 	else
