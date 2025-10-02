@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/02 18:39:41 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 18:41:38 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,18 +228,18 @@ static void	hd_child_exit_success(int *p, t_env *env, t_cmd *cmd)
 	_exit(0);
 }
 
-// static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
-// {
-// 	hd_env(0, params->env);
-// 	hd_cmd(0, params->cmd);
-// 	signal(SIGINT, hd_sigint_handler);
-// 	signal(SIGQUIT, hd_sigquit_handler);
-// 	signal(SIGPIPE, SIG_IGN);
-// 	close(p[0]);
-// 	if (hd_loop(p[1], delim, expand, params->env))
-// 		hd_child_exit_error(p, params->env, params->cmd);
-// 	hd_child_exit_success(p, params->env, params->cmd);
-// }
+static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
+{
+	hd_env(0, params->env);
+	hd_cmd(0, params->cmd);
+	signal(SIGINT, hd_sigint_handler);
+	signal(SIGQUIT, hd_sigquit_handler);
+	signal(SIGPIPE, SIG_IGN);
+	close(p[0]);
+	if (hd_loop(p[1], delim, expand, params->env))
+		hd_child_exit_error(p, params->env, params->cmd);
+	hd_child_exit_success(p, params->env, params->cmd);
+}
 
 static int	hd_parent_wait(int *p, pid_t pid)
 {
