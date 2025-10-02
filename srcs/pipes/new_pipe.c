@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 17:46:02 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 18:13:10 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ pid_t	*pid_array(t_pipeline *pipeline, t_cmd *cmd)
 
 	i = 0;
 	tmp = cmd;
-	while(tmp)
+	while (tmp)
 	{
 		i++;
 		tmp = tmp->next;
@@ -74,7 +74,6 @@ static int	create_pipe(t_pipeline *pipeline)
 	return (0);
 }
 
-
 int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
 	t_pipeline	pipeline;
@@ -100,7 +99,6 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	free(pids);
 	return (exit_status);
 }
-
 
 int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 {
@@ -130,7 +128,6 @@ int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 	}
 	return (perror("fork"), 1);
 }
-
 
 static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 {

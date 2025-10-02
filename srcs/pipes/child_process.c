@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 19:06:14 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:13:33 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/02 18:38:22 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,38 @@ void	close_all_pipes(t_pipeline *pipeline)
 	}
 }
 
+//AVANT DE REDUIRE
+// static char	*find_cmd_path(char *cmd, char **envp)
+// {
+// 	int		i;
+// 	char	**paths;
+// 	char	*tmp;
+// 	char	*full;
+
+// 	if (ft_strchr(cmd, '/'))
+// 		return (ft_strdup(cmd));
+// 	i = 0;
+// 	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5) != 0)
+// 		i++;
+// 	if (!envp[i])
+// 		return (NULL);
+// 	paths = ft_split(envp[i] + 5, ':');
+// 	if (!paths)
+// 		return (NULL);
+// 	i = 0;
+// 	while (paths[i])
+// 	{
+// 		tmp = ft_strjoin(paths[i], "/");
+// 		full = ft_strjoin(tmp, cmd);
+// 		free(tmp);
+// 		if (access(full, F_OK) == 0)
+// 			return (free_tab(paths), full);
+// 		free(full);
+// 		i++;
+// 	}
+// 	return (free_tab(paths), NULL);
+// }
+
 static char	*find_cmd_path(char *cmd, char **envp)
 {
 	int		i;
@@ -72,10 +104,7 @@ static char	*find_cmd_path(char *cmd, char **envp)
 	i = 0;
 	while (envp[i] && ft_strncmp(envp[i], "PATH=", 5) != 0)
 		i++;
-	if (!envp[i])
-		return (NULL);
-	paths = ft_split(envp[i] + 5, ':');
-	if (!paths)
+	if (!envp[i] || !(paths = ft_split(envp[i] + 5, ':')))
 		return (NULL);
 	i = 0;
 	while (paths[i])
@@ -88,8 +117,7 @@ static char	*find_cmd_path(char *cmd, char **envp)
 		free(full);
 		i++;
 	}
-	free_tab(paths);
-	return (NULL);
+	return (free_tab(paths), NULL);
 }
 
 static int	print_cmd_error(char *cmd, char **envp)
