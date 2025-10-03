@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/02 16:30:59 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 16:49:34 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,37 +29,40 @@ static int	is_blank_line(const char *line)
 	return (line[i] == '\0');
 }
 
+static int	need_env_update(char **args)
+{
+	if (!args || !args[0])
+		return (0);
+	return (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "unset")
+		|| !ft_strcmp(args[0], "export"));
+}
+
+static void	update_env(char **envp, t_env **env)
+{
+	if (envp)
+	{
+		free_env(*env);
+		*env = init_env_list(envp);
+	}
+}
+
 static int	handle_single_builtin(t_cmd *cmd, t_env **env)
 {
 	char	**args;
 	char	**envp;
 	int		status;
-	int		need_env;
 
 	args = tokens_to_array(cmd->args);
 	envp = NULL;
 	if (!args)
 		return (1);
-	need_env = 0;
-	if (args[0] && (!ft_strcmp(args[0], "cd")
-			|| !ft_strcmp(args[0], "unset")
-			|| !ft_strcmp(args[0], "export")))
-		need_env = 1;
-	if (need_env)
+	if (need_env_update(args))
 		envp = env_to_array(*env);
 	status = 0;
 	if (try_run_builtin(args, &envp, &status))
 	{
-		if (args[0] && (!ft_strcmp(args[0], "cd")
-				|| !ft_strcmp(args[0], "unset")
-				|| !ft_strcmp(args[0], "export")))
-		{
-			if (envp)
-			{
-				free_env(*env);
-				*env = init_env_list(envp);
-			}
-		}
+		if (need_env_update(args))
+			update_env(envp, env);
 	}
 	if (args)
 		free_tab(args);
@@ -68,6 +71,47 @@ static int	handle_single_builtin(t_cmd *cmd, t_env **env)
 	get_global()->last_status = status;
 	return (status);
 }
+
+//AVANT DE REDUIRE
+// static int	handle_single_builtin(t_cmd *cmd, t_env **env)
+// {
+// 	char	**args;
+// 	char	**envp;
+// 	int		status;
+// 	int		need_env;
+
+// 	args = tokens_to_array(cmd->args);
+// 	envp = NULL;
+// 	if (!args)
+// 		return (1);
+// 	need_env = 0;
+// 	if (args[0] && (!ft_strcmp(args[0], "cd")
+// 			|| !ft_strcmp(args[0], "unset")
+// 			|| !ft_strcmp(args[0], "export")))
+// 		need_env = 1;
+// 	if (need_env)
+// 		envp = env_to_array(*env);
+// 	status = 0;
+// 	if (try_run_builtin(args, &envp, &status))
+// 	{
+// 		if (args[0] && (!ft_strcmp(args[0], "cd")
+// 				|| !ft_strcmp(args[0], "unset")
+// 				|| !ft_strcmp(args[0], "export")))
+// 		{
+// 			if (envp)
+// 			{
+// 				free_env(*env);
+// 				*env = init_env_list(envp);
+// 			}
+// 		}
+// 	}
+// 	if (args)
+// 		free_tab(args);
+// 	if (envp)
+// 		free_tab(envp);
+// 	get_global()->last_status = status;
+// 	return (status);
+// }
 
 static int	is_single_builtin_cmd(t_cmd *cmd)
 {
@@ -91,31 +135,39 @@ static int	is_single_builtin_cmd(t_cmd *cmd)
 	return (result);
 }
 
-static void	process_line(char *line, t_env **env)
+static t_cmd	*process_line2(char *line, t_env *env)
 {
 	char	**split;
 	t_token	*tokens;
 	t_cmd	*cmds;
-	int		exit_status;
 
 	split = split_minishell(line);
 	if (!split)
-		return ;
+		return (NULL);
 	tokens = tokenize(split);
 	free_split(split);
 	if (!tokens)
-		return ;
+		return (NULL);
 	if (!validate_tokens(tokens))
 	{
 		ft_putstr_fd("minishell: syntax error\n", STDERR_FILENO);
 		get_global()->last_status = 2;
 		free_token(tokens);
-		return ;
+		return (NULL);
 	}
-	expand_tokens(tokens, *env, get_global()->last_status);
+	expand_tokens(tokens, env, get_global()->last_status);
 	delete_quotes(tokens);
 	cmds = parse_commands(tokens);
 	free_token(tokens);
+	return (cmds);
+}
+
+static void	process_line(char *line, t_env **env)
+{
+	t_cmd	*cmds;
+	int		exit_status;
+
+	cmds = process_line2(line, *env);
 	if (!cmds)
 		return ;
 	if (is_single_builtin_cmd(cmds))
@@ -124,13 +176,52 @@ static void	process_line(char *line, t_env **env)
 		free_cmd_list(cmds);
 		return ;
 	}
-	else
-	{
-		exit_status = exec_pipeline(cmds, *env);
-		get_global()->last_status = exit_status;
-	}
+	exit_status = exec_pipeline(cmds, *env);
+	get_global()->last_status = exit_status;
 	free_cmd_list(cmds);
 }
+
+//AVANT DE DIVISER
+// static void	process_line(char *line, t_env **env)
+// {
+// 	char	**split;
+// 	t_token	*tokens;
+// 	t_cmd	*cmds;
+// 	int		exit_status;
+
+// 	split = split_minishell(line);
+// 	if (!split)
+// 		return ;
+// 	tokens = tokenize(split);
+// 	free_split(split);
+// 	if (!tokens)
+// 		return ;
+// 	if (!validate_tokens(tokens))
+// 	{
+// 		ft_putstr_fd("minishell: syntax error\n", STDERR_FILENO);
+// 		get_global()->last_status = 2;
+// 		free_token(tokens);
+// 		return ;
+// 	}
+// 	expand_tokens(tokens, *env, get_global()->last_status);
+// 	delete_quotes(tokens);
+// 	cmds = parse_commands(tokens);
+// 	free_token(tokens);
+// 	if (!cmds)
+// 		return ;
+// 	if (is_single_builtin_cmd(cmds))
+// 	{
+// 		handle_single_builtin(cmds, env);
+// 		free_cmd_list(cmds);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		exit_status = exec_pipeline(cmds, *env);
+// 		get_global()->last_status = exit_status;
+// 	}
+// 	free_cmd_list(cmds);
+// }
 
 static void	cleanup_shell(t_env *env)
 {
@@ -162,6 +253,55 @@ static int	init_shell(char **envp, t_env **env)
 	return (0);
 }
 
+// static void main_loop(t_env **env)
+// {
+// 	char *line;
+
+// 	while (1)
+// 	{
+// 		if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO)
+// 			|| !isatty(STDERR_FILENO))
+// 			line = get_next_line(STDIN_FILENO);
+// 		else
+// 			line = readline("minishell$ ");
+// 		if (!line)
+// 		{
+// 			handle_eof(env);
+// 			break ;
+// 		}
+// 		if (is_blank_line(line))
+// 		{
+// 			free(line);
+// 			continue ;
+// 		}
+// 		add_history(line);
+// 		process_line(line, &env);
+// 		if (get_global()->want_exit)
+// 		{
+// 			free(line);
+// 			cleanup_shell(env);
+// 			return (get_global()->exit_code);
+// 		}
+// 		free(line);
+// 	}
+// }
+
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	char	*line;
+// 	t_env	*env;
+
+// 	(void)argc;
+// 	(void)argv;
+// 	if (init_shell(envp, &env))
+// 		return (1);
+	
+// 	cleanup_shell(env);
+// 	return (get_global()->last_status);
+// }
+
+
+//AVANT DE REDUIRE
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
@@ -181,12 +321,12 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 		{
 			handle_eof(env);
-			break;
+			break ;
 		}
 		if (is_blank_line(line))
 		{
 			free(line);
-			continue;
+			continue ;
 		}
 		add_history(line);
 		process_line(line, &env);
