@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 15:10:31 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:48:08 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 15:23:21 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,35 @@ static t_token	*create_token(char *str, t_type prev_type)
 	return (new);
 }
 
+static int	new_token(t_token *new, t_type prev_type)
+{
+	if (prev_type == DRIN && new->type == LIM)
+	{
+		if (mark_limiter_if_quoted(new))
+			return (1);
+	}
+	return (0);
+}
+
+static void	token_to_list(t_token **head, t_token **last, t_token *new)
+{
+	if (*last)
+	{
+		(*last)->next = new;
+		new->prev = *last;
+	}
+	else
+		*head = new;
+	*last = new;
+}
+
 t_token	*tokenize(char **split)
 {
 	t_token	*head;
-	t_token	*last;
 	t_token	*new;
+	t_token	*last;
 	t_type	prev_type;
-
+	
 	head = NULL;
 	last = NULL;
 	prev_type = PIPE;
@@ -87,28 +109,49 @@ t_token	*tokenize(char **split)
 		new = create_token(*split, prev_type);
 		if (!new)
 			return (free_token(head), NULL);
-		if (prev_type == DRIN && new->type == LIM)
-		{
-			if (mark_limiter_if_quoted(new))
-			{
-				free(new->str);
-				free(new);
-				return (NULL);
-			}
-		}
-		if (last)
-		{
-			last->next = new;
-			new->prev = last;
-		}
-		else
-			head = new;
-		last = new;
+		if(new_token(new, prev_type) == 1)
+			return(free(new->str), free(new), NULL);
+		token_to_list(&head, &last, new);
 		prev_type = new->type;
 		split++;
 	}
 	return (head);
 }
+
+//AVANT DE REDUIRE
+// t_token	*tokenize(char **split)
+// {
+// 	t_token	*head;
+// 	t_token	*last;
+// 	t_token	*new;
+// 	t_type	prev_type;
+
+// 	head = NULL;
+// 	last = NULL;
+// 	prev_type = PIPE;
+// 	while (*split)
+// 	{
+// 		new = create_token(*split, prev_type);
+// 		if (!new)
+// 			return (free_token(head), NULL);
+// 		if (prev_type == DRIN && new->type == LIM)
+// 		{
+// 			if (mark_limiter_if_quoted(new))
+// 				return (free(new->str), free(new), NULL);
+// 		}
+// 		if (last)
+// 		{
+// 			last->next = new;
+// 			new->prev = last;
+// 		}
+// 		else
+// 			head = new;
+// 		last = new;
+// 		prev_type = new->type;
+// 		split++;
+// 	}
+// 	return (head);
+// }
 
 // si return (0) (= invalide)
 int	validate_tokens(t_token *tkn)
@@ -135,6 +178,7 @@ int	validate_tokens(t_token *tkn)
 	}
 	return (1);
 }
+
 int	mark_limiter_if_quoted(t_token *tok)
 {
 	char	*s;
