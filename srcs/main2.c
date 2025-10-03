@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/03 16:49:34 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 17:02:10 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,10 +253,67 @@ static int	init_shell(char **envp, t_env **env)
 	return (0);
 }
 
-// static void main_loop(t_env **env)
-// {
-// 	char *line;
+static char	*find_line(void)
+{
+	if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO)
+		|| !isatty(STDERR_FILENO))
+		return (get_next_line(STDIN_FILENO));
+	else
+		return (readline("minishell$ "));
+}
 
+static int	valid_line_for_main(char *line, t_env **env)
+{
+	add_history(line);
+	process_line(line, env);
+	if (get_global()->want_exit)
+	{
+		free(line);
+		cleanup_shell(*env);
+		exit(get_global()->exit_code);
+	}
+	return (0);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	char	*line;
+	t_env	*env;
+
+	(void)argc;
+	(void)argv;
+	if (init_shell(envp, &env))
+		return (1);
+	while (1)
+	{
+		line = find_line();
+		if (!line)
+		{
+			handle_eof(env);
+			break ;
+		}
+		if (is_blank_line(line))
+		{
+			free(line);
+			continue ;
+		}
+		valid_line_for_main(line, &env);
+		free(line);
+	}
+	cleanup_shell(env);
+	return (get_global()->last_status);
+}
+
+//AVANT DE REDUIRE
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	char	*line;
+// 	t_env	*env;
+
+// 	(void)argc;
+// 	(void)argv;
+// 	if (init_shell(envp, &env))
+// 		return (1);
 // 	while (1)
 // 	{
 // 		if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO)
@@ -284,60 +341,6 @@ static int	init_shell(char **envp, t_env **env)
 // 		}
 // 		free(line);
 // 	}
-// }
-
-// int	main(int argc, char **argv, char **envp)
-// {
-// 	char	*line;
-// 	t_env	*env;
-
-// 	(void)argc;
-// 	(void)argv;
-// 	if (init_shell(envp, &env))
-// 		return (1);
-	
 // 	cleanup_shell(env);
 // 	return (get_global()->last_status);
 // }
-
-
-//AVANT DE REDUIRE
-int	main(int argc, char **argv, char **envp)
-{
-	char	*line;
-	t_env	*env;
-
-	(void)argc;
-	(void)argv;
-	if (init_shell(envp, &env))
-		return (1);
-	while (1)
-	{
-		if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO)
-			|| !isatty(STDERR_FILENO))
-			line = get_next_line(STDIN_FILENO);
-		else
-			line = readline("minishell$ ");
-		if (!line)
-		{
-			handle_eof(env);
-			break ;
-		}
-		if (is_blank_line(line))
-		{
-			free(line);
-			continue ;
-		}
-		add_history(line);
-		process_line(line, &env);
-		if (get_global()->want_exit)
-		{
-			free(line);
-			cleanup_shell(env);
-			return (get_global()->exit_code);
-		}
-		free(line);
-	}
-	cleanup_shell(env);
-	return (get_global()->last_status);
-}
