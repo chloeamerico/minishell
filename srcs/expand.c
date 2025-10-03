@@ -35,12 +35,10 @@ static int	check_if_expand(char *str)
 //on avance l'indexe iget_env_value
 static char	*extract_var(char *str, int *i)
 {
-	int		start;
 	char	*var;
 	int		len;
 
 	len = 0;
-	start = 0;
 	if (str[0] == '?')
 	{
 		(*i)++;

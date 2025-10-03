@@ -54,11 +54,9 @@ static int	get_word_len(char *line, int *i)
 // Alloue mot (sans quotes) extrait de start à end
 static char	*get_word(char *line, int start, int end)
 {
-	int		copy_state;
 	char	*word;
 	int		j;
 
-	copy_state = STATE_NONE;
 	word = malloc (sizeof(char) * (end - start + 1));
 	j = 0;
 	if (!word)

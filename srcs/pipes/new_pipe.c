@@ -95,6 +95,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	pipec.env = env;
 	if (loop_pipe(&pipec, 0))
 		return (free(pids), 1);
+	close_all_pipes(&pipeline);
 	exit_status = wait_children_pid(&pipeline, pids);
 	free(pids);
 	return (exit_status);
