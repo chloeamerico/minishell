@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 12:10:29 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:18:31 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,21 +85,14 @@ void	export_one_arg(char *arg, char ***env)
 	if (index != -1)
 	{
 		if (!ft_strchr(arg, '='))
-		{
-			free(key);
-			return ;
-		}
+			return (free(key));
 		update_var_in_env(arg, *env, index);
-		free(key);
-		return ;
+		return (free(key));
 	}
 	if (!ft_strchr(arg, '='))
 	{
 		if (export_one_arg2 (key, env))
-		{
-			free(key);
-			return ;
-		}
+			return (free(key));
 	}
 	*env = add_new_line_in_env(arg, *env);
 	free(key);
