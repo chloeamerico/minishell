@@ -16,7 +16,7 @@ SRCS =  init.c \
 	utils.c \
 	hd_helper.c \
 	commander.c \
-	pipes/child_process.c \
+	pipes/ch_processlolo.c \
 	pipes/list_to_array.c \
 	pipes/new_pipe.c \
 	pipes/parent_and_waitpid.c \
