@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 17:29:31 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 19:53:52 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ static int	create_pipe(t_pipeline *pipeline)
 		if (pipe(pipeline->pipefd2) == -1)
 			return (perror("creation pipe 2 failed"), 1);
 	}
+	close(pipeline->pipefd1[1]);
 	return (0);
 }
 
