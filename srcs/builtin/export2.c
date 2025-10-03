@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 16:51:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 16:25:05 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:31:48 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,17 @@ static int	update_var_in_env(char *arg, char **env, int index)
 	return (0);
 }
 
+static int	check_key(char *key, char *arg)
+{
+	if (ft_isalpha(key[0]) == 0 && key[0] != '_')
+	{
+		printf("export: %s : not a valid identifier\n", arg);
+		free(key);
+		return (1);
+	}
+	return (0);
+}
+
 void	export_one_arg(char *arg, char ***env)
 {
 	char	*key;
@@ -68,25 +79,20 @@ void	export_one_arg(char *arg, char ***env)
 	key = find_key(arg);
 	if (!key)
 		return ;
+	if (check_key(key, arg))
+		return ;
 	index = find_index(key, *env);
 	if (index != -1)
 	{
 		if (!ft_strchr(arg, '='))
-		{
-			free(key);
-			return ;
-		}
+			return (free(key));
 		update_var_in_env(arg, *env, index);
-		free(key);
-		return ;
+		return (free(key));
 	}
 	if (!ft_strchr(arg, '='))
 	{
 		if (export_one_arg2 (key, env))
-		{
-			free(key);
-			return ;
-		}
+			return (free(key));
 	}
 	*env = add_new_line_in_env(arg, *env);
 	free(key);
@@ -100,7 +106,7 @@ int	export_one_arg2(char *key, char ***env)
 	len = ft_strlen(key);
 	tmp = malloc (sizeof(char) * (len + 2));
 	if (!tmp)
-		return (1) ;
+		return (1);
 	ft_strcpy(tmp, key);
 	tmp[len] = '=';
 	tmp[len + 1] = '\0';

@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/01 12:38:27 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 14:44:14 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _POSIX_C_SOURCE 200809L
 #include "minishell.h"
 
-static void sigint_interactive(int sig)
+static void	sigint_interactive(int sig)
 {
 	(void)sig;
 	get_global()->last_status = 130;

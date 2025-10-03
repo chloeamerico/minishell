@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:46:59 by camerico          #+#    #+#             */
-/*   Updated: 2024/11/27 12:57:16 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:01:32 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 // verifie si le char est alphabetique (une lettre)
+//renvoie 1 auqnd c'est alpha
 int	ft_isalpha(int c)
 {
 	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))

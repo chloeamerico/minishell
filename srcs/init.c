@@ -6,17 +6,33 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 13:18:33 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 15:00:10 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static int	create_node2_with_equal(t_env *node, char *envdeb, char *equal)
+{
+	size_t	len;
+
+	len = equal - envdeb;
+	node->key = ft_substr(envdeb, 0, len);
+	if (!node->key)
+		return (1);
+	node->value = ft_strdup(equal + 1);
+	if (!node->value)
+	{
+		free(node->key);
+		return (1);
+	}
+	return (0);
+}
+
 static t_env	*create_node(char *envdeb)
 {
 	t_env	*node;
 	char	*equal;
-	size_t	len;
 
 	node = malloc (sizeof(t_env));
 	if (!node)
@@ -31,13 +47,8 @@ static t_env	*create_node(char *envdeb)
 	}
 	else
 	{
-		len = equal - envdeb;
-		node->key = ft_substr(envdeb, 0, len);
-		if (!node->key)
+		if (create_node2_with_equal(node, envdeb, equal) == 1)
 			return (free(node), NULL);
-		node->value = ft_strdup(equal + 1);
-		if (!node->value)
-			return (free(node->key), free(node), NULL);
 	}
 	node->next = NULL;
 	return (node);

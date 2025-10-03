@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 11:51:28 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:26:18 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,7 @@ static int	print_export(char **env)
 			write(1, "=\"", 2);
 			j++;
 			while (env[i][j])
-			{
-				write(1, &env[i][j], 1);
-				j++;
-			}
+				write(1, &env[i][j++], 1);
 			write(1, "\"", 1);
 		}
 		write(1, "\n", 1);

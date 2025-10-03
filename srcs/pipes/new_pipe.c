@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 16:43:39 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 17:29:31 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,8 @@ static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 		return (1);
 	}
 	else if (pipec->pids[cmd_index] == 0)
-		child_process(cmd_index, pipec->pipeline, pipec->current_cmd, pipec->env, pipec->pids);
+		child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
+			pipec->env, pipec->pids);
 	else
 		parent_process(pipec->pipeline, cmd_index);
 	return (0);
