@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   new_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 17:29:31 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/03 18:30:11 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	pipec.env = env;
 	if (loop_pipe(&pipec, 0))
 		return (free(pids), 1);
+	close_all_pipes(&pipeline);
 	exit_status = wait_children_pid(&pipeline, pids);
 	free(pids);
 	return (exit_status);
@@ -226,9 +227,10 @@ int	loop_pipe(t_pipec *pipec, int cmd_index)
 	while (pipec->current_cmd)
 	{
 		if (loop_pipe2(pipec, cmd_index))
-			return (1);
+			return (close_all_pipes(pipec->pipeline), 1);
 		pipec->current_cmd = pipec->current_cmd->next;
 		cmd_index++;
 	}
+	close_all_pipes(pipec->pipeline);
 	return (0);
 }

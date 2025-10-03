@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 12:20:12 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 18:23:06 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,10 @@ static int	check_if_expand(char *str)
 //on avance l'indexe iget_env_value
 static char	*extract_var(char *str, int *i)
 {
-	int		start;
 	char	*var;
 	int		len;
 
 	len = 0;
-	start = 0;
 	if (str[0] == '?')
 	{
 		(*i)++;

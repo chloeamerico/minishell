@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:20:04 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 14:39:37 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 18:23:43 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,9 @@ static int	get_word_len(char *line, int *i)
 // Alloue mot (sans quotes) extrait de start à end
 static char	*get_word(char *line, int start, int end)
 {
-	int		copy_state;
 	char	*word;
 	int		j;
 
-	copy_state = STATE_NONE;
 	word = malloc (sizeof(char) * (end - start + 1));
 	j = 0;
 	if (!word)
