@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 15:10:31 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 15:23:21 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 15:39:15 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ t_token	*tokenize(char **split)
 	t_token	*new;
 	t_token	*last;
 	t_type	prev_type;
-	
+
 	head = NULL;
 	last = NULL;
 	prev_type = PIPE;
@@ -109,8 +109,8 @@ t_token	*tokenize(char **split)
 		new = create_token(*split, prev_type);
 		if (!new)
 			return (free_token(head), NULL);
-		if(new_token(new, prev_type) == 1)
-			return(free(new->str), free(new), NULL);
+		if (new_token(new, prev_type) == 1)
+			return (free(new->str), free(new), NULL);
 		token_to_list(&head, &last, new);
 		prev_type = new->type;
 		split++;
@@ -179,29 +179,30 @@ int	validate_tokens(t_token *tkn)
 	return (1);
 }
 
-int	mark_limiter_if_quoted(t_token *tok)
+static int	has_quotes(char *str)
 {
-	char	*s;
-	int		i;
-	int		hasq;
-	int		len;
-	char	*tmp;
+	int	i;
 
-	s = tok->str;
 	i = 0;
-	hasq = 0;
-	while (s && s[i])
+	while (str && str[i])
 	{
-		if (s[i] == '\'' || s[i] == '"')
-			hasq = 1;
+		if (str[i] == '\'' || str[i] == '"')
+			return (1);
 		i++;
 	}
-	if (!hasq)
-		return (0);
+	return (0);
+}
+
+static char	*str_with_prefix(char *s)
+{
+	char	*tmp;
+	int		len;
+	int		i;
+
 	len = ft_strlen(s);
 	tmp = malloc (len + 2);
 	if (!tmp)
-		return (1);
+		return (NULL);
 	tmp[0] = '\1';
 	i = 0;
 	while (i < len)
@@ -210,7 +211,56 @@ int	mark_limiter_if_quoted(t_token *tok)
 		i++;
 	}
 	tmp[i + 1] = '\0';
+	return (tmp);
+}
+
+int	mark_limiter_if_quoted(t_token *tok)
+{
+	char	*tmp;
+
+	if (!has_quotes(tok->str))
+		return (0);
+	tmp = str_with_prefix(tok->str);
+	if (!tmp)
+		return (1);
 	free(tok->str);
 	tok->str = tmp;
 	return (0);
 }
+
+//AVANT DE REDUIRE
+// int	mark_limiter_if_quoted(t_token *tok)
+// {
+// 	char	*s;
+// 	int		i;
+// 	int		hasq;
+// 	int		len;
+// 	char	*tmp;
+
+// 	s = tok->str;
+// 	i = 0;
+// 	hasq = 0;
+// 	while (s && s[i])
+// 	{
+// 		if (s[i] == '\'' || s[i] == '"')
+// 			hasq = 1;
+// 		i++;
+// 	}
+// 	if (!hasq)
+// 		return (0);
+	// len = ft_strlen(s);
+	// tmp = malloc (len + 2);
+	// if (!tmp)
+	// 	return (1);
+	// tmp[0] = '\1';
+	// i = 0;
+	// while (i < len)
+	// {
+	// 	tmp[i + 1] = s[i];
+	// 	i++;
+	// }
+	// tmp[i + 1] = '\0';
+// 	free(tok->str);
+// 	tok->str = tmp;
+// 	return (0);
+// }
