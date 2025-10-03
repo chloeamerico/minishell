@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   new_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 15:48:07 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 16:42:31 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:07:00 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ static int	loop_pipe2(t_pipeline *pipeline, int cmd_index, t_cmd *current_cmd, p
 		return (1);
 	}
 	else if (pids[cmd_index] == 0)
-		child_process(cmd_index, pipeline, current_cmd, env, pids);
+		child_process(cmd_index, pipeline, current_cmd, env);
 	else
 		parent_process(pipeline, cmd_index);
 	return (0);
