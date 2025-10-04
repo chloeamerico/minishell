@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/03 17:02:10 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 18:36:11 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,7 @@ static int	init_shell(char **envp, t_env **env)
 	get_global()->last_status = 0;
 	get_global()->child_pid = 0;
 	get_global()->hd_interrupted = 0;
+	get_global()->hd_wfd = -1;
 	*env = init_env_list(envp);
 	if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO) && isatty(STDERR_FILENO))
 		setup_signals_interactive();

@@ -89,6 +89,7 @@ typedef struct s_global
 	int   hd_interrupted; /* flag: 1 si heredoc annulé par Ctrl-C */
 	int   want_exit;      /* flag: builtin exit demandé         */
 	int   exit_code;      /* code de sortie demandé par builtin */
+	int hd_wfd;
 }	t_global;
 
 typedef struct s_expand

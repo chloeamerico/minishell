@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   chpl.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 14:36:10 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/04 18:04:16 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,17 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 	int rc;
 
 	rc = apply_redirections(cmd, env);
-	if (rc == -2)
-		exit(130);
-	if (rc < 0)
+	if (rc != 0)
+	{
+		close_all_pipes(pipeline);
+		if (get_global()->hd_interrupted)
+			exit(130);
 		exit(1);
+	}
+	// if (rc == -2)
+	// 	exit(130);
+	// if (rc < 0)
+	// 	exit(1);
 
 	if (cmd->input != -1)
 	{
