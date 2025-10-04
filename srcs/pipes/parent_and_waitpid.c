@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:49:40 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 18:27:04 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/03 19:56:29 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void	parent_process(t_pipeline *pipeline, int cmd_index)
 		close_pipe_fd(pipeline, pipeline->prev_pipe, 0);
 	if (cmd_index < (pipeline->nb_cmd - 1))
 		close_pipe_fd(pipeline, pipeline->current_pipe, 1);
-	if (cmd_index == (pipeline->nb_cmd - 1))
-		close_all_pipes(pipeline);
+	// if (cmd_index == (pipeline->nb_cmd - 1))
+	// 	close_all_pipes(pipeline);
 }
 
 

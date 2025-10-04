@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 18:30:11 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 10:40:04 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,16 @@ static int	create_pipe(t_pipeline *pipeline)
 		if (pipe(pipeline->pipefd2) == -1)
 			return (perror("creation pipe 2 failed"), 1);
 	}
+	close(pipeline->pipefd1[1]);
+	pipeline->pipefd1[1] = -1;
+	// if (pipeline->pipefd1[0] != -1) 
+	// {
+    // 	close(pipeline->pipefd1[0]);       // <-- AJOUTE ÇA
+	// 	pipeline->pipefd1[0] = -1;         // <-- AJOUTE ÇA
+	// }
 	return (0);
 }
+
 
 int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
@@ -139,6 +147,7 @@ static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 		pipec->pipeline->prev_pipe = -1;
 	if (pipec->current_cmd->next)
 		create_pipe(pipec->pipeline);
+	// close(pipec->pipeline->pipefd1[1]);
 	pipec->pids[cmd_index] = fork();
 	if (pipec->pids[cmd_index] == -1)
 	{
@@ -152,10 +161,14 @@ static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 		return (1);
 	}
 	else if (pipec->pids[cmd_index] == 0)
+	{
 		child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
 			pipec->env, pipec->pids);
+		// close(pipec->pipeline->pipefd1[1]);
+	}
 	else
 		parent_process(pipec->pipeline, cmd_index);
+	// close(pipec->pipeline->pipefd1[1]);
 	return (0);
 }
 
