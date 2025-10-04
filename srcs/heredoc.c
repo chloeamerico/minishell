@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/04 14:50:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:58:06 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,25 @@ static void	hd_child_exit_success(int *p, t_env *env, t_cmd *cmd)
 	_exit(0);
 }
 
+static void close_all_exect_one(int	fd_keep)
+{
+	struct rlimit	lim;
+	int				max_fd;
+	int				fd;
+
+	if (getrlimit(RLIMIT_NOFILE, &lim) == 0)
+		max_fd = (int)lim.rlim_cur;
+	else
+		max_fd = 1024;
+	fd = 3;
+	while(fd < max_fd)
+	{
+		if(fd != fd_keep)
+			close(fd);
+		fd++;
+	}
+}
+
 static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 {
 	hd_env(0, params->env);
@@ -236,6 +255,7 @@ static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 	signal(SIGQUIT, hd_sigquit_handler);
 	signal(SIGPIPE, SIG_IGN);
 	close(p[0]);
+	close_all_exect_one(p[1]);
 	if (hd_loop(p[1], delim, expand, params->env))
 		hd_child_exit_error(p, params->env, params->cmd);
 	hd_child_exit_success(p, params->env, params->cmd);

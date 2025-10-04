@@ -17,6 +17,7 @@
 # include "./libft/includes/libft.h"
 # include <fcntl.h> 
 # include <sys/wait.h>
+# include <sys/resource.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
