@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/03 19:30:21 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:44:32 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,26 @@ static void	hd_child_exit_success(int *p, t_env *env, t_cmd *cmd)
 	_exit(0);
 }
 
+static void close_all_except(int keep_fd)
+{
+    struct rlimit lim;
+    int max_fd;
+    int fd;
+
+    if (getrlimit(RLIMIT_NOFILE, &lim) == 0)
+        max_fd = (int)lim.rlim_cur;
+    else
+        max_fd = 1024;
+
+    fd = 3;
+    while (fd < max_fd)
+    {
+        if (fd != keep_fd)
+            close(fd);
+        fd++;
+    }
+}
+
 static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 {
 	hd_env(0, params->env);
@@ -236,6 +256,7 @@ static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 	signal(SIGQUIT, hd_sigquit_handler);
 	signal(SIGPIPE, SIG_IGN);
 	close(p[0]);
+	close_all_except(p[1]);
 	if (hd_loop(p[1], delim, expand, params->env))
 		hd_child_exit_error(p, params->env, params->cmd);
 	hd_child_exit_success(p, params->env, params->cmd);
@@ -265,6 +286,7 @@ static int	hd_parent_wait(int *p, pid_t pid)
 	close(p[0]);
 	return (-1);
 }
+
 
 int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 {

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/04 10:40:04 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:39:51 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	init_pipeline(t_pipeline *pipeline)
 static void	child(t_cmd *cmd_list, t_env *env)
 {
 	setup_signals_child();
-	exec_simple_cmd(cmd_list, env);
+	exec_simple_cmd_without_pipe(cmd_list, env);
 	exit(127);
 }
 
@@ -60,6 +60,8 @@ static int	create_pipe(t_pipeline *pipeline)
 		}
 		if (pipe(pipeline->pipefd1) == -1)
 			return (perror("creation pipe 1 failed"), 1);
+		fcntl(pipeline->pipefd1[0], F_SETFD, FD_CLOEXEC);
+		fcntl(pipeline->pipefd1[1], F_SETFD, FD_CLOEXEC);
 	}
 	else
 	{
@@ -70,9 +72,17 @@ static int	create_pipe(t_pipeline *pipeline)
 		}
 		if (pipe(pipeline->pipefd2) == -1)
 			return (perror("creation pipe 2 failed"), 1);
+		
+		fcntl(pipeline->pipefd2[0], F_SETFD, FD_CLOEXEC);
+		fcntl(pipeline->pipefd2[1], F_SETFD, FD_CLOEXEC);
 	}
-	close(pipeline->pipefd1[1]);
-	pipeline->pipefd1[1] = -1;
+	// printf("debug : pipefd1[0] = %i\n", pipeline->pipefd1[0]);			// sont a 3, 4;
+	// printf("debug : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+	
+	// printf("debug : pipefd1[0] = %i\n", pipeline->pipefd1[0]);			// il y a 4 pipefd1[0] et 4 pipefd[1][1];
+	// printf("debug : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+	// close(pipeline->pipefd1[1]);
+	// pipeline->pipefd1[1] = -1;
 	// if (pipeline->pipefd1[0] != -1) 
 	// {
     // 	close(pipeline->pipefd1[0]);       // <-- AJOUTE ÇA
@@ -96,16 +106,23 @@ int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 	pids = pid_array(&pipeline, cmd_list);
 	if (!pids)
 		return (1);
-	init_pipeline(&pipeline);
+	// init_pipeline(&pipeline);
 	pipec.current_cmd = cmd_list;
 	pipec.pipeline = &pipeline;
 	pipec.pids = pids;
 	pipec.env = env;
+	init_pipeline(pipec.pipeline);
 	if (loop_pipe(&pipec, 0))
 		return (free(pids), 1);
-	close_all_pipes(&pipeline);
-	exit_status = wait_children_pid(&pipeline, pids);
+	printf("debug : pipefd1[0] = %i\n", pipeline.pipefd1[0]);
+	printf("debug : pipefd1[1] = %i\n", pipeline.pipefd1[1]);
+	close_all_pipes(pipec.pipeline);
+	exit_status = wait_children_pid(pipec.pipeline, pids);
 	free(pids);
+	// printf("debug : pipefd1[0] = %i\n", pipeline.pipefd1[0]);		//tout est ferme
+	// printf("debug : pipefd1[1] = %i\n", pipeline.pipefd1[1]);
+	// printf("debug : pipefd2[0] = %i\n", pipeline.pipefd2[0]);
+	// printf("debug : pipefd2[1] = %i\n", pipeline.pipefd2[1]);
 	return (exit_status);
 }
 
@@ -148,7 +165,11 @@ static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 	if (pipec->current_cmd->next)
 		create_pipe(pipec->pipeline);
 	// close(pipec->pipeline->pipefd1[1]);
+	// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);			// sont a 3, 4, 3, -1;
+	// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 	pipec->pids[cmd_index] = fork();
+	// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);			// il y a 4 pipefd1[0] et 4 pipefd[1][1];
+	// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 	if (pipec->pids[cmd_index] == -1)
 	{
 		perror("error : fork");
@@ -158,17 +179,30 @@ static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 			cmd_index--;
 			waitpid(pipec->pids[cmd_index], NULL, 0);
 		}
+		// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);			//ne s'execute pas
+		// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 		return (1);
 	}
-	else if (pipec->pids[cmd_index] == 0)
+	// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);			// il y a 4 pipefd1[0] et 4 pipefd[1][1];
+	// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
+	if (pipec->pids[cmd_index] == 0)
 	{
+		// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);		//sont a 3, 4, 3, -1
+		// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 		child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
 			pipec->env, pipec->pids);
+		// printf("debug2 : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);			//NE s'execute jamais
+		// printf("debug2 : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 		// close(pipec->pipeline->pipefd1[1]);
 	}
+	
 	else
+	{
 		parent_process(pipec->pipeline, cmd_index);
+	}
 	// close(pipec->pipeline->pipefd1[1]);
+	// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);
+	// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 	return (0);
 }
 
@@ -243,6 +277,9 @@ int	loop_pipe(t_pipec *pipec, int cmd_index)
 			return (close_all_pipes(pipec->pipeline), 1);
 		pipec->current_cmd = pipec->current_cmd->next;
 		cmd_index++;
+		
+		// printf("debug : pipefd1[0] = %i\n", pipec->pipeline->pipefd1[0]);
+		// printf("debug : pipefd1[1] = %i\n", pipec->pipeline->pipefd1[1]);
 	}
 	close_all_pipes(pipec->pipeline);
 	return (0);

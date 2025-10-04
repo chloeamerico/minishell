@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 18:18:22 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 12:28:59 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,11 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 	setup_signals_child();
 	get_global()->child_pid = 0;
 	close_all_pipes(pipeline);
-	exec_simple_cmd(cmd, env);
+	// printf("debug : pipefd1[0] = %i\n", pipeline->pipefd1[0]);			//tous les 2 a -1
+	// printf("debug : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+	exec_simple_cmd_with_pipe(cmd, env, pipeline);
+	// printf("debug : pipefd1[0] = %i\n", pipeline->pipefd1[0]);		//ne s'execute pas 
+	// printf("debug : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
 	return (0);
 }
 
@@ -227,6 +231,42 @@ static void cleanup_exit(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
 	free_cmd_list(cmd);
 }
 
+static int exec_simple_cmd_with_pipe_part2(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd, t_pipeline * pipeline)
+{
+	int		status;
+	int		error_code;
+	char	*cmd_path;
+
+	(void)pipeline;
+	if (try_run_builtin(cmd_arg, &envp, &status))
+	{
+		cleanup_exit(cmd_arg, envp, env, cmd);
+		exit(status);
+	}
+	error_code = print_cmd_error(cmd_arg[0], envp);
+	if (error_code != 0)
+	{
+		cleanup_exit(cmd_arg, envp, env, cmd);
+		exit(error_code);
+	}
+	cmd_path = find_cmd_path(cmd_arg[0], envp);
+	if (!cmd_path)
+	{
+		cleanup_exit(cmd_arg, envp, env, cmd);
+		exit(127);
+	}
+	// printf("debug3 : pipefd1[0] = %i\n", pipeline->pipefd1[0]);		//toujours les 2 a -1
+	// printf("debug3 : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+	execve(cmd_path, cmd_arg, envp);
+	// printf("debug3 : pipefd1[0] = %i\n", pipeline->pipefd1[0]);		//ne s'execute pas ==> normal
+	// printf("debug3 : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+	perror("execve failed");
+	free(cmd_path);
+	cleanup_exit(cmd_arg, envp, env, cmd);
+	exit(126);
+}
+
+
 static int exec_simple_cmd_part2(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
 {
 	int		status;
@@ -257,7 +297,34 @@ static int exec_simple_cmd_part2(char **cmd_arg, char **envp, t_env *env, t_cmd 
 	exit(126);
 }
 
-int exec_simple_cmd(t_cmd *cmd, t_env *env)
+int exec_simple_cmd_with_pipe(t_cmd *cmd, t_env *env, t_pipeline *pipeline)
+{
+	char	**envp;
+	char	**cmd_arg;
+
+	if (apply_redirections(cmd, env) < 0)
+		exit(1);
+	envp = env_to_array(env);
+	if (!envp)
+		exit(1);
+	cmd_arg = tokens_to_array(cmd->args);
+	if (!cmd_arg)
+	{
+		cleanup_exit(NULL, envp, env, cmd);
+		exit(1);
+	}
+	if (!cmd_arg[0] || !cmd_arg[0][0])
+	{
+		fprintf(stderr, "minishell: command not found\n");
+		cleanup_exit(cmd_arg, envp, env, cmd);
+		exit(127);
+	}
+	// printf("debug : pipefd1[0] = %i\n", pipeline->pipefd1[0]);
+	// printf("debug : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+	return (exec_simple_cmd_with_pipe_part2(cmd_arg, envp, env, cmd, pipeline));
+}
+
+int exec_simple_cmd_without_pipe(t_cmd *cmd, t_env *env)
 {
 	char	**envp;
 	char	**cmd_arg;

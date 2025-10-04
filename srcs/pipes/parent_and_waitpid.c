@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:49:40 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 19:56:29 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:03:23 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,20 @@ void	parent_process(t_pipeline *pipeline, int cmd_index)
 		close_pipe_fd(pipeline, pipeline->prev_pipe, 0);
 	if (cmd_index < (pipeline->nb_cmd - 1))
 		close_pipe_fd(pipeline, pipeline->current_pipe, 1);
+	// close(pipeline->pipefd1[1]);
+	// pipeline->pipefd1[1] = -1;
 	// if (cmd_index == (pipeline->nb_cmd - 1))
 	// 	close_all_pipes(pipeline);
+	// if (cmd_index == (pipeline->nb_cmd - 1))
+	// {
+	// 	close(pipeline->pipefd1[1]);
+	// 	pipeline->pipefd1[1] = -1;
+	// }
+	// if(cmd_index == 1)
+	// {
+	// 	close(pipeline->pipefd1[1]);
+	// 	pipeline->pipefd1[1] = -1;
+	// }
 }
 
 
@@ -101,7 +113,9 @@ int	wait_children_pid(t_pipeline *pipeline, pid_t *pid)
 	{
 		if (waitpid(pid[i], &exit_status, 0) == -1)
 			perror("waitpid");
-		else if (i == pipeline->nb_cmd - 1)
+		// printf("debug : pipefd1[0] = %i\n", pipeline->pipefd1[0]);		//sont tous les deux  a -1
+		// printf("debug : pipefd1[1] = %i\n", pipeline->pipefd1[1]);
+		if (i == pipeline->nb_cmd - 1)
 			last_exit_status = last_children_status(exit_status);
 		i++;
 	}
