@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/04 12:52:38 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/04 14:50:53 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 	params.cmd = cmd;
 	if (pipe(p) < 0)
 		return (-1);
-	close(p[1]);
+	// close(p[1]);
 	pid = fork();
 	if (pid < 0)
 	{

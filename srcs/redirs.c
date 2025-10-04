@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:34:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/04 12:40:58 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:31:32 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,25 +129,15 @@ int	apply_redirections(t_cmd *cmd, t_env *env)
 	}
 	if (fd_in >= 0)
 	{
-		if (dup2(fd_in, STDIN_FILENO) < 0)
-		{
-			perror("dup2");
-			close(fd_in);
-			if (fd_out >= 0)
-				close(fd_out);
-			return (1);
-		}
-		close(fd_in);
+	    if (cmd->input != -1)
+	        close(cmd->input);
+	    cmd->input = fd_in;
 	}
 	if (fd_out >= 0)
 	{
-		if (dup2(fd_out, STDOUT_FILENO) < 0)
-		{
-			perror("dup2");
-			close(fd_out);
-			return (1);
-		}
-		close(fd_out);
+	    if (cmd->output != -1)
+	        close(cmd->output);
+	    cmd->output = fd_out;
 	}
 	return (0);
 }
