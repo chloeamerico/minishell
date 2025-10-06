@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 15:52:01 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 16:09:53 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,9 @@ static void close_other_heredocs(t_cmd *all_cmds, t_cmd *current_cmd)
     cmd = all_cmds;
     while (cmd)
     {
-        // Fermer les heredocs des AUTRES commandes
         if (cmd != current_cmd && cmd->input != -1)
         {
             close(cmd->input);
-            // Ne pas mettre à -1 car ce n'est qu'une copie locale après fork
         }
         cmd = cmd->next;
     }
@@ -34,16 +32,23 @@ int child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 {
     free(pids);
     int rc;
+    t_cmd *first_cmd;
     
     rc = apply_redirections(cmd, env);
     if (rc != 0)
     {
         close_all_pipes(pipeline);
+        first_cmd = cmd;
+        while (first_cmd->prev)
+            first_cmd = first_cmd->prev;
+        free_cmd_list(first_cmd);
+        free_env(env);
+        
         if (get_global()->hd_interrupted)
             exit(130);
         exit(1);
     }
-    t_cmd *first_cmd = cmd;
+    first_cmd = cmd;
     while (first_cmd->prev)
         first_cmd = first_cmd->prev;
     close_other_heredocs(first_cmd, cmd);
@@ -66,17 +71,18 @@ int child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
         dup2(cmd->output, STDOUT_FILENO);
         close(cmd->output);
     }
-    else if (cmd->next)
+    else if (cmd_index < (pipeline->nb_cmd - 1))
     {
         if (pipeline->current_pipe == 0)
             dup2(pipeline->pipefd1[1], STDOUT_FILENO);
         else
             dup2(pipeline->pipefd2[1], STDOUT_FILENO);
     }
-    
+    setup_signals_child();
+    get_global()->child_pid = 0;
     close_all_pipes(pipeline);
-    child(cmd, env);
-    exit(127);
+    exec_simple_cmd(cmd, env, rc);
+    return (0);
 }
 
 
@@ -314,78 +320,95 @@ static int print_cmd_error(char *cmd, char **envp)
 	return (result);
 }
 
-static void	cleanup_exit(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
+// static void cleanup_exit(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
+// {
+//     if (cmd_arg)
+//         free_tab(cmd_arg);
+//     if (envp)
+//         free_tab(envp);
+//     // Ne plus libérer env et cmd car déjà fait dans exec_simple_cmd
+//     if (env)
+//         free_env(env);
+//     if (cmd)
+//     {
+//         t_cmd *first = cmd;
+//         while (first && first->prev)
+//             first = first->prev;
+//         free_cmd_list(first);
+//     }
+// }
+
+static int exec_simple_cmd_part2(char **cmd_arg, char **envp)
 {
-	t_cmd *first;
-	
-	if (cmd_arg)
-		free_tab(cmd_arg);
-	if (envp)
-		free_tab(envp);
-	free_env(env);
-	first = cmd;
-	while (first && first->prev)
-		first = first->prev;
-	free_cmd_list(first);
+    int status;
+    int error_code;
+    char *cmd_path;
+    
+    signal(SIGPIPE, SIG_IGN);
+    if (try_run_builtin(cmd_arg, &envp, &status))
+    {
+        free_tab(cmd_arg);
+        free_tab(envp);
+        exit(status);
+    }
+    
+    error_code = print_cmd_error(cmd_arg[0], envp);
+    if (error_code != 0)
+    {
+        free_tab(cmd_arg);
+        free_tab(envp);
+        exit(error_code);
+    }
+    
+    cmd_path = find_cmd_path(cmd_arg[0], envp);
+    if (!cmd_path)
+    {
+        free_tab(cmd_arg);
+        free_tab(envp);
+        exit(127);
+    }
+    execve(cmd_path, cmd_arg, envp);
+    perror("execve failed");
+    free(cmd_path);
+    free_tab(cmd_arg);
+    free_tab(envp);
+    exit(126);
 }
 
-
-static int exec_simple_cmd_part2(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
-{
-	int		status;
-	int		error_code;
-	char	*cmd_path;
-
-	if (try_run_builtin(cmd_arg, &envp, &status))
-	{
-		cleanup_exit(cmd_arg, envp, env, cmd);
-		exit(status);
-	}
-	error_code = print_cmd_error(cmd_arg[0], envp);
-	if (error_code != 0)
-	{
-		cleanup_exit(cmd_arg, envp, env, cmd);
-		exit(error_code);
-	}
-	cmd_path = find_cmd_path(cmd_arg[0], envp);
-	if (!cmd_path)
-	{
-		cleanup_exit(cmd_arg, envp, env, cmd);
-		exit(127);
-	}
-	execve(cmd_path, cmd_arg, envp);
-	perror("execve failed");
-	free(cmd_path);
-	cleanup_exit(cmd_arg, envp, env, cmd);
-	exit(126);
-}
 
 int exec_simple_cmd(t_cmd *cmd, t_env *env, int rc)
 {
-	char	**envp;
-	char	**cmd_arg;
-
-	if(rc == -1)
-	{
-		if (apply_redirections(cmd, env) < 0)
-			exit(1);
-	}
-	// if (apply_redirections(cmd, env) < 0)
-	// 	exit(1);
-	envp = env_to_array(env);
-	if (!envp)
-		exit(1);
-	cmd_arg = tokens_to_array(cmd->args);
-	if (!cmd_arg)
-	{
-		cleanup_exit(NULL, envp, env, cmd);
-		exit(1);
-	}
-	if (!cmd_arg[0] || !cmd_arg[0][0])
-	{
-		fprintf(stderr, "minishell: command not found\n");
-		cleanup_exit(cmd_arg, envp, env, cmd);
-		exit(127);
-	}
-	return (exec_simple_cmd_part2(cmd_arg, envp, env, cmd));
+    char **envp;
+    char **cmd_arg;
+    t_cmd *first;
+    
+    if (rc == -1)
+    {
+        if (apply_redirections(cmd, env) < 0)
+            exit(1);
+    }
+    
+    envp = env_to_array(env);
+    if (!envp)
+        exit(1);
+    
+    cmd_arg = tokens_to_array(cmd->args);
+    if (!cmd_arg)
+    {
+        free_tab(envp);
+        exit(1);
+    }
+    if (!cmd_arg[0] || !cmd_arg[0][0])
+    {
+        // fprintf(stderr, "minishell: command not found\n");
+        free_tab(cmd_arg);
+        free_tab(envp);
+        exit(127);
+    }
+    first = cmd;
+    while (first && first->prev)
+        first = first->prev;
+    free_cmd_list(first);
+    free_env(env);
+    return (exec_simple_cmd_part2(cmd_arg, envp));
 }
