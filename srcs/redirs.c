@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:34:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 15:09:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 17:45:15 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,94 +53,55 @@ static int	open_out(char *path, int *fd, int append)
 	return (0);
 }
 
-// static int do_heredoc(t_token *lim, int *fd, t_env *env, t_cmd *cmd)
-// {
-//     int hfd;
-    
-//     // Check if heredoc fd was already collected
-//     if (lim->hd_fd >= 0)
-//     {
-//         hfd = lim->hd_fd;
-//         lim->hd_fd = -1;  // Mark as consumed
-//     }
-//     else
-//     {
-//         // Fallback: collect now (for non-pipeline cases)
-//         int expand = 1;
-//         char *d = lim->str;
-        
-//         if (d && d[0] == '\1')
-//         {
-//             expand = 0;
-//             int i = 0;
-//             while (d[i])
-//             {
-//                 d[i] = d[i + 1];
-//                 i++;
-//             }
-//         }
-        
-//         hfd = ms_heredoc(d, expand, env, cmd);
-//         if (hfd < 0)
-//             return (1);
-//     }
-    
-//     if (*fd >= 0)
-//         close(*fd);
-//     *fd = hfd;
-//     return (0);
-// }
-
-int apply_redirections(t_cmd *cmd, t_env *env)
+int	apply_redirections(t_cmd *cmd, t_env *env)
 {
-    t_token *t;
-    int fd_in;
-    int fd_out;
-    
-    (void) env;
-    fd_in = -1;
-    fd_out = -1;
-    t = cmd->reds;
-    
-    while (t)
-    {
-        if (t->type == RINT && t->next && t->next->type == FD)
-        {
-            if (open_in(t->next->str, &fd_in))
-            {
-                perror(t->next->str);
-                return (close_both_and_fail(&fd_in, &fd_out));
-            }
-        }
-        else if (t->type == ROUT && t->next && t->next->type == FD)
-        {
-            if (open_out(t->next->str, &fd_out, 0))
-            {
-                perror(t->next->str);
-                return (close_both_and_fail(&fd_in, &fd_out));
-            }
-        }
-        else if (t->type == DROUT && t->next && t->next->type == FD)
-        {
-            if (open_out(t->next->str, &fd_out, 1))
-            {
-                perror(t->next->str);
-                return (close_both_and_fail(&fd_in, &fd_out));
-            }
-        }
-        t = t->next;
-    }
-    if (fd_in >= 0)
-    {
-        if (cmd->input != -1)
-            close(cmd->input);
-        cmd->input = fd_in;
-    }
-    if (fd_out >= 0)
-    {
-        if (cmd->output != -1)
-            close(cmd->output);
-        cmd->output = fd_out;
-    }
-    return (0);
+	t_token	*t;
+	int		fd_in;
+	int		fd_out;
+
+	(void)env;
+	fd_in = -1;
+	fd_out = -1;
+	t = cmd->reds;
+	while (t)
+	{
+		if (t->type == RINT && t->next && t->next->type == FD)
+		{
+			if (open_in(t->next->str, &fd_in))
+			{
+				perror(t->next->str);
+				return (close_both_and_fail(&fd_in, &fd_out));
+			}
+		}
+		else if (t->type == ROUT && t->next && t->next->type == FD)
+		{
+			if (open_out(t->next->str, &fd_out, 0))
+			{
+				perror(t->next->str);
+				return (close_both_and_fail(&fd_in, &fd_out));
+			}
+		}
+		else if (t->type == DROUT && t->next && t->next->type == FD)
+		{
+			if (open_out(t->next->str, &fd_out, 1))
+			{
+				perror(t->next->str);
+				return (close_both_and_fail(&fd_in, &fd_out));
+			}
+		}
+		t = t->next;
+	}
+	if (fd_in >= 0)
+	{
+		if (cmd->input != -1)
+			close(cmd->input);
+		cmd->input = fd_in;
+	}
+	if (fd_out >= 0)
+	{
+		if (cmd->output != -1)
+			close(cmd->output);
+		cmd->output = fd_out;
+	}
+	return (0);
 }

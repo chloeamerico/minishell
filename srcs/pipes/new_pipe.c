@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 15:54:17 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 17:43:04 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,260 +75,184 @@ static int	create_pipe(t_pipeline *pipeline)
 		fcntl(pipeline->pipefd2[0], F_SETFD, FD_CLOEXEC);
 		fcntl(pipeline->pipefd2[1], F_SETFD, FD_CLOEXEC);
 	}
-	// close(pipeline->pipefd1[1]);
 	return (0);
 }
 
-static int collect_all_heredocs(t_cmd *cmd_list, t_env *env)
+static int	collect_all_heredocs(t_cmd *cmd_list, t_env *env)
 {
-    t_cmd *cmd;
-    t_token *token;
-    int hfd;
-    
-    cmd = cmd_list;
-    while (cmd)
-    {
-        token = cmd->reds;
-        while (token)
-        {
-            if (token->type == DRIN && token->next && token->next->type == LIM)
-            {
-                int expand = 1;
-                char *d = token->next->str;
-                
-                if (d && d[0] == '\1')
-                {
-                    expand = 0;
-                    int i = 0;
-                    while (d[i])
-                    {
-                        d[i] = d[i + 1];
-                        i++;
-                    }
-                }
-                
-                hfd = ms_heredoc(d, expand, env, cmd);
-                if (hfd < 0)
-                    return (1);
-                if (cmd->input != -1)
-                    close(cmd->input);
-                cmd->input = hfd;
-            }
-            token = token->next;
-        }
-        cmd = cmd->next;
-    }
-    return (0);
+	t_cmd	*cmd;
+	t_token	*token;
+	int		hfd;
+	int		expand;
+	char	*d;
+	int		i;
+
+	cmd = cmd_list;
+	while (cmd)
+	{
+		token = cmd->reds;
+		while (token)
+		{
+			if (token->type == DRIN && token->next && token->next->type == LIM)
+			{
+				expand = 1;
+				d = token->next->str;
+				if (d && d[0] == '\1')
+				{
+					expand = 0;
+					i = 0;
+					while (d[i])
+					{
+						d[i] = d[i + 1];
+						i++;
+					}
+				}
+				hfd = ms_heredoc(d, expand, env, cmd);
+				if (hfd < 0)
+					return (1);
+				if (cmd->input != -1)
+					close(cmd->input);
+				cmd->input = hfd;
+			}
+			token = token->next;
+		}
+		cmd = cmd->next;
+	}
+	return (0);
 }
 
-
-
-int exec_pipeline(t_cmd *cmd_list, t_env *env)
+int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
-    t_pipeline pipeline;
-    pid_t *pids;
-    int exit_status;
-    t_pipec pipec;
-    
-    if (!cmd_list)
-        return (1);
-    if (!cmd_list->next)
-        return (one_cmd_without_pipe(cmd_list, env));
-    if (collect_all_heredocs(cmd_list, env))
-        return (1);
-    pids = pid_array(&pipeline, cmd_list);
-    if (!pids)
-        return (1);
-    init_pipeline(&pipeline);
-    pipec.current_cmd = cmd_list;
-    pipec.first_cmd = cmd_list;
-    pipec.pipeline = &pipeline;
-    pipec.pids = pids;
-    pipec.env = env;
-    if (loop_pipe(&pipec, 0))
-        return (free(pids), 1);
-    exit_status = wait_children_pid(&pipeline, pids);
-    free(pids);
-    return (exit_status);
+	t_pipeline	pipeline;
+	pid_t		*pids;
+	int			exit_status;
+	t_pipec		pipec;
+
+	if (!cmd_list)
+		return (1);
+	if (!cmd_list->next)
+		return (one_cmd_without_pipe(cmd_list, env));
+	if (collect_all_heredocs(cmd_list, env))
+		return (1);
+	pids = pid_array(&pipeline, cmd_list);
+	if (!pids)
+		return (1);
+	init_pipeline(&pipeline);
+	pipec.current_cmd = cmd_list;
+	pipec.first_cmd = cmd_list;
+	pipec.pipeline = &pipeline;
+	pipec.pids = pids;
+	pipec.env = env;
+	if (loop_pipe(&pipec, 0))
+		return (free(pids), 1);
+	exit_status = wait_children_pid(&pipeline, pids);
+	free(pids);
+	return (exit_status);
 }
 
+static int	collect_cmd_heredocs(t_cmd *cmd, t_env *env)
+{
+	t_token	*token;
+	int		hfd;
+	int		expand;
+	char	*d;
+	int		i;
 
-static int collect_cmd_heredocs(t_cmd *cmd, t_env *env)
-{
-    t_token *token;
-    int hfd;
-    int expand;
-    char *d;
-    int i;
-    
-    if (!cmd || !cmd->reds)
-        return (0);
-    
-    get_global()->hd_interrupted = 0;
-    
-    token = cmd->reds;
-    while (token)
-    {
-        if (token->type == DRIN && token->next && token->next->type == LIM)
-        {
-            expand = 1;
-            d = token->next->str;
-            
-            if (d && d[0] == '\1')
-            {
-                expand = 0;
-                i = 0;
-                while (d[i])
-                {
-                    d[i] = d[i + 1];
-                    i++;
-                }
-            }
-            
-            hfd = ms_heredoc(d, expand, env, cmd);
-            if (hfd < 0)
-            {
-                return (1);
-            }
-            
-            if (cmd->input != -1)
-                close(cmd->input);
-            cmd->input = hfd;
-        }
-        token = token->next;
-    }
-    return (0);
-}
-int one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
-{
-    pid_t pid;
-    int status;
-    int sig;
-    
-    if (collect_cmd_heredocs(cmd_list, env))
-        return (1);
-    
-    pid = fork();
-    if (pid == 0)
-        child(cmd_list, env);
-    else if (pid > 0)
-    {
-        if (waitpid(pid, &status, 0) == -1)
-            return (1);
-        if (WIFEXITED(status))
-            return (WEXITSTATUS(status));
-        if (WIFSIGNALED(status))
-        {
-            sig = WTERMSIG(status);
-            if (sig == SIGQUIT)
-                write(2, "Quit (core dumped)\n", 20);
-            else if (sig == SIGINT)
-                write(2, "\n", 1);
-            return (128 + sig);
-        }
-        return (1);
-    }
-    return (perror("fork"), 1);
-}
-static int loop_pipe2(t_pipec *pipec, int cmd_index)
-{
-    pipec->pipeline->current_pipe = cmd_index % 2;
-    if (cmd_index != 0)
-        pipec->pipeline->prev_pipe = (cmd_index - 1) % 2;
-    else
-        pipec->pipeline->prev_pipe = -1;
-    
-    if (pipec->current_cmd->next)
-        create_pipe(pipec->pipeline);
-    
-    pipec->pids[cmd_index] = fork();
-    
-    if (pipec->pids[cmd_index] == -1)
-    {
-        perror("error : fork");
-        close_all_pipes(pipec->pipeline);
-        while (cmd_index > 0)
-        {
-            cmd_index--;
-            waitpid(pipec->pids[cmd_index], NULL, 0);
-        }
-        return (1);
-    }
-    else if (pipec->pids[cmd_index] == 0)
-    {
-        // Simplement appeler child_process comme avant
-        child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
-                     pipec->env, pipec->pids);
-    }
-    else
-        parent_process(pipec->pipeline, cmd_index);
-    
-    return (0);
+	if (!cmd || !cmd->reds)
+		return (0);
+	get_global()->hd_interrupted = 0;
+	token = cmd->reds;
+	while (token)
+	{
+		if (token->type == DRIN && token->next && token->next->type == LIM)
+		{
+			expand = 1;
+			d = token->next->str;
+			if (d && d[0] == '\1')
+			{
+				expand = 0;
+				i = 0;
+				while (d[i])
+				{
+					d[i] = d[i + 1];
+					i++;
+				}
+			}
+			hfd = ms_heredoc(d, expand, env, cmd);
+			if (hfd < 0)
+			{
+				return (1);
+			}
+			if (cmd->input != -1)
+				close(cmd->input);
+			cmd->input = hfd;
+		}
+		token = token->next;
+	}
+	return (0);
 }
 
+int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
+{
+	pid_t	pid;
+	int		status;
+	int		sig;
 
-// int collect_heredocs(t_cmd *cmd, t_env *env)
-// {
-//     t_token *token = cmd->reds;
-//     int last_input_fd = -1;
-//     int ret;
+	if (collect_cmd_heredocs(cmd_list, env))
+		return (1);
+	pid = fork();
+	if (pid == 0)
+		child(cmd_list, env);
+	else if (pid > 0)
+	{
+		if (waitpid(pid, &status, 0) == -1)
+			return (1);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		if (WIFSIGNALED(status))
+		{
+			sig = WTERMSIG(status);
+			if (sig == SIGQUIT)
+				write(2, "Quit (core dumped)\n", 20);
+			else if (sig == SIGINT)
+				write(2, "\n", 1);
+			return (128 + sig);
+		}
+		return (1);
+	}
+	return (perror("fork"), 1);
+}
 
-//     while (token)
-//     {
-//         if (token->type == DRIN)
-//         {
-//             if (last_input_fd >= 0)
-//                 close(last_input_fd);
-//             ret = ms_heredoc(token->str, 1, env, cmd);
-//             if (ret < 0)
-//             {
-//                 if (last_input_fd >= 0)
-//                     close(last_input_fd);
-//                 return (1);
-//             }
-//             last_input_fd = ret;
-//             cmd->input = last_input_fd;
-//         }
-//         token = token->next;
-//     }
-//     return (0);
-// }
-
-// static int loop_pipe2(t_pipec *pipec, int cmd_index)
-// {
-//     pipec->pipeline->current_pipe = cmd_index % 2;
-//     if (cmd_index != 0)
-//         pipec->pipeline->prev_pipe = (cmd_index - 1) % 2;
-//     else
-//         pipec->pipeline->prev_pipe = -1;
-//     if (collect_heredocs(pipec->current_cmd, pipec->env))
-//         return (1);
-//     if (pipec->current_cmd->next)
-//         if (create_pipe(pipec->pipeline))
-//             return (1);
-//     pipec->pids[cmd_index] = fork();
-//     if (pipec->pids[cmd_index] == -1)
-//     {
-//         perror("error : fork");
-//         close_all_pipes(pipec->pipeline);
-//         while (cmd_index > 0)
-//         {
-//             cmd_index--;
-//             waitpid(pipec->pids[cmd_index], NULL, 0);
-//         }
-//         return (1);
-//     }
-//     else if (pipec->pids[cmd_index] == 0)
-//     {
-//         if (apply_redirections(pipec->current_cmd, pipec->env))
-//             exit(EXIT_FAILURE);
-//         child_process(cmd_index, pipec->pipeline, pipec->current_cmd, pipec->env, pipec->pids);
-//     }
-//     else
-//         parent_process(pipec->pipeline, cmd_index);
-//     return (0);
-// }
-
+static int	loop_pipe2(t_pipec *pipec, int cmd_index)
+{
+	pipec->pipeline->current_pipe = cmd_index % 2;
+	if (cmd_index != 0)
+		pipec->pipeline->prev_pipe = (cmd_index - 1) % 2;
+	else
+		pipec->pipeline->prev_pipe = -1;
+	if (pipec->current_cmd->next)
+		create_pipe(pipec->pipeline);
+	pipec->pids[cmd_index] = fork();
+	if (pipec->pids[cmd_index] == -1)
+	{
+		perror("error : fork");
+		close_all_pipes(pipec->pipeline);
+		while (cmd_index > 0)
+		{
+			cmd_index--;
+			waitpid(pipec->pids[cmd_index], NULL, 0);
+		}
+		return (1);
+	}
+	else if (pipec->pids[cmd_index] == 0)
+	{
+		child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
+			pipec->env, pipec->pids);
+	}
+	else
+		parent_process(pipec->pipeline, cmd_index);
+	return (0);
+}
 
 int	loop_pipe(t_pipec *pipec, int cmd_index)
 {
