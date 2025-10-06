@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 14:42:26 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/06 14:55:12 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,15 +301,21 @@ static int print_cmd_error(char *cmd, char **envp)
 	return (result);
 }
 
-static void cleanup_exit(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
+static void	cleanup_exit(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
 {
+	t_cmd *first;
+	
 	if (cmd_arg)
 		free_tab(cmd_arg);
 	if (envp)
 		free_tab(envp);
 	free_env(env);
-	free_cmd_list(cmd);
+	first = cmd;
+	while (first && first->prev)
+		first = first->prev;
+	free_cmd_list(first);
 }
+
 
 static int exec_simple_cmd_part2(char **cmd_arg, char **envp, t_env *env, t_cmd *cmd)
 {
