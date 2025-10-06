@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:55:55 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 12:59:09 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 18:05:50 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,24 +43,21 @@ void	free_env(t_env *env)
 
 void	free_cmd_list(t_cmd *cmd)
 {
-	t_cmd *tmp;
-	
+	t_cmd	*tmp;
+
 	while (cmd)
 	{
 		tmp = cmd;
 		cmd = cmd->next;
-			
 		free_token(tmp->args);
 		free_token(tmp->reds);
 		if (tmp->input != -1)
 			close(tmp->input);
 		if (tmp->output != -1)
 			close(tmp->output);
-			
 		free(tmp);
 	}
 }
-
 
 void	free_tab(char **tab)
 {
