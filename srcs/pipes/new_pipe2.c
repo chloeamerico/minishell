@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 14:28:25 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:55:06 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,83 +79,30 @@ static int	create_pipe(t_pipeline *pipeline)
 	return (0);
 }
 
-// Collecter tous les heredocs de toutes les commandes AVANT le pipeline
-static int collect_all_heredocs(t_cmd *cmd_list, t_env *env)
+int	exec_pipeline(t_cmd *cmd_list, t_env *env)
 {
-    t_cmd *cmd;
-    t_token *token;
-    int hfd;
-    
-    cmd = cmd_list;
-    while (cmd)
-    {
-        token = cmd->reds;
-        while (token)
-        {
-            if (token->type == DRIN && token->next && token->next->type == LIM)
-            {
-                // Appeler do_heredoc ici pour ce token
-                int expand = 1;
-                char *d = token->next->str;
-                
-                if (d && d[0] == '\1')
-                {
-                    expand = 0;
-                    int i = 0;
-                    while (d[i])
-                    {
-                        d[i] = d[i + 1];
-                        i++;
-                    }
-                }
-                
-                hfd = ms_heredoc(d, expand, env, cmd);
-                if (hfd < 0)
-                    return (1);
-                
-                // Fermer l'ancien input et assigner le nouveau
-                if (cmd->input != -1)
-                    close(cmd->input);
-                cmd->input = hfd;
-            }
-            token = token->next;
-        }
-        cmd = cmd->next;
-    }
-    return (0);
-}
+	t_pipeline	pipeline;
+	pid_t		*pids;
+	int			exit_status;
+	t_pipec		pipec;
 
-
-
-int exec_pipeline(t_cmd *cmd_list, t_env *env)
-{
-    t_pipeline pipeline;
-    pid_t *pids;
-    int exit_status;
-    t_pipec pipec;
-    
-    if (!cmd_list)
-        return (1);
-    if (!cmd_list->next)
-        return (one_cmd_without_pipe(cmd_list, env));
-    
-    // COLLECTER TOUS LES HEREDOCS ICI AVANT LE PIPELINE
-    if (collect_all_heredocs(cmd_list, env))
-        return (1);
-    
-    pids = pid_array(&pipeline, cmd_list);
-    if (!pids)
-        return (1);
-    init_pipeline(&pipeline);
-    pipec.current_cmd = cmd_list;
-    pipec.pipeline = &pipeline;
-    pipec.pids = pids;
-    pipec.env = env;
-    if (loop_pipe(&pipec, 0))
-        return (free(pids), 1);
-    exit_status = wait_children_pid(&pipeline, pids);
-    free(pids);
-    return (exit_status);
+	if (!cmd_list)
+		return (1);
+	if (!cmd_list->next)
+		return (one_cmd_without_pipe(cmd_list, env));
+	pids = pid_array(&pipeline, cmd_list);
+	if (!pids)
+		return (1);
+	init_pipeline(&pipeline);
+	pipec.current_cmd = cmd_list;
+	pipec.pipeline = &pipeline;
+	pipec.pids = pids;
+	pipec.env = env;
+	if (loop_pipe(&pipec, 0))
+		return (free(pids), 1);
+	exit_status = wait_children_pid(&pipeline, pids);
+	free(pids);
+	return (exit_status);
 }
 
 int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
