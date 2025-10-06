@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:55:55 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/01 12:23:10 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 12:59:09 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,29 +41,26 @@ void	free_env(t_env *env)
 	}
 }
 
-/* libère la liste de commandes :
-   - ferme les fd valides
-   - libère args (t_token*) et reds (t_token*)
-   - libère le maillon t_cmd */
-void	free_cmd_list(t_cmd *cmds)
+void	free_cmd_list(t_cmd *cmd)
 {
-	t_cmd	*n;
-
-	while (cmds)
+	t_cmd *tmp;
+	
+	while (cmd)
 	{
-		n = cmds->next;
-		if (cmds->input >= 0)
-			close(cmds->input);
-		if (cmds->output >= 0)
-			close(cmds->output);
-		if (cmds->args)
-			free_token(cmds->args);
-		if (cmds->reds)
-			free_token(cmds->reds);
-		free(cmds);
-		cmds = n;
+		tmp = cmd;
+		cmd = cmd->next;
+			
+		free_token(tmp->args);
+		free_token(tmp->reds);
+		if (tmp->input != -1)
+			close(tmp->input);
+		if (tmp->output != -1)
+			close(tmp->output);
+			
+		free(tmp);
 	}
 }
+
 
 void	free_tab(char **tab)
 {
