@@ -6,13 +6,12 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 14:42:26 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 18:04:16 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//AVANT LES CHANGEMENTS
 int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
 {
 	free(pids);
@@ -26,6 +25,11 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 			exit(130);
 		exit(1);
 	}
+	// if (rc == -2)
+	// 	exit(130);
+	// if (rc < 0)
+	// 	exit(1);
+
 	if (cmd->input != -1)
 	{
 		dup2(cmd->input, STDIN_FILENO);
@@ -47,97 +51,16 @@ int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, p
 	else if (cmd_index < (pipeline->nb_cmd - 1))
 	{
 		if (pipeline->current_pipe == 0)
-		{
 			dup2(pipeline->pipefd1[1], STDOUT_FILENO);
-		}
 		else
-		{
 			dup2(pipeline->pipefd2[1], STDOUT_FILENO);
-		}
 	}
 	setup_signals_child();
 	get_global()->child_pid = 0;
-	// if (cmd->input != -1)
-	// 	close(cmd->input);
-    // if (cmd->output != -1)
-	// 	close(cmd->output);
 	close_all_pipes(pipeline);
-	exec_simple_cmd(cmd, env, rc);
+	exec_simple_cmd(cmd, env);
 	return (0);
 }
-
-
-// int child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
-// {
-//     free(pids);
-//     int rc;
-//     int saved_pipe_in;
-//     int saved_pipe_out;
-
-//     // Sauvegarder les FDs des pipes AVANT apply_redirections
-//     // pour éviter qu'ils soient réutilisés par le heredoc
-//     saved_pipe_in = -1;
-//     saved_pipe_out = -1;
-    
-//     if (cmd_index > 0)
-//     {
-//         if (pipeline->prev_pipe == 0)
-//             saved_pipe_in = dup(pipeline->pipefd1[0]);
-//         else
-//             saved_pipe_in = dup(pipeline->pipefd2[0]);
-//     }
-    
-//     if (cmd_index < (pipeline->nb_cmd - 1))
-//     {
-//         if (pipeline->current_pipe == 0)
-//             saved_pipe_out = dup(pipeline->pipefd1[1]);
-//         else
-//             saved_pipe_out = dup(pipeline->pipefd2[1]);
-//     }
-
-//     rc = apply_redirections(cmd, env);
-//     if (rc != 0)
-//     {
-//         if (saved_pipe_in >= 0)
-//             close(saved_pipe_in);
-//         if (saved_pipe_out >= 0)
-//             close(saved_pipe_out);
-//         close_all_pipes(pipeline);
-//         if (get_global()->hd_interrupted)
-//             exit(130);
-//         exit(1);
-//     }
-
-//     // STDIN : priorité aux redirections explicites
-//     if (cmd->input != -1)
-//     {
-//         dup2(cmd->input, STDIN_FILENO);
-//         close(cmd->input);
-//     }
-//     else if (saved_pipe_in >= 0)
-//     {
-//         dup2(saved_pipe_in, STDIN_FILENO);
-//         close(saved_pipe_in);
-//     }
-
-//     // STDOUT : priorité aux redirections explicites
-//     if (cmd->output != -1)
-//     {
-//         dup2(cmd->output, STDOUT_FILENO);
-//         close(cmd->output);
-//     }
-//     else if (saved_pipe_out >= 0)
-//     {
-//         dup2(saved_pipe_out, STDOUT_FILENO);
-//         close(saved_pipe_out);
-//     }
-    
-//     setup_signals_child();
-//     get_global()->child_pid = 0;
-//     close_all_pipes(pipeline);
-//     exec_simple_cmd(cmd, env, rc);
-//     return (0);
-// }
 
 void	close_all_pipes(t_pipeline *pipeline)
 {
@@ -341,18 +264,13 @@ static int exec_simple_cmd_part2(char **cmd_arg, char **envp, t_env *env, t_cmd 
 	exit(126);
 }
 
-int exec_simple_cmd(t_cmd *cmd, t_env *env, int rc)
+int exec_simple_cmd(t_cmd *cmd, t_env *env)
 {
 	char	**envp;
 	char	**cmd_arg;
 
-	if(rc == -1)
-	{
-		if (apply_redirections(cmd, env) < 0)
-			exit(1);
-	}
-	// if (apply_redirections(cmd, env) < 0)
-	// 	exit(1);
+	if (apply_redirections(cmd, env) < 0)
+		exit(1);
 	envp = env_to_array(env);
 	if (!envp)
 		exit(1);

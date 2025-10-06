@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 11:41:58 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 18:36:11 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,6 @@ static int	is_single_builtin_cmd(t_cmd *cmd)
 
 	if (!cmd || cmd->next)
 		return (0);
-	if(cmd->reds)
-		return(0);
 	args = tokens_to_array(cmd->args);
 	if (!args || !args[0])
 	{

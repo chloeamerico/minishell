@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   new_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 14:35:56 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/04 15:55:06 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	init_pipeline(t_pipeline *pipeline)
 static void	child(t_cmd *cmd_list, t_env *env)
 {
 	setup_signals_child();
-	exec_simple_cmd(cmd_list, env, -1);
+	exec_simple_cmd(cmd_list, env);
 	exit(127);
 }
 
@@ -72,10 +72,10 @@ static int	create_pipe(t_pipeline *pipeline)
 		}
 		if (pipe(pipeline->pipefd2) == -1)
 			return (perror("creation pipe 2 failed"), 1);
-		fcntl(pipeline->pipefd2[0], F_SETFD, FD_CLOEXEC);
-		fcntl(pipeline->pipefd2[1], F_SETFD, FD_CLOEXEC);
+		fcntl(pipeline->pipefd1[0], F_SETFD, FD_CLOEXEC);
+		fcntl(pipeline->pipefd1[1], F_SETFD, FD_CLOEXEC);
 	}
-	// close(pipeline->pipefd1[1]);
+	close(pipeline->pipefd1[1]);
 	return (0);
 }
 

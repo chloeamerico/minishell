@@ -141,7 +141,7 @@ char **tokens_to_array(t_token *args);
 void	free_tab(char **tab);
 int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids);
 void close_all_pipes(t_pipeline *pipeline);
-int	exec_simple_cmd(t_cmd *cmd, t_env *env);
+int	exec_simple_cmd(t_cmd *cmd, t_env *env, int rc);
 void	parent_process(t_pipeline *pipeline, int cmd_index);
 int	wait_children_pid(t_pipeline *pipeline, pid_t *pid);
 int	loop_pipe(t_pipec *pipec, int cmd_index);
