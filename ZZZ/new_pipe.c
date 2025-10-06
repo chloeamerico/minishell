@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 15:16:30 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 14:28:25 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	init_pipeline(t_pipeline *pipeline)
 static void	child(t_cmd *cmd_list, t_env *env)
 {
 	setup_signals_child();
-	exec_simple_cmd(cmd_list, env, -1);
+	exec_simple_cmd(cmd_list, env);
 	exit(127);
 }
 
@@ -72,13 +72,14 @@ static int	create_pipe(t_pipeline *pipeline)
 		}
 		if (pipe(pipeline->pipefd2) == -1)
 			return (perror("creation pipe 2 failed"), 1);
-		fcntl(pipeline->pipefd2[0], F_SETFD, FD_CLOEXEC);
-		fcntl(pipeline->pipefd2[1], F_SETFD, FD_CLOEXEC);
+		fcntl(pipeline->pipefd1[0], F_SETFD, FD_CLOEXEC);
+		fcntl(pipeline->pipefd1[1], F_SETFD, FD_CLOEXEC);
 	}
-	// close(pipeline->pipefd1[1]);
+	close(pipeline->pipefd1[1]);
 	return (0);
 }
 
+// Collecter tous les heredocs de toutes les commandes AVANT le pipeline
 static int collect_all_heredocs(t_cmd *cmd_list, t_env *env)
 {
     t_cmd *cmd;
@@ -93,6 +94,7 @@ static int collect_all_heredocs(t_cmd *cmd_list, t_env *env)
         {
             if (token->type == DRIN && token->next && token->next->type == LIM)
             {
+                // Appeler do_heredoc ici pour ce token
                 int expand = 1;
                 char *d = token->next->str;
                 
@@ -110,6 +112,8 @@ static int collect_all_heredocs(t_cmd *cmd_list, t_env *env)
                 hfd = ms_heredoc(d, expand, env, cmd);
                 if (hfd < 0)
                     return (1);
+                
+                // Fermer l'ancien input et assigner le nouveau
                 if (cmd->input != -1)
                     close(cmd->input);
                 cmd->input = hfd;
@@ -134,6 +138,8 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
         return (1);
     if (!cmd_list->next)
         return (one_cmd_without_pipe(cmd_list, env));
+    
+    // COLLECTER TOUS LES HEREDOCS ICI AVANT LE PIPELINE
     if (collect_all_heredocs(cmd_list, env))
         return (1);
     
@@ -152,83 +158,35 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
     return (exit_status);
 }
 
-static int collect_cmd_heredocs(t_cmd *cmd, t_env *env)
+int	one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
 {
-    t_token *token;
-    int hfd;
-    int expand;
-    char *d;
-    int i;
-    
-    if (!cmd || !cmd->reds)
-        return (0);
-    
-    get_global()->hd_interrupted = 0;
-    
-    token = cmd->reds;
-    while (token)
-    {
-        if (token->type == DRIN && token->next && token->next->type == LIM)
-        {
-            expand = 1;
-            d = token->next->str;
-            
-            if (d && d[0] == '\1')
-            {
-                expand = 0;
-                i = 0;
-                while (d[i])
-                {
-                    d[i] = d[i + 1];
-                    i++;
-                }
-            }
-            
-            hfd = ms_heredoc(d, expand, env, cmd);
-            if (hfd < 0)
-            {
-                return (1);
-            }
-            
-            if (cmd->input != -1)
-                close(cmd->input);
-            cmd->input = hfd;
-        }
-        token = token->next;
-    }
-    return (0);
+	pid_t	pid;
+	int		status;
+	int		sig;
+
+	pid = fork();
+	if (pid == 0)
+		child(cmd_list, env);
+	else if (pid > 0)
+	{
+		if (waitpid(pid, &status, 0) == -1)
+			return (1);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		if (WIFSIGNALED(status))
+		{
+			sig = WTERMSIG(status);
+			if (sig == SIGQUIT)
+				write(2, "Quit (core dumped)\n", 20);
+			else if (sig == SIGINT)
+				write(2, "\n", 1);
+			return (128 + sig);
+		}
+		return (1);
+	}
+	return (perror("fork"), 1);
 }
-int one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
-{
-    pid_t pid;
-    int status;
-    int sig;
-    
-    if (collect_cmd_heredocs(cmd_list, env))
-        return (1);
-    
-    pid = fork();
-    if (pid == 0)
-        child(cmd_list, env);
-    else if (pid > 0)
-    {
-        if (waitpid(pid, &status, 0) == -1)
-            return (1);
-        if (WIFEXITED(status))
-            return (WEXITSTATUS(status));
-        if (WIFSIGNALED(status))
-        {
-            sig = WTERMSIG(status);
-            if (sig == SIGQUIT)
-                write(2, "Quit (core dumped)\n", 20);
-            else if (sig == SIGINT)
-                write(2, "\n", 1);
-            return (128 + sig);
-        }
-        return (1);
-    }
-    return (perror("fork"), 1);
-}
+
 static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 {
 	pipec->pipeline->current_pipe = cmd_index % 2;

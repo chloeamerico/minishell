@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:34:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 15:09:53 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 14:29:44 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int apply_redirections(t_cmd *cmd, t_env *env)
     int fd_in;
     int fd_out;
     
-    (void) env;
+	(void) env;
     fd_in = -1;
     fd_out = -1;
     t = cmd->reds;
@@ -128,8 +128,13 @@ int apply_redirections(t_cmd *cmd, t_env *env)
                 return (close_both_and_fail(&fd_in, &fd_out));
             }
         }
+        // NE PAS traiter les DRIN ici - ils sont déjà traités par collect_all_heredocs
+        // Les heredocs sont collectés AVANT le pipeline, pas dans les enfants
+        
         t = t->next;
     }
+    
+    // Ne pas toucher cmd->input s'il est déjà assigné par collect_all_heredocs
     if (fd_in >= 0)
     {
         if (cmd->input != -1)

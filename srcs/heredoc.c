@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/04 18:44:25 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:09:26 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,28 +104,26 @@ static int	hd_loop_expand_and_write(int wfd,
 	return (0);
 }
 
-static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
+static int hd_loop(int wfd, char *delim, int expand, t_env *env)
 {
-	char	*l;
-
-	while (1)
-	{
-		if (get_global()->hd_interrupted)
-			return (close(wfd), 1);
-		l = readline("> ");
-		if (!l)
-			return (close(wfd), 0);
-		if (get_global()->hd_interrupted)
-		{
-			free(l);
-			return (close(wfd), 1);
-		}
-		if (hd_loop_check_delim(l, delim, wfd))
-			return (0);
-		if (hd_loop_expand_and_write(wfd, l, expand, env))
-			return (1);
-	}
-	return (0);
+    char *l;
+    
+    while (1)
+    {
+        l = readline("> ");
+        if (!l)
+            return (close(wfd), 0);
+        if (get_global()->hd_interrupted)
+        {
+            free(l);
+            return (close(wfd), 1);
+        }
+        if (hd_loop_check_delim(l, delim, wfd))
+            return (0);
+        if (hd_loop_expand_and_write(wfd, l, expand, env))
+            return (1);
+    }
+    return (0);
 }
 
 static void	hd_sigint_handler(int sig)
@@ -307,36 +305,38 @@ static int	hd_parent_wait(int *p, pid_t pid)
 	return (-1);
 }
 
-int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
+int ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 {
-	int			p[2];
-	pid_t		pid;
-	t_hd_params	params;
-	int			parent_wait;
-
-	params.env = env;
-	params.cmd = cmd;
-	if (pipe(p) < 0)
-		return (-1);
-	// close(p[1]);
-	pid = fork();
-	if (pid < 0)
-	{
-		close(p[0]);
-		close(p[1]);
-		return (-1);
-	}
-	if (pid == 0)
-	{
-		close(p[0]);
-		get_global()->hd_wfd = p[1];
-		setup_signals_hd();
-		hd_child(p, delim, expand, &params);
-		close(p[1]);
-		_exit(0);
-	}
-	close(p[1]);
-	parent_wait = hd_parent_wait(p, pid);
-	get_global()->hd_wfd = -1;
-	return (parent_wait);
+    int p[2];
+    pid_t pid;
+    t_hd_params params;
+    int parent_wait;
+    
+    params.env = env;
+    params.cmd = cmd;
+    if (pipe(p) < 0)
+        return (-1);
+    
+    pid = fork();
+    if (pid < 0)
+    {
+        close(p[0]);
+        close(p[1]);
+        return (-1);
+    }
+    
+    if (pid == 0)
+    {
+        close(p[0]);
+        get_global()->hd_wfd = p[1];
+        setup_signals_hd();
+        hd_child(p, delim, expand, &params);
+        close(p[1]);
+        _exit(0);
+    }
+    
+    close(p[1]);
+    parent_wait = hd_parent_wait(p, pid);
+    get_global()->hd_wfd = -1;
+    return (parent_wait);
 }

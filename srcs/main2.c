@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 11:41:58 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:17:02 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,23 +164,27 @@ static t_cmd	*process_line2(char *line, t_env *env)
 	return (cmds);
 }
 
-static void	process_line(char *line, t_env **env)
+static void process_line(char *line, t_env **env)
 {
-	t_cmd	*cmds;
-	int		exit_status;
-
-	cmds = process_line2(line, *env);
-	if (!cmds)
-		return ;
-	if (is_single_builtin_cmd(cmds))
-	{
-		handle_single_builtin(cmds, env);
-		free_cmd_list(cmds);
-		return ;
-	}
-	exit_status = exec_pipeline(cmds, *env);
-	get_global()->last_status = exit_status;
-	free_cmd_list(cmds);
+    t_cmd *cmds;
+    int exit_status;
+    
+    get_global()->hd_interrupted = 0;
+    
+    cmds = process_line2(line, *env);
+    if (!cmds)
+        return;
+    
+    if (is_single_builtin_cmd(cmds))
+    {
+        handle_single_builtin(cmds, env);
+        free_cmd_list(cmds);
+        return;
+    }
+    
+    exit_status = exec_pipeline(cmds, *env);
+    get_global()->last_status = exit_status;
+    free_cmd_list(cmds);
 }
 
 //AVANT DE DIVISER
