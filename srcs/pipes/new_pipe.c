@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 15:16:30 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:54:17 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	init_pipeline(t_pipeline *pipeline)
 	pipeline->pipefd2[1] = -1;
 }
 
-static void	child(t_cmd *cmd_list, t_env *env)
+void	child(t_cmd *cmd_list, t_env *env)
 {
 	setup_signals_child();
 	exec_simple_cmd(cmd_list, env, -1);
@@ -136,12 +136,12 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
         return (one_cmd_without_pipe(cmd_list, env));
     if (collect_all_heredocs(cmd_list, env))
         return (1);
-    
     pids = pid_array(&pipeline, cmd_list);
     if (!pids)
         return (1);
     init_pipeline(&pipeline);
     pipec.current_cmd = cmd_list;
+    pipec.first_cmd = cmd_list;
     pipec.pipeline = &pipeline;
     pipec.pids = pids;
     pipec.env = env;
@@ -151,6 +151,7 @@ int exec_pipeline(t_cmd *cmd_list, t_env *env)
     free(pids);
     return (exit_status);
 }
+
 
 static int collect_cmd_heredocs(t_cmd *cmd, t_env *env)
 {
@@ -229,34 +230,42 @@ int one_cmd_without_pipe(t_cmd *cmd_list, t_env *env)
     }
     return (perror("fork"), 1);
 }
-static int	loop_pipe2(t_pipec *pipec, int cmd_index)
+static int loop_pipe2(t_pipec *pipec, int cmd_index)
 {
-	pipec->pipeline->current_pipe = cmd_index % 2;
-	if (cmd_index != 0)
-		pipec->pipeline->prev_pipe = (cmd_index - 1) % 2;
-	else
-		pipec->pipeline->prev_pipe = -1;
-	if (pipec->current_cmd->next)
-		create_pipe(pipec->pipeline);
-	pipec->pids[cmd_index] = fork();
-	if (pipec->pids[cmd_index] == -1)
-	{
-		perror("error : fork");
-		close_all_pipes(pipec->pipeline);
-		while (cmd_index > 0)
-		{
-			cmd_index--;
-			waitpid(pipec->pids[cmd_index], NULL, 0);
-		}
-		return (1);
-	}
-	else if (pipec->pids[cmd_index] == 0)
-		child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
-			pipec->env, pipec->pids);
-	else
-		parent_process(pipec->pipeline, cmd_index);
-	return (0);
+    pipec->pipeline->current_pipe = cmd_index % 2;
+    if (cmd_index != 0)
+        pipec->pipeline->prev_pipe = (cmd_index - 1) % 2;
+    else
+        pipec->pipeline->prev_pipe = -1;
+    
+    if (pipec->current_cmd->next)
+        create_pipe(pipec->pipeline);
+    
+    pipec->pids[cmd_index] = fork();
+    
+    if (pipec->pids[cmd_index] == -1)
+    {
+        perror("error : fork");
+        close_all_pipes(pipec->pipeline);
+        while (cmd_index > 0)
+        {
+            cmd_index--;
+            waitpid(pipec->pids[cmd_index], NULL, 0);
+        }
+        return (1);
+    }
+    else if (pipec->pids[cmd_index] == 0)
+    {
+        // Simplement appeler child_process comme avant
+        child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
+                     pipec->env, pipec->pids);
+    }
+    else
+        parent_process(pipec->pipeline, cmd_index);
+    
+    return (0);
 }
+
 
 // int collect_heredocs(t_cmd *cmd, t_env *env)
 // {

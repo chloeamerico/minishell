@@ -3,67 +3,80 @@
 /*                                                        :::      ::::::::   */
 /*   chpl.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/06 14:55:12 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:52:01 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//AVANT LES CHANGEMENTS
-int	child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
+// Nouvelle fonction à ajouter
+static void close_other_heredocs(t_cmd *all_cmds, t_cmd *current_cmd)
 {
-	free(pids);
-	int rc;
+    t_cmd *cmd;
+    
+    cmd = all_cmds;
+    while (cmd)
+    {
+        // Fermer les heredocs des AUTRES commandes
+        if (cmd != current_cmd && cmd->input != -1)
+        {
+            close(cmd->input);
+            // Ne pas mettre à -1 car ce n'est qu'une copie locale après fork
+        }
+        cmd = cmd->next;
+    }
+}
 
-	rc = apply_redirections(cmd, env);
-	if (rc != 0)
-	{
-		close_all_pipes(pipeline);
-		if (get_global()->hd_interrupted)
-			exit(130);
-		exit(1);
-	}
-	if (cmd->input != -1)
-	{
-		dup2(cmd->input, STDIN_FILENO);
-		close(cmd->input);
-	}
-	else if (cmd_index > 0)
-	{
-		if (pipeline->prev_pipe == 0)
-			dup2(pipeline->pipefd1[0], STDIN_FILENO);
-		else
-			dup2(pipeline->pipefd2[0], STDIN_FILENO);
-	}
-
-	if (cmd->output != -1)
-	{
-		dup2(cmd->output, STDOUT_FILENO);
-		close(cmd->output);
-	}
-	else if (cmd_index < (pipeline->nb_cmd - 1))
-	{
-		if (pipeline->current_pipe == 0)
-		{
-			dup2(pipeline->pipefd1[1], STDOUT_FILENO);
-		}
-		else
-		{
-			dup2(pipeline->pipefd2[1], STDOUT_FILENO);
-		}
-	}
-	setup_signals_child();
-	get_global()->child_pid = 0;
-	// if (cmd->input != -1)
-	// 	close(cmd->input);
-    // if (cmd->output != -1)
-	// 	close(cmd->output);
-	close_all_pipes(pipeline);
-	exec_simple_cmd(cmd, env, rc);
-	return (0);
+int child_process(int cmd_index, t_pipeline *pipeline, t_cmd *cmd, t_env *env, pid_t *pids)
+{
+    free(pids);
+    int rc;
+    
+    rc = apply_redirections(cmd, env);
+    if (rc != 0)
+    {
+        close_all_pipes(pipeline);
+        if (get_global()->hd_interrupted)
+            exit(130);
+        exit(1);
+    }
+    t_cmd *first_cmd = cmd;
+    while (first_cmd->prev)
+        first_cmd = first_cmd->prev;
+    close_other_heredocs(first_cmd, cmd);
+    
+    if (cmd->input != -1)
+    {
+        dup2(cmd->input, STDIN_FILENO);
+        close(cmd->input);
+    }
+    else if (cmd_index > 0)
+    {
+        if (pipeline->prev_pipe == 0)
+            dup2(pipeline->pipefd1[0], STDIN_FILENO);
+        else
+            dup2(pipeline->pipefd2[0], STDIN_FILENO);
+    }
+    
+    if (cmd->output != -1)
+    {
+        dup2(cmd->output, STDOUT_FILENO);
+        close(cmd->output);
+    }
+    else if (cmd->next)
+    {
+        if (pipeline->current_pipe == 0)
+            dup2(pipeline->pipefd1[1], STDOUT_FILENO);
+        else
+            dup2(pipeline->pipefd2[1], STDOUT_FILENO);
+    }
+    
+    close_all_pipes(pipeline);
+    child(cmd, env);
+    exit(127);
 }
 
 

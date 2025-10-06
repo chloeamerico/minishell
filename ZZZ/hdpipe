@@ -131,3 +131,24 @@ static int collect_all_heredocs(t_cmd *cmd_list, t_env *env)
     }
     return (0);
 }
+
+// Passer pipec en entier au lieu de ses éléments séparés
+int child_process_full(int cmd_index, t_pipec *pipec, t_cmd *cmd)
+{
+    free(pipec->pids);
+    int rc;
+    
+    rc = apply_redirections(cmd, pipec->env);
+    if (rc != 0)
+    {
+        close_all_pipes(pipec->pipeline);
+        if (get_global()->hd_interrupted)
+            exit(130);
+        exit(1);
+    }
+    
+    // FERMER LES HEREDOCS DES AUTRES COMMANDES
+    close_other_heredocs(pipec->first_cmd, cmd);
+    
+    // ... reste du code
+}
