@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirs.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:34:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 17:45:15 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 13:54:06 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,44 +53,46 @@ static int	open_out(char *path, int *fd, int append)
 	return (0);
 }
 
-int	apply_redirections(t_cmd *cmd, t_env *env)
+//ca gere les < et <<
+static int	input_redir(t_token *t, int *fd_in, int *fd_out)
 {
-	t_token	*t;
-	int		fd_in;
-	int		fd_out;
-
-	(void)env;
-	fd_in = -1;
-	fd_out = -1;
-	t = cmd->reds;
-	while (t)
+	if (open_in(t->next->str, fd_in))
 	{
-		if (t->type == RINT && t->next && t->next->type == FD)
-		{
-			if (open_in(t->next->str, &fd_in))
-			{
-				perror(t->next->str);
-				return (close_both_and_fail(&fd_in, &fd_out));
-			}
-		}
-		else if (t->type == ROUT && t->next && t->next->type == FD)
-		{
-			if (open_out(t->next->str, &fd_out, 0))
-			{
-				perror(t->next->str);
-				return (close_both_and_fail(&fd_in, &fd_out));
-			}
-		}
-		else if (t->type == DROUT && t->next && t->next->type == FD)
-		{
-			if (open_out(t->next->str, &fd_out, 1))
-			{
-				perror(t->next->str);
-				return (close_both_and_fail(&fd_in, &fd_out));
-			}
-		}
-		t = t->next;
+		perror(t->next->str);
+		return (close_both_and_fail(fd_in, fd_out));
 	}
+	return (0);
+}
+
+//ca gere les > et >>
+//dd pour savoir si c'est un double redir ou simple redir
+static int	output_redir(t_token *t, int *fd_in, int *fd_out)
+{
+	int	dd;
+
+	dd = (t->type == DROUT);
+	if (open_out(t->next->str, fd_out, dd))
+	{
+		perror(t->next->str);
+		return (close_both_and_fail(fd_in, fd_out));
+	}
+	return (0);
+}
+
+static int	redir_for_token(t_token *t, int *fd_in, int *fd_out)
+{
+	if (!t->next || t->next->type != FD)
+		return (0);
+	if (t->type == RINT)
+		return (input_redir(t, fd_in, fd_out));
+	else if (t->type == ROUT || t->type == DROUT)
+		return (output_redir(t, fd_in, fd_out));
+	return (0);
+}
+
+//on applique kes fd a la commande
+static void	apply_fds(t_cmd *cmd, int fd_in, int fd_out)
+{
 	if (fd_in >= 0)
 	{
 		if (cmd->input != -1)
@@ -103,5 +105,80 @@ int	apply_redirections(t_cmd *cmd, t_env *env)
 			close(cmd->output);
 		cmd->output = fd_out;
 	}
+}
+
+int	apply_redirections(t_cmd *cmd, t_env *env)
+{
+	t_token	*t;
+	int		fd_in;
+	int		fd_out;
+	int		ret;
+
+	(void)env;
+	fd_in = -1;
+	fd_out = -1;
+	t = cmd->reds;
+	while (t)
+	{
+		ret = redir_for_token(t, &fd_in, &fd_out);
+		if (ret != 0)
+			return (ret);
+		t = t->next;
+	}
+	apply_fds(cmd, fd_in, fd_out);
 	return (0);
 }
+
+//AVANT DE DIVISER
+// int	apply_redirections(t_cmd *cmd, t_env *env)
+// {
+// 	t_token	*t;
+// 	int		fd_in;
+// 	int		fd_out;
+
+// 	(void)env;
+// 	fd_in = -1;
+// 	fd_out = -1;
+// 	t = cmd->reds;
+// 	while (t)
+// 	{
+// 		if (t->type == RINT && t->next && t->next->type == FD)
+// 		{
+// 			if (open_in(t->next->str, &fd_in))
+// 			{
+// 				perror(t->next->str);
+// 				return (close_both_and_fail(&fd_in, &fd_out));
+// 			}
+// 		}
+// 		else if (t->type == ROUT && t->next && t->next->type == FD)
+// 		{
+// 			if (open_out(t->next->str, &fd_out, 0))
+// 			{
+// 				perror(t->next->str);
+// 				return (close_both_and_fail(&fd_in, &fd_out));
+// 			}
+// 		}
+// 		else if (t->type == DROUT && t->next && t->next->type == FD)
+// 		{
+// 			if (open_out(t->next->str, &fd_out, 1))
+// 			{
+// 				perror(t->next->str);
+// 				return (close_both_and_fail(&fd_in, &fd_out));
+// 			}
+// 		}
+// 		t = t->next;
+// 	}
+// 	if (fd_in >= 0)
+// 	{
+// 		if (cmd->input != -1)
+// 			close(cmd->input);
+// 		cmd->input = fd_in;
+// 	}
+// 	if (fd_out >= 0)
+// 	{
+// 		if (cmd->output != -1)
+// 			close(cmd->output);
+// 		cmd->output = fd_out;
+// 	}
+// 	return (0);
+// }
