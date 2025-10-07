@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 17:55:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 17:59:44 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 14:35:41 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,15 @@ typedef struct s_hd_params
 	t_cmd	*cmd;
 }	t_hd_params;
 
+typedef struct s_child_params
+{
+	int			cmd_index;
+	t_pipeline	*pipeline;
+	t_cmd		*cmd;
+	t_env		*env;
+	pid_t		*pids;
+}	t_child_params;
+
 /* ************************************************************************** */
 /* PROTO                                                                      */
 /* ************************************************************************** */
@@ -152,8 +161,9 @@ int			exec_pipeline(t_cmd *cmd_list, t_env *env);
 char		**env_to_array(t_env *env);
 char		**tokens_to_array(t_token *args);
 void		free_tab(char **tab);
-int			child_process(int cmd_index, t_pipeline *pipeline,
-				t_cmd *cmd, t_env *env, pid_t *pids);
+// int			child_process(int cmd_index, t_pipeline *pipeline,
+// 				t_cmd *cmd, t_env *env, pid_t *pids);
+int	child_process(t_child_params *params);
 void		close_all_pipes(t_pipeline *pipeline);
 int			exec_simple_cmd(t_cmd *cmd, t_env *env, int rc);
 void		parent_process(t_pipeline *pipeline, int cmd_index);
