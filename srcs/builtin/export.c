@@ -6,19 +6,43 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 12:26:18 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 19:15:50 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	sort_env(char **env)
+static char **copy_env(char **env)
 {
-	int		i;
-	int		j;
-	int		len_env;
-	char	*tmp;
+	int i;
+	int count;
+	char **copy;
 
+	count = 0;
+	while (env && env[count])
+		count++;
+	copy = malloc(sizeof(char *) * (count + 1));
+	if (!copy)
+		return (NULL);
+	i = 0;
+	while (i < count)
+	{
+		copy[i] = env[i];
+		i++;
+	}
+	copy[i] = NULL;
+	return (copy);
+}
+
+static void sort_env(char **env)
+{
+	int i;
+	int j;
+	int len_env;
+	char *tmp;
+
+	if (!env)
+		return;
 	len_env = 0;
 	while (env[len_env])
 		len_env++;
@@ -95,7 +119,7 @@ static int	print_export(char **env)
 			write(1, &env[i][j], 1);
 			j++;
 		}
-		if (env[i][j] == '=' && env[i][j + 1])
+		if (env[i][j] == '=')
 		{
 			write(1, "=\"", 2);
 			j++;
@@ -109,17 +133,22 @@ static int	print_export(char **env)
 	return (0);
 }
 
-int	ft_export(char **args, char ***env)
+int ft_export(char **args, char ***env)
 {
-	int	i;
+	int i;
+	char **env_copy;
 
 	if (!args || !args[0])
 		return (1);
 	if (!args[1] && (!ft_strcmp(args[0], "export")))
 	{
-		sort_env(*env);
-		print_export(*env);
-	}	
+		env_copy = copy_env(*env);
+		if (!env_copy)
+			return (1);
+		sort_env(env_copy);
+		print_export(env_copy);
+		free(env_copy);
+	}
 	else
 	{
 		i = 1;

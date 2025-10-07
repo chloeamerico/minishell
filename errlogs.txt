@@ -1,0 +1,338 @@
+######### HERE DOC #########
+
+
+minishell$ << EOF cat
+> fchuqwkfqw
+> fqw
+> fqwfqw
+> fqw
+> EOF
+==3450487== 
+==3450487== FILE DESCRIPTORS: 3 open (3 std) at exit.
+==3450487== 
+==3450487== HEAP SUMMARY:
+==3450487==     in use at exit: 208,283 bytes in 229 blocks
+==3450487==   total heap usage: 727 allocs, 498 frees, 235,324 bytes allocated
+==3450487== 
+==3450487== LEAK SUMMARY:
+==3450487==    definitely lost: 0 bytes in 0 blocks
+==3450487==    indirectly lost: 0 bytes in 0 blocks
+==3450487==      possibly lost: 0 bytes in 0 blocks
+==3450487==    still reachable: 0 bytes in 0 blocks
+==3450487==         suppressed: 208,283 bytes in 229 blocks
+==3450487== 
+==3450487== For lists of detected and suppressed errors, rerun with: -s
+==3450487== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+exiy
+exiy
+e^C==3450364== 
+==3450364== Process terminating with default action of signal 2 (SIGINT)
+==3450364==    at 0x49B23EA: wait4 (wait4.c:30)
+==3450364==    by 0x404D3D: one_cmd_without_pipe (new_pipe.c:288)
+==3450364==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450364==    by 0x401B6C: process_line (main2.c:182)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== FILE DESCRIPTORS: 4 open (3 std) at exit.
+==3450364== Open file descriptor 3:
+==3450364==    at 0x49DD0ED: pipe (pipe.c:29)
+==3450364==    by 0x406E2F: ms_heredoc (heredoc.c:326)
+==3450364==    by 0x405296: heredocs_token (new_pipe.c:100)
+==3450364==    by 0x4051A6: collect_all_hd_loop (new_pipe.c:118)
+==3450364==    by 0x404F5E: collect_cmd_heredocs (new_pipe.c:218)
+==3450364==    by 0x404CEC: one_cmd_without_pipe (new_pipe.c:281)
+==3450364==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450364==    by 0x401B6C: process_line (main2.c:182)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== 
+==3450364== HEAP SUMMARY:
+==3450364==     in use at exit: 219,384 bytes in 423 blocks
+==3450364==   total heap usage: 694 allocs, 271 frees, 235,012 bytes allocated
+==3450364== 
+==3450364== 4 bytes in 1 blocks are still reachable in loss record 1 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x40827C: ft_strdup (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450364==    by 0x4038C0: add_token (commander.c:41)
+==3450364==    by 0x4037EC: assign_token (commander.c:64)
+==3450364==    by 0x403681: fill_cmds (commander.c:130)
+==3450364==    by 0x403598: parse_commands (commander.c:144)
+==3450364==    by 0x401C71: process_line2 (main2.c:162)
+==3450364==    by 0x401B1B: process_line (main2.c:173)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== 7 bytes in 2 blocks are still reachable in loss record 2 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x40827C: ft_strdup (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450364==    by 0x4038C0: add_token (commander.c:41)
+==3450364==    by 0x403859: assign_token (commander.c:68)
+==3450364==    by 0x403681: fill_cmds (commander.c:130)
+==3450364==    by 0x403598: parse_commands (commander.c:144)
+==3450364==    by 0x401C71: process_line2 (main2.c:162)
+==3450364==    by 0x401B1B: process_line (main2.c:173)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== 32 bytes in 1 blocks are still reachable in loss record 24 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x403899: add_token (commander.c:38)
+==3450364==    by 0x4037EC: assign_token (commander.c:64)
+==3450364==    by 0x403681: fill_cmds (commander.c:130)
+==3450364==    by 0x403598: parse_commands (commander.c:144)
+==3450364==    by 0x401C71: process_line2 (main2.c:162)
+==3450364==    by 0x401B1B: process_line (main2.c:173)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== 40 bytes in 1 blocks are still reachable in loss record 26 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x4036E1: create_cmd (commander.c:20)
+==3450364==    by 0x4035E4: fill_cmds (commander.c:116)
+==3450364==    by 0x403598: parse_commands (commander.c:144)
+==3450364==    by 0x401C71: process_line2 (main2.c:162)
+==3450364==    by 0x401B1B: process_line (main2.c:173)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== 64 bytes in 2 blocks are still reachable in loss record 31 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x403899: add_token (commander.c:38)
+==3450364==    by 0x403859: assign_token (commander.c:68)
+==3450364==    by 0x403681: fill_cmds (commander.c:130)
+==3450364==    by 0x403598: parse_commands (commander.c:144)
+==3450364==    by 0x401C71: process_line2 (main2.c:162)
+==3450364==    by 0x401B1B: process_line (main2.c:173)
+==3450364==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450364==    by 0x4017DF: main (main2.c:262)
+==3450364== 
+==3450364== 698 bytes in 54 blocks are still reachable in loss record 46 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x408382: ft_substr (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450364==    by 0x4016D1: create_node2_with_equal (init.c:20)
+==3450364==    by 0x4014A7: create_node (init.c:50)
+==3450364==    by 0x401385: init_env_list (init.c:67)
+==3450364==    by 0x401863: init_shell (main2.c:209)
+==3450364==    by 0x401776: main (main2.c:247)
+==3450364== 
+==3450364== 1,296 bytes in 54 blocks are still reachable in loss record 58 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x401415: create_node (init.c:37)
+==3450364==    by 0x401385: init_env_list (init.c:67)
+==3450364==    by 0x401863: init_shell (main2.c:209)
+==3450364==    by 0x401776: main (main2.c:247)
+==3450364== 
+==3450364== 2,902 bytes in 54 blocks are still reachable in loss record 63 of 89
+==3450364==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450364==    by 0x40827C: ft_strdup (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450364==    by 0x401702: create_node2_with_equal (init.c:23)
+==3450364==    by 0x4014A7: create_node (init.c:50)
+==3450364==    by 0x401385: init_env_list (init.c:67)
+==3450364==    by 0x401863: init_shell (main2.c:209)
+==3450364==    by 0x401776: main (main2.c:247)
+==3450364== 
+==3450364== LEAK SUMMARY:
+==3450364==    definitely lost: 0 bytes in 0 blocks
+==3450364==    indirectly lost: 0 bytes in 0 blocks
+==3450364==      possibly lost: 0 bytes in 0 blocks
+==3450364==    still reachable: 5,043 bytes in 169 blocks
+==3450364==         suppressed: 214,341 bytes in 254 blocks
+==3450364== 
+==3450364== For lists of detected and suppressed errors, rerun with: -s
+==3450364== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+
+######### ENV #########
+
+
+minishell$ export YO
+minishell$ echo $YO
+==3450946== Invalid read of size 1
+==3450946==    at 0x40960D: ft_strjoin_free (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x4048C2: env_to_array (list_to_array.c:46)
+==3450946==    by 0x403E46: handle_redir_and_envp (chpl.c:547)
+==3450946==    by 0x403D46: exec_simple_cmd (chpl.c:558)
+==3450946==    by 0x404AF6: child (new_pipe.c:28)
+==3450946==    by 0x404D20: one_cmd_without_pipe (new_pipe.c:285)
+==3450946==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450946==    by 0x401B6C: process_line (main2.c:182)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+==3450946== 
+==3450946== 
+==3450946== Process terminating with default action of signal 11 (SIGSEGV)
+==3450946==  Access not within mapped region at address 0x0
+==3450946==    at 0x40960D: ft_strjoin_free (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x4048C2: env_to_array (list_to_array.c:46)
+==3450946==    by 0x403E46: handle_redir_and_envp (chpl.c:547)
+==3450946==    by 0x403D46: exec_simple_cmd (chpl.c:558)
+==3450946==    by 0x404AF6: child (new_pipe.c:28)
+==3450946==    by 0x404D20: one_cmd_without_pipe (new_pipe.c:285)
+==3450946==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450946==    by 0x401B6C: process_line (main2.c:182)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946==  If you believe this happened as a result of a stack
+==3450946==  overflow in your program's main thread (unlikely but
+==3450946==  possible), you can try to increase the size of the
+==3450946==  main thread stack using the --main-stacksize= flag.
+==3450946==  The main thread stack size used in this run was 8388608.
+==3450946== 
+==3450946== FILE DESCRIPTORS: 3 open (3 std) at exit.
+==3450946== 
+==3450946== HEAP SUMMARY:
+==3450946==     in use at exit: 223,490 bytes in 487 blocks
+==3450946==   total heap usage: 1,073 allocs, 586 frees, 250,154 bytes allocated
+==3450946== 
+==3450946== 3 bytes in 1 blocks are still reachable in loss record 1 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x40827C: ft_strdup (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x401457: create_node (init.c:43)
+==3450946==    by 0x401385: init_env_list (init.c:67)
+==3450946==    by 0x401FCF: update_env (main2.c:45)
+==3450946==    by 0x401E91: handle_single_builtin (main2.c:65)
+==3450946==    by 0x401B4E: process_line (main2.c:178)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 4 bytes in 1 blocks are still reachable in loss record 2 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x40847E: ft_strjoin (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x40489A: env_to_array (list_to_array.c:45)
+==3450946==    by 0x403E46: handle_redir_and_envp (chpl.c:547)
+==3450946==    by 0x403D46: exec_simple_cmd (chpl.c:558)
+==3450946==    by 0x404AF6: child (new_pipe.c:28)
+==3450946==    by 0x404D20: one_cmd_without_pipe (new_pipe.c:285)
+==3450946==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450946==    by 0x401B6C: process_line (main2.c:182)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 6 bytes in 2 blocks are still reachable in loss record 3 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x40827C: ft_strdup (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x4038C0: add_token (commander.c:41)
+==3450946==    by 0x4037EC: assign_token (commander.c:64)
+==3450946==    by 0x403681: fill_cmds (commander.c:130)
+==3450946==    by 0x403598: parse_commands (commander.c:144)
+==3450946==    by 0x401C71: process_line2 (main2.c:162)
+==3450946==    by 0x401B1B: process_line (main2.c:173)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 40 bytes in 1 blocks are still reachable in loss record 26 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x4036E1: create_cmd (commander.c:20)
+==3450946==    by 0x4035E4: fill_cmds (commander.c:116)
+==3450946==    by 0x403598: parse_commands (commander.c:144)
+==3450946==    by 0x401C71: process_line2 (main2.c:162)
+==3450946==    by 0x401B1B: process_line (main2.c:173)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 64 bytes in 2 blocks are still reachable in loss record 30 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x403899: add_token (commander.c:38)
+==3450946==    by 0x4037EC: assign_token (commander.c:64)
+==3450946==    by 0x403681: fill_cmds (commander.c:130)
+==3450946==    by 0x403598: parse_commands (commander.c:144)
+==3450946==    by 0x401C71: process_line2 (main2.c:162)
+==3450946==    by 0x401B1B: process_line (main2.c:173)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 456 bytes in 1 blocks are still reachable in loss record 44 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x404858: env_to_array (list_to_array.c:40)
+==3450946==    by 0x403E46: handle_redir_and_envp (chpl.c:547)
+==3450946==    by 0x403D46: exec_simple_cmd (chpl.c:558)
+==3450946==    by 0x404AF6: child (new_pipe.c:28)
+==3450946==    by 0x404D20: one_cmd_without_pipe (new_pipe.c:285)
+==3450946==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450946==    by 0x401B6C: process_line (main2.c:182)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 701 bytes in 55 blocks are still reachable in loss record 47 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x408382: ft_substr (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x4016D1: create_node2_with_equal (init.c:20)
+==3450946==    by 0x4014A7: create_node (init.c:50)
+==3450946==    by 0x401385: init_env_list (init.c:67)
+==3450946==    by 0x401FCF: update_env (main2.c:45)
+==3450946==    by 0x401E91: handle_single_builtin (main2.c:65)
+==3450946==    by 0x401B4E: process_line (main2.c:178)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 1,344 bytes in 56 blocks are still reachable in loss record 59 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x401415: create_node (init.c:37)
+==3450946==    by 0x401385: init_env_list (init.c:67)
+==3450946==    by 0x401FCF: update_env (main2.c:45)
+==3450946==    by 0x401E91: handle_single_builtin (main2.c:65)
+==3450946==    by 0x401B4E: process_line (main2.c:178)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 2,903 bytes in 55 blocks are still reachable in loss record 64 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x40827C: ft_strdup (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x401702: create_node2_with_equal (init.c:23)
+==3450946==    by 0x4014A7: create_node (init.c:50)
+==3450946==    by 0x401385: init_env_list (init.c:67)
+==3450946==    by 0x401FCF: update_env (main2.c:45)
+==3450946==    by 0x401E91: handle_single_builtin (main2.c:65)
+==3450946==    by 0x401B4E: process_line (main2.c:178)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== 3,608 bytes in 56 blocks are still reachable in loss record 65 of 91
+==3450946==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3450946==    by 0x40957C: ft_strjoin_free (in /home/camerico/Documents/Minishell_avec_le_best/minishell)
+==3450946==    by 0x4048C2: env_to_array (list_to_array.c:46)
+==3450946==    by 0x403E46: handle_redir_and_envp (chpl.c:547)
+==3450946==    by 0x403D46: exec_simple_cmd (chpl.c:558)
+==3450946==    by 0x404AF6: child (new_pipe.c:28)
+==3450946==    by 0x404D20: one_cmd_without_pipe (new_pipe.c:285)
+==3450946==    by 0x404BF2: exec_pipeline (new_pipe.c:194)
+==3450946==    by 0x401B6C: process_line (main2.c:182)
+==3450946==    by 0x401A85: valid_line_for_main (main2.c:230)
+==3450946==    by 0x4017DF: main (main2.c:262)
+==3450946== 
+==3450946== LEAK SUMMARY:
+==3450946==    definitely lost: 0 bytes in 0 blocks
+==3450946==    indirectly lost: 0 bytes in 0 blocks
+==3450946==      possibly lost: 0 bytes in 0 blocks
+==3450946==    still reachable: 9,129 bytes in 230 blocks
+==3450946==         suppressed: 214,361 bytes in 257 blocks
+==3450946== 
+==3450946== For lists of detected and suppressed errors, rerun with: -s
+==3450946== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+######### SEFGAULT #########
+
+minishell$ 
+minishell$ export YO
+minishell$ env
+minishell$ unset YO
+[1]    3451185 segmentation fault (core dumped)  ./minishell
+
+######### BROKEN PIPE #########
+
+minishell$ cat | cat | ls
+a.out  errlogs.txt  hello.c  libft  Makefile  minishell  minishell.h  obj  out1  out2  out3  pouet  readline.supp  srcs
+
+cat: write error: Broken pipe
+
+cat: write error: Broken pipe
+
+
+minishell$ < Makefile cat | << EOF cat | > outilent
+> Helloent
+> EOF
+cat: write error: Broken pipe
+cat: write error: Broken pipe
