@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 13:14:18 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/04 12:36:13 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 18:09:34 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,22 @@ void	setup_signals_interactive(void)
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
+// void	setup_signals_child(void)
+// {
+// 	signal(SIGINT, SIG_DFL);
+// 	signal(SIGQUIT, SIG_DFL);
+// }
+
 void	setup_signals_child(void)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	struct sigaction sa;
+
+	sa.sa_handler = SIG_DFL;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);   
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGPIPE, &sa, NULL);
 }
 
 // void	setup_signals_interactive(void)
