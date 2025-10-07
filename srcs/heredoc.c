@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 12:40:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 12:51:52 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,12 +164,12 @@ static void	close_all_exect_one(int fd_keep)
 
 static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 {
-	t_cmd *first_cmd;
+	t_cmd	*first_cmd;
 
-    first_cmd = params->cmd;
-    while (first_cmd && first_cmd->prev)
+	first_cmd = params->cmd;
+	while (first_cmd && first_cmd->prev)
 	{
-        first_cmd = first_cmd->prev;
+		first_cmd = first_cmd->prev;
 	}
 	hd_env(0, params->env);
 	hd_cmd(0, first_cmd);
