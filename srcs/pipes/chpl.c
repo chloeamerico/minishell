@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 18:55:36 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/07 15:46:44 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 17:27:09 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -550,6 +550,20 @@ static void	handle_redir_and_envp(t_cmd *cmd, t_env *env, int rc, char ***envp)
 		cleanup_and_exit_simple(cmd, env, 1);
 }
 
+static void	setup_redirections_for_exec(t_cmd *cmd)
+{
+	if (cmd->input != -1)
+	{
+		dup2(cmd->input, STDIN_FILENO);
+		close(cmd->input);
+	}
+	if (cmd->output != -1)
+	{
+		dup2(cmd->output, STDOUT_FILENO);
+		close(cmd->output);
+	}
+}
+
 int	exec_simple_cmd(t_cmd *cmd, t_env *env, int rc)
 {
 	char	**envp;
@@ -557,6 +571,7 @@ int	exec_simple_cmd(t_cmd *cmd, t_env *env, int rc)
 	t_cmd	*first;
 
 	handle_redir_and_envp(cmd, env, rc, &envp);
+	setup_redirections_for_exec(cmd);
 	cmd_arg = tokens_to_array(cmd->args);
 	if (!cmd_arg)
 		cleanup_with_tabs(cmd, env, envp, NULL);

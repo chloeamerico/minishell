@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 15:59:59 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 16:00:54 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 17:23:39 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,38 @@ char	*hd_expand(char *s, t_env *env, int last)
 
 int	hd_loop_check_delim(char *l, char *delim, int wfd)
 {
+	(void)wfd;
 	if (!ft_strcmp(l, delim))
 	{
 		free(l);
-		close(wfd);
 		return (1);
 	}
 	return (0);
 }
+
+// int	hd_loop_expand_and_write(int wfd, char *l, int expand, t_env *env)
+// {
+// 	char	*x;
+// 	if (expand)
+// 	{
+// 		x = hd_expand(l, env, get_global()->last_status);
+// 		free(l);
+// 		if (!x)
+// 		{ close(wfd); return (1); }
+// 		if (write(wfd, x, ft_strlen(x)) == -1)
+// 		{ free(x); close(wfd); return (1); }
+// 		free(x);
+// 	}
+// 	else
+// 	{
+// 		if (write(wfd, l, ft_strlen(l)) == -1)
+// 		{ free(l); close(wfd); return (1); }
+// 		free(l);
+// 	}
+// 	if (write(wfd, "\n", 1) == -1)
+// 	{ close(wfd); return (1); }
+// 	return (0);
+// }
 
 int	hd_loop_expand_and_write(int wfd,
 	char *l, int expand, t_env *env)
@@ -78,14 +102,21 @@ int	hd_loop(int wfd, char *delim, int expand, t_env *env)
 	{
 		l = readline("> ");
 		if (!l)
-			return (close(wfd), 0);
+		{
+			close(wfd);
+			return (0);
+		}
 		if (get_global()->hd_interrupted)
 		{
 			free(l);
-			return (close(wfd), 1);
+			close(wfd);
+			return (1);
 		}
 		if (hd_loop_check_delim(l, delim, wfd))
+		{
+			close(wfd);
 			return (0);
+		}
 		if (hd_loop_expand_and_write(wfd, l, expand, env))
 			return (1);
 	}

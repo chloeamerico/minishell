@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 16:02:36 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 17:15:04 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,12 +314,38 @@ static void	hd_child_process(int *p, char *delim,
 	_exit(0);
 }
 
+// int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
+// {
+// 	int			p[2];
+// 	pid_t		pid;
+// 	t_hd_params	params;
+// 	int			parent_wait;
+
+// 	params.env = env;
+// 	params.cmd = cmd;
+// 	if (pipe(p) < 0)
+// 		return (-1);
+// 	pid = fork();
+// 	if (pid < 0)
+// 	{
+// 		close(p[0]);
+// 		close(p[1]);
+// 		return (-1);
+// 	}
+// 	if (pid == 0)
+// 		hd_child_process(p, delim, expand, &params);
+// 	close(p[1]);
+// 	parent_wait = hd_parent_wait(p, pid);
+// 	get_global()->hd_wfd = -1;
+// 	return (parent_wait);
+// }
+
 int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 {
-	int			p[2];
-	pid_t		pid;
-	t_hd_params	params;
-	int			parent_wait;
+	int				p[2];
+	pid_t			pid;
+	t_hd_params		params;
+	int				parent_wait;
 
 	params.env = env;
 	params.cmd = cmd;
