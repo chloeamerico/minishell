@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 17:29:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/07 14:40:17 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 14:51:47 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,8 +350,17 @@ static int	loop_pipe2(t_pipec *pipec, int cmd_index)
 		return (1);
 	}
 	else if (pipec->pids[cmd_index] == 0)
-		child_process(cmd_index, pipec->pipeline, pipec->current_cmd,
-			pipec->env, pipec->pids);
+	{
+		child_process(cmd_index, pipec);
+		// t_child_params params;
+
+		// params.cmd_index = cmd_index;
+		// params.pipeline = pipec->pipeline;
+		// params.cmd = pipec->current_cmd;
+		// params.env = pipec->env;
+		// params.pids = pipec->pids;
+		// child_process(&params);
+	}
 	else
 		parent_process(pipec->pipeline, cmd_index);
 	return (0);
