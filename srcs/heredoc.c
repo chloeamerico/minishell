@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 17:48:12 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 12:40:45 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,16 +164,23 @@ static void	close_all_exect_one(int fd_keep)
 
 static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 {
+	t_cmd *first_cmd;
+
+    first_cmd = params->cmd;
+    while (first_cmd && first_cmd->prev)
+	{
+        first_cmd = first_cmd->prev;
+	}
 	hd_env(0, params->env);
-	hd_cmd(0, params->cmd);
+	hd_cmd(0, first_cmd);
 	signal(SIGINT, hd_sigint_handler);
 	signal(SIGQUIT, hd_sigquit_handler);
 	signal(SIGPIPE, SIG_IGN);
 	close(p[0]);
 	close_all_exect_one(p[1]);
 	if (hd_loop(p[1], delim, expand, params->env))
-		hd_child_exit_error(p, params->env, params->cmd);
-	hd_child_exit_success(p, params->env, params->cmd);
+		hd_child_exit_error(p, params->env, first_cmd);
+	hd_child_exit_success(p, params->env, first_cmd);
 }
 
 static int	hd_parent_wait(int *p, pid_t pid)
