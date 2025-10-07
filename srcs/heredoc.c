@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 12:40:45 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 12:58:36 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,12 +164,12 @@ static void	close_all_exect_one(int fd_keep)
 
 static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 {
-	t_cmd *first_cmd;
+	t_cmd	*first_cmd;
 
-    first_cmd = params->cmd;
-    while (first_cmd && first_cmd->prev)
+	first_cmd = params->cmd;
+	while (first_cmd && first_cmd->prev)
 	{
-        first_cmd = first_cmd->prev;
+		first_cmd = first_cmd->prev;
 	}
 	hd_env(0, params->env);
 	hd_cmd(0, first_cmd);
@@ -183,23 +183,49 @@ static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 	hd_child_exit_success(p, params->env, first_cmd);
 }
 
-static int	hd_parent_wait(int *p, pid_t pid)
-{
-	int		st;
-	void	(*old_int)(int);
-	void	(*old_quit)(int);
+// static int	hd_parent_wait(int *p, pid_t pid)
+// {
+// 	int		st;
+// 	void	(*old_int)(int);
+// 	void	(*old_quit)(int);
 
-	close(p[1]);
-	old_int = signal(SIGINT, SIG_IGN);
-	old_quit = signal(SIGQUIT, SIG_IGN);
-	if (waitpid(pid, &st, 0) < 0)
-	{
-		signal(SIGINT, old_int);
-		signal(SIGQUIT, old_quit);
-		return (close(p[0]), -1);
-	}
-	signal(SIGINT, old_int);
-	signal(SIGQUIT, old_quit);
+// 	close(p[1]);
+// 	old_int = signal(SIGINT, SIG_IGN);
+// 	old_quit = signal(SIGQUIT, SIG_IGN);
+// 	if (waitpid(pid, &st, 0) < 0)
+// 	{
+// 		signal(SIGINT, old_int);
+// 		signal(SIGQUIT, old_quit);
+// 		return (close(p[0]), -1);
+// 	}
+// 	signal(SIGINT, old_int);
+// 	signal(SIGQUIT, old_quit);
+// 	if (WIFEXITED(st) && WEXITSTATUS(st) == 0)
+// 	{
+// 		fcntl(p[0], F_SETFD, FD_CLOEXEC);
+// 		get_global()->hd_wfd = -1;
+// 		return (p[0]);
+// 	}
+// 	if (WIFEXITED(st) && WEXITSTATUS(st) == 130)
+// 	{
+// 		get_global()->hd_interrupted = 1;
+// 		close(p[0]);
+// 		return (-1);
+// 	}
+// 	if (WIFSIGNALED(st) && WTERMSIG(st) == SIGINT)
+// 	{
+// 		get_global()->hd_interrupted = 1;
+// 		close(p[0]);
+// 		get_global()->hd_wfd = -1;
+// 		return (-1);
+// 	}
+// 	close(p[0]);
+// 	get_global()->hd_wfd = -1;
+// 	return (-1);
+// }
+
+static int	hd_handle_child_status(int *p, int st)
+{
 	if (WIFEXITED(st) && WEXITSTATUS(st) == 0)
 	{
 		fcntl(p[0], F_SETFD, FD_CLOEXEC);
@@ -224,6 +250,70 @@ static int	hd_parent_wait(int *p, pid_t pid)
 	return (-1);
 }
 
+static int	hd_parent_wait(int *p, pid_t pid)
+{
+	int		st;
+	void	(*old_int)(int);
+	void	(*old_quit)(int);
+
+	close(p[1]);
+	old_int = signal(SIGINT, SIG_IGN);
+	old_quit = signal(SIGQUIT, SIG_IGN);
+	if (waitpid(pid, &st, 0) < 0)
+	{
+		signal(SIGINT, old_int);
+		signal(SIGQUIT, old_quit);
+		return (close(p[0]), -1);
+	}
+	signal(SIGINT, old_int);
+	signal(SIGQUIT, old_quit);
+	return (hd_handle_child_status(p, st));
+}
+
+// int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
+// {
+// 	int			p[2];
+// 	pid_t		pid;
+// 	t_hd_params	params;
+// 	int			parent_wait;
+
+// 	params.env = env;
+// 	params.cmd = cmd;
+// 	if (pipe(p) < 0)
+// 		return (-1);
+// 	pid = fork();
+// 	if (pid < 0)
+// 	{
+// 		close(p[0]);
+// 		close(p[1]);
+// 		return (-1);
+// 	}
+// 	if (pid == 0)
+// 	{
+// 		close(p[0]);
+// 		get_global()->hd_wfd = p[1];
+// 		setup_signals_hd();
+// 		hd_child(p, delim, expand, &params);
+// 		close(p[1]);
+// 		_exit(0);
+// 	}
+// 	close(p[1]);
+// 	parent_wait = hd_parent_wait(p, pid);
+// 	get_global()->hd_wfd = -1;
+// 	return (parent_wait);
+// }
+
+static void	hd_child_process(int *p, char *delim,
+	int expand, t_hd_params *params)
+{
+	close(p[0]);
+	get_global()->hd_wfd = p[1];
+	setup_signals_hd();
+	hd_child(p, delim, expand, params);
+	close(p[1]);
+	_exit(0);
+}
+
 int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 {
 	int			p[2];
@@ -243,14 +333,7 @@ int	ms_heredoc(char *delim, int expand, t_env *env, t_cmd *cmd)
 		return (-1);
 	}
 	if (pid == 0)
-	{
-		close(p[0]);
-		get_global()->hd_wfd = p[1];
-		setup_signals_hd();
-		hd_child(p, delim, expand, &params);
-		close(p[1]);
-		_exit(0);
-	}
+		hd_child_process(p, delim, expand, &params);
 	close(p[1]);
 	parent_wait = hd_parent_wait(p, pid);
 	get_global()->hd_wfd = -1;
