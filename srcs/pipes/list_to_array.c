@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 17:40:47 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 15:04:05 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 19:29:09 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,13 @@ char	**env_to_array(t_env *env)
 		return (NULL);
 	while (tmp)
 	{
-		tab[i] = ft_strjoin(tmp->key, "=");
-		tab[i] = ft_strjoin_free(tab[i], tmp->value);
+		if (tmp->value)
+		{
+			tab[i] = ft_strjoin(tmp->key, "=");
+			tab[i] = ft_strjoin_free(tab[i], tmp->value);
+		}
+		else
+			tab[i] = ft_strdup(tmp->key);
 		tmp = tmp->next;
 		i++;
 	}

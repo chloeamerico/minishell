@@ -6,17 +6,17 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:17:16 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/07 19:15:50 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 19:49:09 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char **copy_env(char **env)
+static char	**copy_env(char **env)
 {
-	int i;
-	int count;
-	char **copy;
+	int		i;
+	int		count;
+	char	**copy;
 
 	count = 0;
 	while (env && env[count])
@@ -34,20 +34,20 @@ static char **copy_env(char **env)
 	return (copy);
 }
 
-static void sort_env(char **env)
+static void	sort_env(char **env)
 {
-	int i;
-	int j;
-	int len_env;
-	char *tmp;
+	int		i;
+	int		j;
+	int		len_env;
+	char	*tmp;
 
 	if (!env)
-		return;
+		return ;
 	len_env = 0;
 	while (env[len_env])
 		len_env++;
 	i = 0;
-	while (i < len_env - 1)
+	while (i++ < len_env - 1)
 	{
 		j = 0;
 		while (j < len_env - i - 1)
@@ -60,7 +60,6 @@ static void sort_env(char **env)
 			}
 			j++;
 		}
-		i++;
 	}
 }
 
@@ -86,22 +85,6 @@ char	*find_key(char *arg)
 	}
 	key[j] = '\0';
 	return (key);
-}
-
-int	find_index(char *key, char **env)
-{
-	int	i;
-
-	i = 0;
-	while (env[i])
-	{
-		if (!ft_strncmp(env[i], key, ft_strlen(key))
-			&& (env[i][ft_strlen(key)] == '='
-			|| env[i][ft_strlen(key)] == '\0' ))
-			return (i);
-		i++;
-	}
-	return (-1);
 }
 
 static int	print_export(char **env)
@@ -133,10 +116,10 @@ static int	print_export(char **env)
 	return (0);
 }
 
-int ft_export(char **args, char ***env)
+int	ft_export(char **args, char ***env)
 {
-	int i;
-	char **env_copy;
+	int		i;
+	char	**env_copy;
 
 	if (!args || !args[0])
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 15:07:54 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/07 19:14:04 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 19:51:30 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,20 @@ int	print_env(char **envp)
 		i++;
 	}
 	return (0);
+}
+
+int	find_index(char *key, char **env)
+{
+	int	i;
+
+	i = 0;
+	while (env[i])
+	{
+		if (!ft_strncmp(env[i], key, ft_strlen(key))
+			&& (env[i][ft_strlen(key)] == '='
+			|| env[i][ft_strlen(key)] == '\0' ))
+			return (i);
+		i++;
+	}
+	return (-1);
 }

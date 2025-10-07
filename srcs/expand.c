@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/07 15:22:25 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 19:38:30 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,12 @@ char	*get_env_value(char *var, t_env *env, int exit_status)
 	while (tmp)
 	{
 		if (!ft_strcmp(var, tmp->key))
-			return (ft_strdup(tmp->value));
+		{
+			if (tmp->value)
+				return (ft_strdup(tmp->value));
+			else
+				return (ft_strdup(""));
+		}
 		else
 			tmp = tmp->next;
 	}
