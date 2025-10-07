@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 15:26:32 by camerico          #+#    #+#             */
-/*   Updated: 2025/07/03 16:41:08 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 14:56:20 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 
 // char	*ft_strchr(const char *s, int c)
 // {
