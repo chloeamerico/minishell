@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:12:48 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/06 17:51:03 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:06:14 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,60 +17,60 @@
 #include <errno.h>
 #include <signal.h>
 
-static int	is_blank_line(const char *line)
-{
-	int	i;
+// static int	is_blank_line(const char *line)
+// {
+// 	int	i;
 
-	if (!line)
-		return (1);
-	i = 0;
-	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-		i++;
-	return (line[i] == '\0');
-}
+// 	if (!line)
+// 		return (1);
+// 	i = 0;
+// 	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+// 		i++;
+// 	return (line[i] == '\0');
+// }
 
-static int	need_env_update(char **args)
-{
-	if (!args || !args[0])
-		return (0);
-	return (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "unset")
-		|| !ft_strcmp(args[0], "export"));
-}
+// static int	need_env_update(char **args)
+// {
+// 	if (!args || !args[0])
+// 		return (0);
+// 	return (!ft_strcmp(args[0], "cd") || !ft_strcmp(args[0], "unset")
+// 		|| !ft_strcmp(args[0], "export"));
+// }
 
-static void	update_env(char **envp, t_env **env)
-{
-	if (envp)
-	{
-		free_env(*env);
-		*env = init_env_list(envp);
-	}
-}
+// static void	update_env(char **envp, t_env **env)
+// {
+// 	if (envp)
+// 	{
+// 		free_env(*env);
+// 		*env = init_env_list(envp);
+// 	}
+// }
 
-static int	handle_single_builtin(t_cmd *cmd, t_env **env)
-{
-	char	**args;
-	char	**envp;
-	int		status;
+// static int	handle_single_builtin(t_cmd *cmd, t_env **env)
+// {
+// 	char	**args;
+// 	char	**envp;
+// 	int		status;
 
-	args = tokens_to_array(cmd->args);
-	envp = NULL;
-	if (!args)
-		return (1);
-	if (need_env_update(args))
-		envp = env_to_array(*env);
-	status = 0;
-	if (try_run_builtin(args, &envp, &status))
-	{
-		if (need_env_update(args))
-			update_env(envp, env);
-	}
-	if (args)
-		free_tab(args);
-	if (envp)
-		free_tab(envp);
-	get_global()->last_status = status;
-	return (status);
-}
+// 	args = tokens_to_array(cmd->args);
+// 	envp = NULL;
+// 	if (!args)
+// 		return (1);
+// 	if (need_env_update(args))
+// 		envp = env_to_array(*env);
+// 	status = 0;
+// 	if (try_run_builtin(args, &envp, &status))
+// 	{
+// 		if (need_env_update(args))
+// 			update_env(envp, env);
+// 	}
+// 	if (args)
+// 		free_tab(args);
+// 	if (envp)
+// 		free_tab(envp);
+// 	get_global()->last_status = status;
+// 	return (status);
+// }
 
 //AVANT DE REDUIRE
 // static int	handle_single_builtin(t_cmd *cmd, t_env **env)
@@ -113,83 +113,83 @@ static int	handle_single_builtin(t_cmd *cmd, t_env **env)
 // 	return (status);
 // }
 
-static int	is_single_builtin_cmd(t_cmd *cmd)
-{
-	char	**args;
-	int		result;
+// static int	is_single_builtin_cmd(t_cmd *cmd)
+// {
+// 	char	**args;
+// 	int		result;
 
-	if (!cmd || cmd->next)
-		return (0);
-	if (cmd->reds)
-		return (0);
-	args = tokens_to_array(cmd->args);
-	if (!args || !args[0])
-	{
-		if (args)
-			free_tab(args);
-		return (0);
-	}
-	result = (!ft_strcmp(args[0], "cd")
-			|| !ft_strcmp(args[0], "unset")
-			|| !ft_strcmp(args[0], "exit")
-			|| !ft_strcmp(args[0], "export"));
-	free_tab(args);
-	return (result);
-}
+// 	if (!cmd || cmd->next)
+// 		return (0);
+// 	if (cmd->reds)
+// 		return (0);
+// 	args = tokens_to_array(cmd->args);
+// 	if (!args || !args[0])
+// 	{
+// 		if (args)
+// 			free_tab(args);
+// 		return (0);
+// 	}
+// 	result = (!ft_strcmp(args[0], "cd")
+// 			|| !ft_strcmp(args[0], "unset")
+// 			|| !ft_strcmp(args[0], "exit")
+// 			|| !ft_strcmp(args[0], "export"));
+// 	free_tab(args);
+// 	return (result);
+// }
 
-static t_cmd	*process_line2(char *line, t_env *env)
-{
-	char	**split;
-	t_token	*tokens;
-	t_cmd	*cmds;
+// static t_cmd	*process_line2(char *line, t_env *env)
+// {
+// 	char	**split;
+// 	t_token	*tokens;
+// 	t_cmd	*cmds;
 
-	split = split_minishell(line);
-	if (!split)
-		return (NULL);
-	tokens = tokenize(split);
-	free_split(split);
-	if (!tokens)
-		return (NULL);
-	if (!validate_tokens(tokens))
-	{
-		ft_putstr_fd("minishell: syntax error\n", STDERR_FILENO);
-		get_global()->last_status = 2;
-		free_token(tokens);
-		return (NULL);
-	}
-	expand_tokens(tokens, env, get_global()->last_status);
-	delete_quotes(tokens);
-	cmds = parse_commands(tokens);
-	free_token(tokens);
-	return (cmds);
-}
+// 	split = split_minishell(line);
+// 	if (!split)
+// 		return (NULL);
+// 	tokens = tokenize(split);
+// 	free_split(split);
+// 	if (!tokens)
+// 		return (NULL);
+// 	if (!validate_tokens(tokens))
+// 	{
+// 		ft_putstr_fd("minishell: syntax error\n", STDERR_FILENO);
+// 		get_global()->last_status = 2;
+// 		free_token(tokens);
+// 		return (NULL);
+// 	}
+// 	expand_tokens(tokens, env, get_global()->last_status);
+// 	delete_quotes(tokens);
+// 	cmds = parse_commands(tokens);
+// 	free_token(tokens);
+// 	return (cmds);
+// }
 
-static void	process_line(char *line, t_env **env)
-{
-	t_cmd	*cmds;
-	int		exit_status;
+// static void	process_line(char *line, t_env **env)
+// {
+// 	t_cmd	*cmds;
+// 	int		exit_status;
 
-	get_global()->hd_interrupted = 0;
-	cmds = process_line2(line, *env);
-	if (!cmds)
-		return ;
-	if (is_single_builtin_cmd(cmds))
-	{
-		handle_single_builtin(cmds, env);
-		free_cmd_list(cmds);
-		return ;
-	}
-	exit_status = exec_pipeline(cmds, *env);
-	get_global()->last_status = exit_status;
-	free_cmd_list(cmds);
-}
+// 	get_global()->hd_interrupted = 0;
+// 	cmds = process_line2(line, *env);
+// 	if (!cmds)
+// 		return ;
+// 	if (is_single_builtin_cmd(cmds))
+// 	{
+// 		handle_single_builtin(cmds, env);
+// 		free_cmd_list(cmds);
+// 		return ;
+// 	}
+// 	exit_status = exec_pipeline(cmds, *env);
+// 	get_global()->last_status = exit_status;
+// 	free_cmd_list(cmds);
+// }
 
-static void	cleanup_shell(t_env *env)
-{
-	if (env)
-		free_env(env);
-	rl_clear_history();
-}
+// static void	cleanup_shell(t_env *env)
+// {
+// 	if (env)
+// 		free_env(env);
+// 	rl_clear_history();
+// }
 
 static void	handle_eof(t_env *env)
 {

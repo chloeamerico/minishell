@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 15:59:26 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/02 12:20:12 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 15:22:25 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,19 @@
 //fonction qui va verifier si il y a un $ dans la chaine du maillon
 //return (1) si PAS de $
 //return (0) s'il y a un $
-static int	check_if_expand(char *str)
-{
-	int	i;
+// static int	check_if_expand(char *str)
+// {
+// 	int	i;
 
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '$')
-			return (1);
-		i++;
-	}
-	return (0);
-}
+// 	i = 0;
+// 	while (str[i])
+// 	{
+// 		if (str[i] == '$')
+// 			return (1);
+// 		i++;
+// 	}
+// 	return (0);
+// }
 
 //on extrait le nom de la var
 //ex : on extrait $VAR dans abc$VAR

@@ -6,161 +6,161 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:51:17 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 14:26:14 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:02:36 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	*hd_expand(char *s, t_env *env, int last)
-{
-	t_token	fake;
-	t_token	one;
-	char	*res;
+// static char	*hd_expand(char *s, t_env *env, int last)
+// {
+// 	t_token	fake;
+// 	t_token	one;
+// 	char	*res;
 
-	fake.next = &one;
-	fake.prev = NULL;
-	one.next = NULL;
-	one.prev = &fake;
-	one.type = WRD;
-	one.str = ft_strdup(s);
-	if (!one.str)
-		return (ft_strdup(""));
-	expand_tokens(&one, env, last);
-	res = ft_strdup(one.str);
-	free(one.str);
-	return (res);
-}
+// 	fake.next = &one;
+// 	fake.prev = NULL;
+// 	one.next = NULL;
+// 	one.prev = &fake;
+// 	one.type = WRD;
+// 	one.str = ft_strdup(s);
+// 	if (!one.str)
+// 		return (ft_strdup(""));
+// 	expand_tokens(&one, env, last);
+// 	res = ft_strdup(one.str);
+// 	free(one.str);
+// 	return (res);
+// }
 
-static int	hd_loop_check_delim(char *l, char *delim, int wfd)
-{
-	if (!ft_strcmp(l, delim))
-	{
-		free(l);
-		close(wfd);
-		return (1);
-	}
-	return (0);
-}
+// static int	hd_loop_check_delim(char *l, char *delim, int wfd)
+// {
+// 	if (!ft_strcmp(l, delim))
+// 	{
+// 		free(l);
+// 		close(wfd);
+// 		return (1);
+// 	}
+// 	return (0);
+// }
 
-static int	hd_loop_expand_and_write(int wfd,
-	char *l, int expand, t_env *env)
-{
-	char	*e;
+// static int	hd_loop_expand_and_write(int wfd,
+// 	char *l, int expand, t_env *env)
+// {
+// 	char	*e;
 
-	if (expand)
-	{
-		e = hd_expand(l, env, get_global()->last_status);
-		if (!e)
-		{
-			free(l);
-			close(wfd);
-			return (1);
-		}
-		free(l);
-		l = e;
-	}
-	if (write(wfd, l, ft_strlen(l)) < 0 || write(wfd, "\n", 1) < 0)
-	{
-		free(l);
-		close(wfd);
-		return (1);
-	}
-	free(l);
-	return (0);
-}
+// 	if (expand)
+// 	{
+// 		e = hd_expand(l, env, get_global()->last_status);
+// 		if (!e)
+// 		{
+// 			free(l);
+// 			close(wfd);
+// 			return (1);
+// 		}
+// 		free(l);
+// 		l = e;
+// 	}
+// 	if (write(wfd, l, ft_strlen(l)) < 0 || write(wfd, "\n", 1) < 0)
+// 	{
+// 		free(l);
+// 		close(wfd);
+// 		return (1);
+// 	}
+// 	free(l);
+// 	return (0);
+// }
 
-static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
-{
-	char	*l;
+// static int	hd_loop(int wfd, char *delim, int expand, t_env *env)
+// {
+// 	char	*l;
 
-	while (1)
-	{
-		l = readline("> ");
-		if (!l)
-			return (close(wfd), 0);
-		if (get_global()->hd_interrupted)
-		{
-			free(l);
-			return (close(wfd), 1);
-		}
-		if (hd_loop_check_delim(l, delim, wfd))
-			return (0);
-		if (hd_loop_expand_and_write(wfd, l, expand, env))
-			return (1);
-	}
-	return (0);
-}
+// 	while (1)
+// 	{
+// 		l = readline("> ");
+// 		if (!l)
+// 			return (close(wfd), 0);
+// 		if (get_global()->hd_interrupted)
+// 		{
+// 			free(l);
+// 			return (close(wfd), 1);
+// 		}
+// 		if (hd_loop_check_delim(l, delim, wfd))
+// 			return (0);
+// 		if (hd_loop_expand_and_write(wfd, l, expand, env))
+// 			return (1);
+// 	}
+// 	return (0);
+// }
 
-static void	hd_sigint_handler(int sig)
-{	
-	t_env	*e;
-	t_cmd	*c;
+// static void	hd_sigint_handler(int sig)
+// {	
+// 	t_env	*e;
+// 	t_cmd	*c;
 
-	(void)sig;
-	e = hd_env(1, NULL);
-	c = hd_cmd(1, NULL);
-	if (e)
-		free_env(e);
-	if (c)
-		free_cmd_list(c);
-	if (get_global()->hd_wfd >= 0)
-	{
-		close(get_global()->hd_wfd);
-		get_global()->hd_wfd = -1;
-	}
-	_exit(130);
-}
+// 	(void)sig;
+// 	e = hd_env(1, NULL);
+// 	c = hd_cmd(1, NULL);
+// 	if (e)
+// 		free_env(e);
+// 	if (c)
+// 		free_cmd_list(c);
+// 	if (get_global()->hd_wfd >= 0)
+// 	{
+// 		close(get_global()->hd_wfd);
+// 		get_global()->hd_wfd = -1;
+// 	}
+// 	_exit(130);
+// }
 
-static void	hd_sigquit_handler(int sig)
-{	
-	t_env	*e;
-	t_cmd	*c;
+// static void	hd_sigquit_handler(int sig)
+// {	
+// 	t_env	*e;
+// 	t_cmd	*c;
 
-	(void)sig;
-	e = hd_env(1, NULL);
-	c = hd_cmd(1, NULL);
-	if (e)
-		free_env(e);
-	if (c)
-		free_cmd_list(c);
-	_exit(131);
-}
+// 	(void)sig;
+// 	e = hd_env(1, NULL);
+// 	c = hd_cmd(1, NULL);
+// 	if (e)
+// 		free_env(e);
+// 	if (c)
+// 		free_cmd_list(c);
+// 	_exit(131);
+// }
 
-static void	hd_child_exit_error(int *p, t_env *env, t_cmd *cmd)
-{
-	close(p[1]);
-	free_env(env);
-	free_cmd_list(cmd);
-	_exit(130);
-}
+// static void	hd_child_exit_error(int *p, t_env *env, t_cmd *cmd)
+// {
+// 	close(p[1]);
+// 	free_env(env);
+// 	free_cmd_list(cmd);
+// 	_exit(130);
+// }
 
-static void	hd_child_exit_success(int *p, t_env *env, t_cmd *cmd)
-{
-	close(p[1]);
-	free_env(env);
-	free_cmd_list(cmd);
-	_exit(0);
-}
+// static void	hd_child_exit_success(int *p, t_env *env, t_cmd *cmd)
+// {
+// 	close(p[1]);
+// 	free_env(env);
+// 	free_cmd_list(cmd);
+// 	_exit(0);
+// }
 
-static void	close_all_exect_one(int fd_keep)
-{
-	struct rlimit	lim;
-	int				max_fd;
-	int				fd;
+// static void	close_all_exect_one(int fd_keep)
+// {
+// 	struct rlimit	lim;
+// 	int				max_fd;
+// 	int				fd;
 
-	if (getrlimit(RLIMIT_NOFILE, &lim) == 0)
-		max_fd = (int)lim.rlim_cur;
-	else
-		max_fd = 1024;
-	fd = 3;
-	while (fd < max_fd)
-	{
-		if (fd != fd_keep)
-			close(fd);
-		fd++;
-	}
-}
+// 	if (getrlimit(RLIMIT_NOFILE, &lim) == 0)
+// 		max_fd = (int)lim.rlim_cur;
+// 	else
+// 		max_fd = 1024;
+// 	fd = 3;
+// 	while (fd < max_fd)
+// 	{
+// 		if (fd != fd_keep)
+// 			close(fd);
+// 		fd++;
+// 	}
+// }
 
 static void	hd_child(int *p, char *delim, int expand, t_hd_params *params)
 {

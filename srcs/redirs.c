@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   redirs.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:34:29 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 13:54:06 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 15:18:57 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	close_both_and_fail(int *a, int *b)
+int	close_both_and_fail(int *a, int *b)
 {
 	if (*a >= 0)
 		close(*a);
@@ -21,7 +21,7 @@ static int	close_both_and_fail(int *a, int *b)
 	return (1);
 }
 
-static int	open_in(char *path, int *fd)
+int	open_in(char *path, int *fd)
 {
 	int	f;
 
@@ -34,7 +34,7 @@ static int	open_in(char *path, int *fd)
 	return (0);
 }
 
-static int	open_out(char *path, int *fd, int append)
+int	open_out(char *path, int *fd, int append)
 {
 	int	f;
 	int	flags;
@@ -54,7 +54,7 @@ static int	open_out(char *path, int *fd, int append)
 }
 
 //ca gere les < et <<
-static int	input_redir(t_token *t, int *fd_in, int *fd_out)
+int	input_redir(t_token *t, int *fd_in, int *fd_out)
 {
 	if (open_in(t->next->str, fd_in))
 	{
@@ -66,7 +66,7 @@ static int	input_redir(t_token *t, int *fd_in, int *fd_out)
 
 //ca gere les > et >>
 //dd pour savoir si c'est un double redir ou simple redir
-static int	output_redir(t_token *t, int *fd_in, int *fd_out)
+int	output_redir(t_token *t, int *fd_in, int *fd_out)
 {
 	int	dd;
 
@@ -79,55 +79,55 @@ static int	output_redir(t_token *t, int *fd_in, int *fd_out)
 	return (0);
 }
 
-static int	redir_for_token(t_token *t, int *fd_in, int *fd_out)
-{
-	if (!t->next || t->next->type != FD)
-		return (0);
-	if (t->type == RINT)
-		return (input_redir(t, fd_in, fd_out));
-	else if (t->type == ROUT || t->type == DROUT)
-		return (output_redir(t, fd_in, fd_out));
-	return (0);
-}
+// static int	redir_for_token(t_token *t, int *fd_in, int *fd_out)
+// {
+// 	if (!t->next || t->next->type != FD)
+// 		return (0);
+// 	if (t->type == RINT)
+// 		return (input_redir(t, fd_in, fd_out));
+// 	else if (t->type == ROUT || t->type == DROUT)
+// 		return (output_redir(t, fd_in, fd_out));
+// 	return (0);
+// }
 
-//on applique kes fd a la commande
-static void	apply_fds(t_cmd *cmd, int fd_in, int fd_out)
-{
-	if (fd_in >= 0)
-	{
-		if (cmd->input != -1)
-			close(cmd->input);
-		cmd->input = fd_in;
-	}
-	if (fd_out >= 0)
-	{
-		if (cmd->output != -1)
-			close(cmd->output);
-		cmd->output = fd_out;
-	}
-}
+// //on applique kes fd a la commande
+// static void	apply_fds(t_cmd *cmd, int fd_in, int fd_out)
+// {
+// 	if (fd_in >= 0)
+// 	{
+// 		if (cmd->input != -1)
+// 			close(cmd->input);
+// 		cmd->input = fd_in;
+// 	}
+// 	if (fd_out >= 0)
+// 	{
+// 		if (cmd->output != -1)
+// 			close(cmd->output);
+// 		cmd->output = fd_out;
+// 	}
+// }
 
-int	apply_redirections(t_cmd *cmd, t_env *env)
-{
-	t_token	*t;
-	int		fd_in;
-	int		fd_out;
-	int		ret;
+// int	apply_redirections(t_cmd *cmd, t_env *env)
+// {
+// 	t_token	*t;
+// 	int		fd_in;
+// 	int		fd_out;
+// 	int		ret;
 
-	(void)env;
-	fd_in = -1;
-	fd_out = -1;
-	t = cmd->reds;
-	while (t)
-	{
-		ret = redir_for_token(t, &fd_in, &fd_out);
-		if (ret != 0)
-			return (ret);
-		t = t->next;
-	}
-	apply_fds(cmd, fd_in, fd_out);
-	return (0);
-}
+// 	(void)env;
+// 	fd_in = -1;
+// 	fd_out = -1;
+// 	t = cmd->reds;
+// 	while (t)
+// 	{
+// 		ret = redir_for_token(t, &fd_in, &fd_out);
+// 		if (ret != 0)
+// 			return (ret);
+// 		t = t->next;
+// 	}
+// 	apply_fds(cmd, fd_in, fd_out);
+// 	return (0);
+// }
 
 //AVANT DE DIVISER
 // int	apply_redirections(t_cmd *cmd, t_env *env)

@@ -10,15 +10,27 @@ OBJ_DIR		=	obj/
 
 SRCS =  init.c \
 	main2.c \
+	main3.c \
+	main.c \
 	split.c \
+	split2.c \
+	split3.c \
 	token.c \
+	token2.c \
 	expand.c \
 	utils.c \
 	hd_helper.c \
 	commander.c \
+	expand_com_init2.c \
 	pipes/chpl.c \
+	pipes/chpl2.c \
+	pipes/chpl3.c \
+	pipes/chpl4.c \
+	pipes/chpl5.c \
 	pipes/list_to_array.c \
 	pipes/new_pipe.c \
+	pipes/np2.c \
+	pipes/np3.c \
 	pipes/parent_and_waitpid.c \
 	free.c \
 	builtin/builtin.c \
@@ -32,7 +44,10 @@ SRCS =  init.c \
 	builtin/env.c \
 	status.c \
 	heredoc.c \
+	heredoc2.c \
+	heredoc3.c \
 	redirs.c \
+	redirs2.c \
 	signal.c \
 
 HEADER = minishell.h

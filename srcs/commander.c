@@ -6,28 +6,28 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/01 12:15:07 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/04 12:34:17 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/07 15:21:39 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h" 
 
 // represente les commandes entre deux pipes
-static t_cmd	*create_cmd(void)
-{
-	t_cmd	*cmd;
+// static t_cmd	*create_cmd(void)
+// {
+// 	t_cmd	*cmd;
 
-	cmd = malloc (sizeof(t_cmd));
-	if (!cmd)
-		return (NULL);
-	cmd->input = -1;
-	cmd->output = -1;
-	cmd->reds = NULL;
-	cmd->args = NULL;
-	cmd->prev = NULL;
-	cmd->next = NULL;
-	return (cmd);
-}
+// 	cmd = malloc (sizeof(t_cmd));
+// 	if (!cmd)
+// 		return (NULL);
+// 	cmd->input = -1;
+// 	cmd->output = -1;
+// 	cmd->reds = NULL;
+// 	cmd->args = NULL;
+// 	cmd->prev = NULL;
+// 	cmd->next = NULL;
+// 	return (cmd);
+// }
 
 // cree la liste args ou reds de t_cmd
 static int	add_token(t_token **dest, t_token *src)

@@ -3,31 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 14:19:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 15:00:10 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/07 15:24:05 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	create_node2_with_equal(t_env *node, char *envdeb, char *equal)
-{
-	size_t	len;
+// static int	create_node2_with_equal(t_env *node, char *envdeb, char *equal)
+// {
+// 	size_t	len;
 
-	len = equal - envdeb;
-	node->key = ft_substr(envdeb, 0, len);
-	if (!node->key)
-		return (1);
-	node->value = ft_strdup(equal + 1);
-	if (!node->value)
-	{
-		free(node->key);
-		return (1);
-	}
-	return (0);
-}
+// 	len = equal - envdeb;
+// 	node->key = ft_substr(envdeb, 0, len);
+// 	if (!node->key)
+// 		return (1);
+// 	node->value = ft_strdup(equal + 1);
+// 	if (!node->value)
+// 	{
+// 		free(node->key);
+// 		return (1);
+// 	}
+// 	return (0);
+// }
 
 static t_env	*create_node(char *envdeb)
 {
