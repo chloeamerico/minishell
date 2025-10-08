@@ -6,7 +6,7 @@
 /*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 15:42:57 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/07 18:10:30 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/08 10:39:22 by lleichtn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int	exec_simple_cmd_part2(char **cmd_arg, char **envp)
 	int		error_code;
 	char	*cmd_path;
 
-	signal(SIGPIPE, SIG_DFL);
+	signal(SIGPIPE, SIG_IGN);
 	if (try_run_builtin(cmd_arg, &envp, &status))
 		cleanup_exec_and_exit(cmd_arg, envp, NULL, status);
 	error_code = print_cmd_error(cmd_arg[0], envp);
