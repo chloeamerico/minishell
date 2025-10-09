@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   chpl5.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lleichtn <lleichtn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 15:42:57 by lleichtn          #+#    #+#             */
-/*   Updated: 2025/10/08 10:39:22 by lleichtn         ###   ########.fr       */
+/*   Updated: 2025/10/09 11:03:41 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int	exec_simple_cmd_part2(char **cmd_arg, char **envp)
 		cleanup_exec_and_exit(cmd_arg, envp, NULL, 127);
 	execve(cmd_path, cmd_arg, envp);
 	perror("execve failed");
+	signal(SIGPIPE, SIG_DFL);
 	cleanup_exec_and_exit(cmd_arg, envp, cmd_path, 126);
 	return (0);
 }

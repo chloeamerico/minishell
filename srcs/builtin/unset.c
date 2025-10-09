@@ -6,7 +6,7 @@
 /*   By: camerico <camerico@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 11:56:44 by camerico          #+#    #+#             */
-/*   Updated: 2025/10/03 12:56:46 by camerico         ###   ########.fr       */
+/*   Updated: 2025/10/09 11:18:44 by camerico         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	find_env_index(char **envp, char *key)
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], key, len) == 0
-			&& envp[i][len] == '=')
+			&& (envp[i][len] == '=' || envp[i][len] == '\0'))
 			return (i);
 		i++;
 	}
@@ -59,7 +59,7 @@ int	ft_unset(char **args, char ***envp)
 	return (exit_status);
 }
 
-//AVANT DE REDUIRE
+// //AVANT DE REDUIRE
 // int	ft_unset(char **args, char ***envp)
 // {
 // 	int	i;
@@ -72,28 +72,18 @@ int	ft_unset(char **args, char ***envp)
 // 	i = 1;
 // 	while (args[i])
 // 	{
-// 		if (!is_valid_identifier(args[i]))
+// 		idx = find_env_index(*envp, args[i]);
+// 		if (idx != -1)
 // 		{
-// 			ft_putstr_fd("unset: `", STDERR_FILENO);
-// 			ft_putstr_fd(args[i], STDERR_FILENO);
-// 			ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-// 			exit_status = 1;
-// 		}
-// 		else
-// 		{
-// 			idx = find_env_index(*envp, args[i]);
-// 			if (idx != -1)
+// 			free((*envp)[idx]);
+// 			while ((*envp)[idx + 1])
 // 			{
-// 				free((*envp)[idx]);
-// 				while ((*envp)[idx + 1])
-// 				{
-// 					(*envp)[idx] = (*envp)[idx + 1];
-// 					idx++;
-// 				}
-// 				(*envp)[idx] = NULL;
+// 				(*envp)[idx] = (*envp)[idx + 1];
+// 				idx++;
 // 			}
+// 			(*envp)[idx] = NULL;
 // 		}
-// 		i++;
 // 	}
+// 		i++;
 // 	return (exit_status);
 // }
